@@ -1,0 +1,17 @@
+<!--
+  PLACEHOLDER favicon — typographic, not the client's logo.
+
+  REBRAND.md §5 requires the full icon set regenerated from the XPDX vector,
+  and is explicit that the vector must come from the client because the PDF
+  letterhead is a raster that will not scale. That vector has not been
+  supplied, so this is a deliberate stand-in: the wordmark's initial set in the
+  brand orange on ink. It invents no mark and no lockup.
+
+  Replace with the real set at handover — see docs/handover.md.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="XPDX">
+  <rect width="64" height="64" rx="12" fill="#14161A"/>
+  <text x="32" y="43" text-anchor="middle"
+        font-family="Archivo, Helvetica, Arial, sans-serif"
+        font-size="30" font-weight="800" letter-spacing="-1.5" fill="#F05A22">XP</text>
+</svg>

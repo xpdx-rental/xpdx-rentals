@@ -1,0 +1,277 @@
+"use client";
+
+import { useState, useRef, useId, useEffect } from "react";
+import { CheckCircle2, Loader2, Phone } from "lucide-react";
+import { DURATIONS } from "@/lib/enquiry-options";
+import { telHref } from "@/lib/lead";
+
+/**
+ * Enquiry form — the site's only conversion action.
+ *
+ * Phase 4 builds the form and its states; Phase 5 hardens the pipeline behind
+ * it (§9: validate → insert → respond → notify, with the notification failure
+ * never surfacing to the customer).
+ *
+ * Two deliberate choices from §9:
+ *   • Success resolves in place. There is no redirect to a thank-you page,
+ *     which would lose the context the customer was reading.
+ *   • Failure copy states what happened and gives the phone number. Never a
+ *     bare "something went wrong" — this form is how the business earns money,
+ *     and a dead end costs a real customer.
+ *
+ * The honeypot is a real input positioned off-screen rather than
+ * `display:none`, because some bots skip hidden fields. It is
+ * `aria-hidden` and `tabIndex={-1}` so it is invisible to assistive tech and
+ * to keyboard users.
+ */
+export function EnquiryForm({
+  vanSlug,
+  vanName,
+  phone,
+  compact = false,
+}: {
+  vanSlug?: string;
+  vanName?: string;
+  phone?: string | null;
+  compact?: boolean;
+}) {
+  const formId = useId();
+  const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  // Set in an effect, not during render: `Date.now()` is impure and calling it
+  // in the render body is a React purity violation. Measuring from when the
+  // form actually became interactive is also the more honest timing baseline
+  // for the anti-spam check.
+  const renderedAt = useRef<number | null>(null);
+  useEffect(() => {
+    renderedAt.current = Date.now();
+  }, []);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("submitting");
+    setError(null);
+    setFieldErrors({});
+
+    const fd = new FormData(e.currentTarget);
+    const utm: Record<string, string> = {};
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"]) {
+        const v = params.get(k);
+        if (v) utm[k] = v;
+      }
+    }
+
+    const payload = {
+      name: fd.get("name"),
+      phone: fd.get("phone"),
+      email: fd.get("email"),
+      suburb: fd.get("suburb") || undefined,
+      vanSlug: fd.get("vanSlug") || undefined,
+      duration: fd.get("duration") || undefined,
+      startDate: fd.get("startDate") || undefined,
+      message: fd.get("message") || undefined,
+      consent: fd.get("consent") === "on",
+      website: fd.get("website") || "",
+      formRenderedAt: renderedAt.current ?? undefined,
+      meta: {
+        pagePath: typeof window !== "undefined" ? window.location.pathname : undefined,
+        referrer: typeof document !== "undefined" ? document.referrer || undefined : undefined,
+        device:
+          typeof navigator === "undefined"
+            ? "unknown"
+            : /iPad|Tablet/i.test(navigator.userAgent)
+              ? "tablet"
+              : /Mobi|Android|iPhone/i.test(navigator.userAgent)
+                ? "mobile"
+                : "desktop",
+        utm,
+      },
+    };
+
+    try {
+      const res = await fetch("/api/v1/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json().catch(() => null);
+
+      if (res.ok) {
+        setStatus("sent");
+        // Conversion event for GTM (§9). Guarded so a missing dataLayer never
+        // breaks the success state.
+        if (typeof window !== "undefined") {
+          (window as unknown as { dataLayer?: unknown[] }).dataLayer?.push({
+            event: "enquiry_submitted",
+            van: vanSlug ?? null,
+          });
+        }
+        return;
+      }
+
+      if (json?.error?.fields) setFieldErrors(json.error.fields);
+      setStatus("error");
+      setError(
+        json?.error?.message ??
+          "We could not send your enquiry just now. Please call us and we'll take the details over the phone.",
+      );
+    } catch {
+      setStatus("error");
+      setError(
+        "Your enquiry did not reach us — you may be offline. Please try again, or call us and we'll take the details over the phone.",
+      );
+    }
+  }
+
+  if (status === "sent") {
+    return (
+      <div className="rounded-xl border border-success/40 bg-success/5 p-6" role="status">
+        <CheckCircle2 className="size-8 text-success" aria-hidden="true" />
+        <h3 className="mt-3 font-heading text-xl font-bold text-foreground">
+          Thanks — we’ve got your enquiry.
+        </h3>
+        <p className="mt-2 text-body">
+          Someone from our team will be in touch shortly
+          {vanName ? ` about the ${vanName}` : ""}. If it’s urgent, give us a call.
+        </p>
+        {phone ? (
+          <a
+            href={telHref(phone)}
+            className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-5 font-semibold text-primary-foreground"
+          >
+            <Phone className="size-4" aria-hidden="true" /> {phone}
+          </a>
+        ) : null}
+      </div>
+    );
+  }
+
+  const inputCls =
+    "mt-1 min-h-11 w-full rounded-lg border border-border bg-background px-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+  const err = (f: string) => fieldErrors[f];
+
+  return (
+    <form onSubmit={onSubmit} noValidate className="space-y-4">
+      {vanSlug ? <input type="hidden" name="vanSlug" value={vanSlug} /> : null}
+
+      {/* Honeypot: off-screen, not display:none. */}
+      <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
+        <label htmlFor={`${formId}-website`}>Do not fill this in</label>
+        <input id={`${formId}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      <div className={compact ? "space-y-4" : "grid grid-cols-1 gap-4 sm:grid-cols-2"}>
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">Your name</span>
+          <input name="name" required autoComplete="name" className={inputCls} />
+          {err("name") ? <span className="mt-1 block text-xs text-danger">{err("name")}</span> : null}
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">Phone</span>
+          <input
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            required
+            autoComplete="tel"
+            placeholder="0400 000 000"
+            className={inputCls}
+          />
+          {err("phone") ? <span className="mt-1 block text-xs text-danger">{err("phone")}</span> : null}
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">Email</span>
+          <input
+            name="email"
+            type="email"
+            inputMode="email"
+            required
+            autoComplete="email"
+            className={inputCls}
+          />
+          {err("email") ? <span className="mt-1 block text-xs text-danger">{err("email")}</span> : null}
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">
+            Suburb <span className="font-normal text-muted-foreground">(optional)</span>
+          </span>
+          <input name="suburb" autoComplete="address-level2" className={inputCls} />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">How long do you need it?</span>
+          <select name="duration" defaultValue="" className={inputCls}>
+            <option value="">Select…</option>
+            {DURATIONS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <span className="mt-1 block text-xs text-muted-foreground">28 day minimum hire.</span>
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">
+            Preferred start <span className="font-normal text-muted-foreground">(optional)</span>
+          </span>
+          <input name="startDate" type="date" className={inputCls} />
+        </label>
+      </div>
+
+      <label className="block">
+        <span className="text-sm font-medium text-foreground">
+          Anything else? <span className="font-normal text-muted-foreground">(optional)</span>
+        </span>
+        <textarea
+          name="message"
+          rows={4}
+          className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          placeholder="What you'll be carrying, or anything we should know."
+        />
+      </label>
+
+      <label className="flex items-start gap-3">
+        <input
+          name="consent"
+          type="checkbox"
+          required
+          className="mt-1 size-5 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        />
+        <span className="text-sm text-body">
+          I agree to XPDX Rentals contacting me about this enquiry.
+        </span>
+      </label>
+      {err("consent") ? <p className="text-xs text-danger">{err("consent")}</p> : null}
+
+      {status === "error" && error ? (
+        <p role="alert" className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">
+          {error}
+          {phone ? (
+            <>
+              {" "}
+              <a href={telHref(phone)} className="font-semibold underline">
+                {phone}
+              </a>
+            </>
+          ) : null}
+        </p>
+      ) : null}
+
+      <button
+        type="submit"
+        disabled={status === "submitting"}
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 sm:w-auto"
+      >
+        {status === "submitting" ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : null}
+        {status === "submitting" ? "Sending…" : "Get a quote"}
+      </button>
+    </form>
+  );
+}

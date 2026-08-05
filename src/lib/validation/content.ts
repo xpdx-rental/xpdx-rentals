@@ -1,0 +1,41 @@
+import { z } from "zod";
+
+/** Content admin validation: testimonials, FAQs, CMS pages. */
+
+export const testimonialSchema = z.object({
+  id: z.string().uuid().optional(),
+  customerName: z.string().trim().min(2).max(120),
+  photoMediaId: z.string().uuid().optional(),
+  // `testimonials.vehicle_id` is dropped by migration 0019: a review is about
+  // the business, not a specific van.
+  rating: z.coerce.number().int().min(1).max(5),
+  quote: z.string().trim().min(5).max(2000),
+  source: z.enum(["google", "facebook", "direct"]).default("direct"),
+  reviewDate: z.string().date().optional().or(z.literal("")),
+  isApproved: z.boolean().optional().default(false),
+  sortOrder: z.coerce.number().int().optional().default(0),
+});
+
+export const faqSchema = z.object({
+  id: z.string().uuid().optional(),
+  category: z.string().trim().min(2).max(60),
+  question: z.string().trim().min(5).max(300),
+  answer: z.string().trim().min(5).max(4000),
+  sortOrder: z.coerce.number().int().optional().default(0),
+  isPublished: z.boolean().optional().default(true),
+});
+
+
+export const pageSchema = z.object({
+  id: z.string().uuid().optional(),
+  slug: z.string().trim().min(1).max(120).regex(/^[a-z0-9-]+$/),
+  title: z.string().trim().min(1).max(200),
+  blocks: z.array(z.record(z.string(), z.unknown())).default([]),
+  seoTitle: z.string().trim().max(160).optional().or(z.literal("")),
+  seoDescription: z.string().trim().max(320).optional().or(z.literal("")),
+  isPublished: z.boolean().optional().default(true),
+});
+
+export type TestimonialInput = z.infer<typeof testimonialSchema>;
+export type FaqInput = z.infer<typeof faqSchema>;
+export type PageInput = z.infer<typeof pageSchema>;
