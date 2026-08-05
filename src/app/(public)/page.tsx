@@ -7,6 +7,7 @@ import { getApprovedTestimonials } from "@/lib/data/content";
 import { VanCard } from "@/components/public/van-card";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { FaqSummaryList } from "@/components/public/faq-list";
+import { VanScene } from "@/components/animations/van-scene";
 import { JsonLd } from "@/components/json-ld";
 import { autoRentalSchema, websiteSchema, faqPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -57,44 +58,49 @@ export default async function HomePage() {
         with no fade and no stagger. MOTION.md §2.3 makes this a hard rule and
         Phase 4b must not animate it.
       */}
-      <section className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="font-mono text-sm font-medium uppercase tracking-widest text-link">
-            {BRAND.tagline}
-          </p>
-          <h1 className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Long-term van hire for Sydney trades and couriers
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-body">
-            Automatic diesel cargo vans from our yard at Condell Park. Unlimited kilometres,
-            comprehensive insurance and 24/7 roadside assistance included in every hire.
-            {HIRE_TERMS.minHireDays} day minimum.
-          </p>
+      <section className="border-b border-border bg-muted/30 relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
+          <div className="relative z-20">
+            <p className="font-mono text-sm font-medium uppercase tracking-widest text-link">
+              {BRAND.tagline}
+            </p>
+            <h1 className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              Long-term van hire for Sydney trades and couriers
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg text-body">
+              Automatic diesel cargo vans from our yard at Condell Park. Unlimited kilometres,
+              comprehensive insurance and 24/7 roadside assistance included in every hire.
+              {HIRE_TERMS.minHireDays} day minimum.
+            </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/vans"
-              className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              See the fleet
-              <ArrowRight className="size-5" aria-hidden="true" />
-            </Link>
-            {contact.phone ? (
-              <a
-                href={telHref(contact.phone)}
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border px-6 font-bold text-foreground hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/vans"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
-                <Phone className="size-5" aria-hidden="true" />
-                {contact.phone}
-              </a>
+                See the fleet
+                <ArrowRight className="size-5" aria-hidden="true" />
+              </Link>
+              {contact.phone ? (
+                <a
+                  href={telHref(contact.phone)}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border px-6 font-bold text-foreground hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  <Phone className="size-5" aria-hidden="true" />
+                  {contact.phone}
+                </a>
+              ) : null}
+            </div>
+
+            {cheapest !== null && Number.isFinite(cheapest) ? (
+              <p className="mt-6 font-mono text-sm text-muted-foreground">
+                From {formatWeekly(cheapest as number)} per week · Unlimited km · Insurance included
+              </p>
             ) : null}
           </div>
-
-          {cheapest !== null && Number.isFinite(cheapest) ? (
-            <p className="mt-6 font-mono text-sm text-muted-foreground">
-              From {formatWeekly(cheapest as number)} per week · Unlimited km · Insurance included
-            </p>
-          ) : null}
+          <div className="mt-12 lg:mt-0 relative z-10 -mx-4 sm:mx-0">
+            <VanScene />
+          </div>
         </div>
       </section>
 
