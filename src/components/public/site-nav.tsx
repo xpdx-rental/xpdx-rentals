@@ -20,7 +20,7 @@ export async function SiteNav() {
   const contact = await getSiteContact();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-ink/40 backdrop-blur-xl shadow-lg transition-all duration-300">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6">
         <Link
           href="/"

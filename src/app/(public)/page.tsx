@@ -8,6 +8,7 @@ import { VanCard } from "@/components/public/van-card";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { FaqSummaryList } from "@/components/public/faq-list";
 import { VanScene } from "@/components/animations/van-scene";
+import { FadeIn } from "@/components/animations/fade-in";
 import { JsonLd } from "@/components/json-ld";
 import { autoRentalSchema, websiteSchema, faqPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -76,7 +77,7 @@ export default async function HomePage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/vans"
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground shadow-[0_0_20px_rgba(240,90,34,0.3)] transition-all duration-300 hover:shadow-[0_0_30px_rgba(240,90,34,0.6)] hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 See the fleet
                 <ArrowRight className="size-5" aria-hidden="true" />
@@ -99,19 +100,22 @@ export default async function HomePage() {
             ) : null}
           </div>
           <div className="mt-12 lg:mt-0 relative z-10 -mx-4 sm:mx-0">
-            <VanScene />
+            <FadeIn delay={0.2}>
+              <VanScene />
+            </FadeIn>
           </div>
         </div>
       </section>
 
       {/* Fleet */}
-      <section aria-labelledby="fleet" className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2
-              id="fleet"
-              className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-            >
+      <section aria-labelledby="fleet" className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20 relative z-10">
+        <FadeIn>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2
+                id="fleet"
+                className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
+              >
               Our vans
             </h2>
             <p className="mt-2 text-body">
@@ -136,7 +140,9 @@ export default async function HomePage() {
           <>
             <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {vans.slice(0, 6).map((v, i) => (
-                <VanCard key={v.id} van={v} priority={i < 3} />
+                <FadeIn key={v.id} delay={i * 0.1}>
+                  <VanCard van={v} priority={i < 3} />
+                </FadeIn>
               ))}
             </div>
 
@@ -146,10 +152,11 @@ export default async function HomePage() {
               the no-JS, screen-reader version underneath.
             */}
             <section aria-labelledby="size-guide" className="mt-14">
-              <h2
-                id="size-guide"
-                className="font-heading text-2xl font-bold tracking-tight text-foreground"
-              >
+              <FadeIn delay={0.2}>
+                <h2
+                  id="size-guide"
+                  className="font-heading text-2xl font-bold tracking-tight text-foreground"
+                >
                 Which size do I need?
               </h2>
               <div className="mt-5 overflow-x-auto rounded-xl border border-border">
@@ -181,26 +188,32 @@ export default async function HomePage() {
                   </tbody>
                 </table>
               </div>
+              </FadeIn>
             </section>
           </>
         )}
+        </FadeIn>
       </section>
 
       {/* Why us — the ten stated advantages, verbatim and unabridged. */}
-      <section aria-labelledby="why-us" className="border-y border-border bg-muted/30">
+      <section aria-labelledby="why-us" className="border-y border-white/5 bg-muted/10">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <h2
-            id="why-us"
-            className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-          >
-            Why hire with us
-          </h2>
+          <FadeIn>
+            <h2
+              id="why-us"
+              className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
+            >
+              Why hire with us
+            </h2>
+          </FadeIn>
           <ul className="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-            {ADVANTAGES.map((a) => (
-              <li key={a.label} className="flex items-start gap-3 text-body">
-                <Check className="mt-0.5 size-5 shrink-0 text-link" aria-hidden="true" />
-                <span className="font-medium text-foreground">{a.label}</span>
-              </li>
+            {ADVANTAGES.map((a, i) => (
+              <FadeIn key={a.label} delay={i * 0.05} direction="up">
+                <li className="flex items-start gap-3 text-body">
+                  <Check className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+                  <span className="font-medium text-foreground">{a.label}</span>
+                </li>
+              </FadeIn>
             ))}
           </ul>
         </div>

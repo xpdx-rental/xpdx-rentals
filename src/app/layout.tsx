@@ -131,7 +131,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-AU"
-      className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground font-sans tracking-tight">

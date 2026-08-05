@@ -22,7 +22,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
   return (
     <article
       id={`van-card-${van.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-ink-2/50 backdrop-blur-md shadow-md transition-all duration-500 hover:shadow-xl hover:border-primary/30 hover:-translate-y-1"
     >
       <Link
         href={`/vans/${van.slug}`}
@@ -92,7 +92,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
           </p>
           <VanTransitionLink
             href={`/vans/${van.slug}`}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(240,90,34,0.3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             View van
             <ArrowRight className="size-4" aria-hidden="true" />
