@@ -206,16 +206,16 @@ export default async function HomePage() {
               Why hire with us
             </h2>
           </FadeIn>
-          <ul className="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
             {ADVANTAGES.map((a, i) => (
               <FadeIn key={a.label} delay={i * 0.05} direction="up">
-                <li className="flex items-start gap-3 text-body">
+                <div className="flex items-start gap-3 text-body">
                   <Check className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                   <span className="font-medium text-foreground">{a.label}</span>
-                </li>
+                </div>
               </FadeIn>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
