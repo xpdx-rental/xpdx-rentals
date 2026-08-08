@@ -19,15 +19,23 @@ export function StaffSignIn() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-    if (signInError) {
-      setError(signInError.message);
+    try {
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
+      // Full navigation so the server picks up the new session cookies.
+      window.location.href = redirectedFrom || "/admin";
+    } catch (err) {
+      // catch (err: any) let err.message through unchecked — a thrown
+      // string or a non-Error object would then set undefined as the message
+      // and the operator would see an empty error box. Narrow instead.
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please check your environment variables.");
       setLoading(false);
-      return;
     }
-    // Full navigation so the server picks up the new session cookies.
-    window.location.href = redirectedFrom || "/admin";
   }
 
   return (
@@ -86,17 +94,23 @@ export function StaffSignIn() {
         type="button"
         onClick={async () => {
           setLoading(true);
-          const supabase = createClient();
-          const next = redirectedFrom || "/admin";
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: {
-              redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-              queryParams: { prompt: "select_account" }
-            },
-          });
-          if (error) {
-            setError(error.message);
+          setError(null);
+          try {
+            const supabase = createClient();
+            const next = redirectedFrom || "/admin";
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: "google",
+              options: {
+                redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+                queryParams: { prompt: "select_account" }
+              },
+            });
+            if (error) {
+              setError(error.message);
+              setLoading(false);
+            }
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "An unexpected error occurred. Please check your environment variables.");
             setLoading(false);
           }
         }}
