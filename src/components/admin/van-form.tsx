@@ -95,6 +95,22 @@ export function VanForm({
             />
           </Field>
 
+          <Field label="Make" error={err("make")}>
+            <input name="make" defaultValue={van?.make ?? ""} placeholder="e.g. Mercedes" className={input} />
+          </Field>
+          
+          <Field label="Model" error={err("model")}>
+            <input name="model" defaultValue={van?.model ?? ""} placeholder="e.g. Sprinter" className={input} />
+          </Field>
+
+          <Field label="Year" error={err("year")}>
+            <input name="year" type="number" defaultValue={van?.year ?? ""} placeholder="2024" className={input} />
+          </Field>
+          
+          <Field label="Registration (Internal)" error={err("registration")}>
+            <input name="registration" defaultValue={van?.registration ?? ""} placeholder="XYZ-123" className={input} />
+          </Field>
+
           <Field
             label="URL slug"
             hint={`Public URL: /vans/${effectiveSlug || "…"}`}
@@ -199,6 +215,15 @@ export function VanForm({
               name="priceMonthlyFrom"
               type="number"
               defaultValue={van?.priceMonthlyFrom ?? ""}
+              className={input}
+            />
+          </Field>
+          
+          <Field label="Security Deposit (AUD)" hint="Leave blank if not required" error={err("depositAmount")}>
+            <input
+              name="depositAmount"
+              type="number"
+              defaultValue={van?.depositAmount ?? ""}
               className={input}
             />
           </Field>

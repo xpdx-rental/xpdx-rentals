@@ -1,77 +1,119 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion, useReducedMotion } from "framer-motion";
+import { Fragment, type ElementType } from "react";
 
-gsap.registerPlugin(ScrollTrigger);
+/**
+ * Word-by-word masked reveal, triggered when the heading scrolls into view.
+ *
+ * ── Why this no longer uses GSAP ────────────────────────────────────────────
+ * The previous implementation imported `gsap` + `gsap/ScrollTrigger` — around
+ * 70 KB gzipped — to do a staggered translate that `framer-motion`, already in
+ * the bundle on every one of these pages, does natively. This component is used
+ * on the homepage and most landing pages, so GSAP was a second animation
+ * runtime downloaded site-wide for one effect.
+ *
+ * Three real bugs went with it:
+ *
+ *  1. **It killed every other component's ScrollTriggers.** Cleanup ran
+ *     `ScrollTrigger.getAll().forEach((t) => t.kill())` — not just its own. The
+ *     homepage renders six of these, so unmounting any one of them disabled the
+ *     scroll animations of all the others.
+ *  2. **It destroyed and rebuilt the DOM on mount.** `innerHTML = ""` followed
+ *     by hand-built `<span>`s threw away the server-rendered markup and forced
+ *     a synchronous layout of the heading on hydration.
+ *  3. **Its effect depended on `[children]` but also read `text`** — the prop
+ *     every caller on the homepage actually passes. A changed `text` never
+ *     re-ran the animation.
+ *
+ * The markup is now the same on the server and the client, so the heading is
+ * real text for a crawler and for a reader with JavaScript disabled. Under
+ * `prefers-reduced-motion` the words are simply present, with no transform.
+ */
 
 interface SplitTextRevealProps {
   children?: string;
   text?: string;
   className?: string;
-  as?: any;
+  as?: ElementType;
 }
 
-export function SplitTextReveal({ children, text, className = "", as: Component = "h2" }: SplitTextRevealProps) {
-  const containerRef = useRef<HTMLHeadingElement>(null);
+type TagProps = { className?: string; children?: React.ReactNode };
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+const WORD_VARIANTS = {
+  hidden: { y: "110%" },
+  visible: { y: "0%" },
+} as const;
 
-    const content = text || children;
-    if (!content) return;
+export function SplitTextReveal({
+  children,
+  text,
+  className = "",
+  as: Component = "h2",
+}: SplitTextRevealProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const content = text ?? children ?? "";
+  const words = content.split(" ");
 
-    // We manually split the text into words and wrap them in spans for GSAP to animate.
-    // This gives us SplitText-like control without worrying about exact import paths.
-    const words = content.split(" ");
-    
-    // Clear and rebuild DOM for the split
-    containerRef.current.innerHTML = "";
-    words.forEach((word, i) => {
-      const wordSpan = document.createElement("span");
-      wordSpan.style.display = "inline-block";
-      wordSpan.style.overflow = "hidden"; // Mask for the reveal
-      wordSpan.style.marginRight = "0.25em";
-      
-      const innerSpan = document.createElement("span");
-      innerSpan.style.display = "inline-block";
-      innerSpan.style.transform = "translateY(110%)"; // Start position (hidden below mask)
-      innerSpan.innerText = word;
-      
-      wordSpan.appendChild(innerSpan);
-      containerRef.current!.appendChild(wordSpan);
-    });
+  // Callers pass `as="div"` (where the real <h2> is a visually-hidden sibling)
+  // or `as="h2"`. Widened to a plain component type so TypeScript resolves the
+  // props of an unknown intrinsic tag rather than intersecting every element's
+  // props down to `never`.
+  const Tag = Component as React.ComponentType<TagProps>;
 
-    const innerSpans = containerRef.current.querySelectorAll("span > span");
+  if (shouldReduceMotion) {
+    return <Tag className={className}>{content}</Tag>;
+  }
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 85%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.to(innerSpans, {
-      y: "0%",
-      duration: 0.8,
-      stagger: 0.03,
-      ease: "power4.out",
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, [children]);
-
+  // The outer element stays a plain tag and the motion orchestration lives on
+  // an inner `motion.span`. Wrapping the caller's tag with `motion.create()`
+  // would mean building a component type during render, which React treats as
+  // a brand-new component on every pass — remounting the subtree and resetting
+  // the animation each time.
   return (
-    <Component
-      ref={containerRef}
-      className={className}
-      // Provide fallback text for SSR, the useEffect will replace it on client mount
-    >
-      {text || children}
-    </Component>
+    <Tag className={className}>
+      <motion.span
+        className="inline"
+        initial="hidden"
+        whileInView="visible"
+        // `once` avoids re-animating a heading every time it is scrolled past,
+        // which reads as a glitch on a long page.
+        viewport={{ once: true, margin: "0px 0px -15% 0px" }}
+        transition={{ staggerChildren: 0.03 }}
+      >
+        {words.map((word, i) => (
+          <Fragment key={`${word}-${i}`}>
+            <span
+              // `inline-block` + `overflow-hidden` is the mask the inner span
+              // translates out of.
+              //
+              // The vertical padding/negative-margin pair gives descenders
+              // (the y in "Why", the g in "hire with us") room inside the mask.
+              // Without it `overflow: hidden` clips them flat against the
+              // baseline, which is visible on every heading containing one.
+              className="inline-block overflow-hidden pb-[0.12em] mb-[-0.12em] align-bottom"
+            >
+              <motion.span
+                className="inline-block"
+                variants={WORD_VARIANTS}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {word}
+              </motion.span>
+            </span>
+            {/*
+              A real space between the word spans, rather than the `margin-right`
+              this used to rely on. A margin puts a visual gap there but leaves
+              no whitespace in the text content, so "Our vans" serialised as
+              "Ourvans" — to a copy-paste, to a screen reader reading the
+              heading, and to a crawler extracting text. On a site whose whole
+              purpose is organic search, headings that read as one run-together
+              token are not an acceptable cost for a reveal animation.
+            */}
+            {i < words.length - 1 ? " " : null}
+          </Fragment>
+        ))}
+      </motion.span>
+    </Tag>
   );
 }

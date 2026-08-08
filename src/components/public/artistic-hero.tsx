@@ -6,7 +6,6 @@ import {
   useTransform,
   useMotionValue,
   useMotionTemplate,
-  useReducedMotion,
 } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,13 +20,13 @@ import {
   Users,
   MessageCircle,
   PackageSearch,
-  Star,
 } from "lucide-react";
 import type { PublicVan } from "@/lib/data/public-vans";
 import { formatWeekly } from "@/lib/van";
 import { telHref, waHref } from "@/lib/lead";
-import { useEffect, useRef, useState } from "react";
-import { Van360Viewer } from "./van-360-viewer";
+import { useRef, useState } from "react";
+import { Van360Viewer, preloadVanScene } from "./van-360-viewer";
+import { BackgroundVideo } from "@/components/public/background-video";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import type { SiteContact } from "@/lib/data/settings";
 
@@ -151,23 +150,18 @@ export function ArtisticHero({
   vans: PublicVan[];
 }) {
   const containerRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [is360Open, setIs360Open] = useState(false);
   const [vehicle, setVehicle] = useState("all");
   const router = useRouter();
-  const shouldReduceMotion = useReducedMotion();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(vehicle === "all" ? "/vans" : `/vans/${vehicle}`);
   };
 
-  // A moving background is exactly the kind of motion prefers-reduced-motion
-  // asks us not to force on people — pause on the poster frame instead of
-  // letting it autoplay (MOTION.md §7 pattern used elsewhere in this file).
-  useEffect(() => {
-    if (shouldReduceMotion) videoRef.current?.pause();
-  }, [shouldReduceMotion]);
+  // The reduced-motion / Save-Data / slow-connection gating for the background
+  // clip now lives inside <BackgroundVideo>, alongside the deferred fetch —
+  // pausing after autoplay had already started still paid for the download.
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -192,20 +186,14 @@ export function ArtisticHero({
           the generator's watermark. Poster is the real fleet photo, so there
           is no blank/black frame before the video can play.
         */}
-        <motion.div style={{ y: imageY }} className="absolute inset-0 h-[calc(100%+120px)] w-full">
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
+        <motion.div style={{ y: imageY }} className="absolute inset-0 h-[calc(100%+120px)] w-full opacity-60">
+          <BackgroundVideo
+            src="/videos/business-van-rental-hero.mp4"
             poster="/vans/sprinter-l2h2.jpg"
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-[70%_center] lg:object-[85%_center] opacity-60"
-          >
-            <source src="/videos/hero-van.mp4" type="video/mp4" />
-          </video>
+            className="size-full"
+            objectPosition="object-top"
+            priority
+          />
         </motion.div>
 
         {/*
@@ -242,23 +230,6 @@ export function ArtisticHero({
       <div className="relative z-20 mx-auto w-full max-w-[1400px] px-6 lg:px-12 pt-32 pb-32">
         <motion.div style={{ y: contentY, opacity }} className="flex flex-col justify-center max-w-2xl">
 
-          {/* Trust Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-3 mb-6"
-          >
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="size-4 text-amber-400 fill-amber-400" />
-              ))}
-            </div>
-            <span className="text-white/80 text-xs font-medium tracking-wide">
-              <span className="text-white font-bold">5.0</span> average on Google
-            </span>
-          </motion.div>
-
           {/* Eyebrow */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -275,7 +246,7 @@ export function ArtisticHero({
 
           {/* Main Heading — editorial, razor-sharp */}
           <h1 className="font-heading font-black leading-[0.92] tracking-[-0.03em]">
-            {["One Rate.", "Everything", "Included."].map((word, i) => (
+            {["100+ Vans.", "Ready To", "Work."].map((word, i) => (
               <motion.span
                 key={word}
                 className="block overflow-hidden"
@@ -290,7 +261,7 @@ export function ArtisticHero({
                 <span
                   className={
                     i === 1
-                      ? "text-transparent bg-clip-text bg-gradient-to-r from-[#C9AB81] to-[#E5C07B] text-[clamp(3rem,7vw,6.5rem)]"
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-[#EA580C] to-[#E5C07B] text-[clamp(3rem,7vw,6.5rem)]"
                       : "text-white text-[clamp(3rem,7vw,6.5rem)]"
                   }
                 >
@@ -307,9 +278,7 @@ export function ArtisticHero({
             transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mt-8 text-[#9aa3ad] text-lg leading-relaxed max-w-md"
           >
-            Automatic diesel cargo vans for Sydney trades, couriers and businesses —
-            unlimited kilometres, comprehensive insurance and 24/7 roadside cover,
-            all included in every weekly rate.
+            Powering Sydney&apos;s trades, couriers, and businesses. Tap into our massive fleet of 100+ commercial vans with unlimited kilometres and comprehensive insurance included.
           </motion.p>
 
           {/* Stat chips */}
@@ -370,7 +339,14 @@ export function ArtisticHero({
               </span>
             </MagneticButton>
 
-            {/* New 360 View CTA */}
+            {/*
+              360 view. The three.js scene behind this is code-split (see
+              van-360-viewer.tsx); `preloadVanScene` warms that chunk on hover
+              or keyboard focus, so anyone who genuinely intends to open it
+              usually finds it already downloaded — without charging the other
+              ~99% of visitors for a 3D runtime they never ask for.
+            */}
+            <span onPointerEnter={preloadVanScene} onFocusCapture={preloadVanScene}>
             <MagneticButton
               onClick={(e) => {
                 e.preventDefault();
@@ -383,6 +359,7 @@ export function ArtisticHero({
               </div>
               View Interactive
             </MagneticButton>
+            </span>
 
             {contact?.phone && (
               <MagneticButton

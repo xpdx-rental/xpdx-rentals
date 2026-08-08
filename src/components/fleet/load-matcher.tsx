@@ -204,7 +204,7 @@ function VanCard({
           {verdict !== "too-small" && (
             <Link
               href={`/contact-us`}
-              className="inline-flex items-center gap-1 rounded-lg bg-[#C9AB81]/10 border border-[#C9AB81]/20 px-2.5 py-1.5 text-[10px] font-bold text-[#C9AB81] hover:bg-[#C9AB81]/20 transition-colors"
+              className="inline-flex items-center gap-1 rounded-lg bg-[#EA580C]/10 border border-[#EA580C]/20 px-2.5 py-1.5 text-[10px] font-bold text-[#EA580C] hover:bg-[#EA580C]/20 transition-colors"
             >
               Book this
             </Link>
@@ -262,7 +262,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
                 <span className="text-2xl" role="img" aria-label={p.label}>
                   {LOAD_ICONS[p.id]}
                 </span>
-                <span className={`text-xs font-bold leading-tight ${isActive ? "text-[#C9AB81]" : "text-white/70"}`}>
+                <span className={`text-xs font-bold leading-tight ${isActive ? "text-[#EA580C]" : "text-white/70"}`}>
                   {p.label}
                 </span>
                 <span className="text-[10px] text-white/30 leading-tight">
@@ -337,7 +337,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
       <p className="text-xs text-white/30 border-t border-white/[0.05] pt-4 leading-relaxed">
         ⚠️ This is a guide based on van size, not a measured capacity. Tell us what you are
         carrying and we will confirm the right van before you book.{" "}
-        <Link href="/contact-us" className="text-[#C9AB81] hover:underline font-semibold">
+        <Link href="/contact-us" className="text-[#EA580C] hover:underline font-semibold">
           Talk to our team →
         </Link>
       </p>

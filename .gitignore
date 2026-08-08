@@ -45,3 +45,9 @@ supabase/.temp/
 
 # local scratch
 /scratch
+
+# local development tool configs (AI assistants, MCP servers, etc.)
+.mcp.json
+.claude
+.codex
+.agents

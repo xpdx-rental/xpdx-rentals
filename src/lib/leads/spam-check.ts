@@ -23,7 +23,20 @@ export function checkSpam(input: {
   website?: string; // honeypot — must be empty
   formRenderedAt?: number;
   email?: string;
+  /**
+   * Result of the server-side Turnstile check (lib/security/turnstile.ts).
+   * `"skipped"` when Turnstile is not configured, and `"passed"` also covers
+   * the case where Cloudflare was unreachable — only a definitive `"failed"`
+   * quarantines, so an outage at Cloudflare never costs a genuine enquiry.
+   */
+  turnstile?: "skipped" | "passed" | "failed";
 }): SpamVerdict {
+  // Turnstile said no. Checked first because it is the strongest signal we
+  // have: it is the only one a bot cannot trivially satisfy by leaving a field
+  // alone or waiting two seconds.
+  if (input.turnstile === "failed") {
+    return { isSpam: true, reason: "turnstile" };
+  }
   // Honeypot filled ⇒ bot.
   if (input.website && input.website.trim().length > 0) {
     return { isSpam: true, reason: "honeypot" };
@@ -61,11 +74,24 @@ export function hashIp(ip: string): string {
   return createHash("sha256").update(`${salt}:${ip}`).digest("hex").slice(0, 32);
 }
 
-/** Extract the best-guess client IP from request headers. */
+/**
+ * Best-guess client IP.
+ *
+ * `cf-connecting-ip` comes first because this site sits behind Cloudflare (the
+ * geo gate in `proxy.ts` reads `cf-ipcountry`, and the CSP allowlists
+ * challenges.cloudflare.com). Cloudflare sets that header itself and strips any
+ * inbound copy, which makes it the only one here a client cannot forge.
+ * `x-forwarded-for` is client-appendable, so it is a fallback, not the primary
+ * — and it was the primary in this function, while the near-identical helper in
+ * `lib/security/rate-limit.ts` already preferred `cf-connecting-ip`. The two
+ * disagreeing meant the enquiry endpoint and the CTA endpoint were rate-limited
+ * on different notions of "who".
+ */
 export function clientIp(headers: Headers): string {
   return (
+    headers.get("cf-connecting-ip")?.trim() ||
+    headers.get("x-real-ip")?.trim() ||
     headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    headers.get("x-real-ip") ||
     "0.0.0.0"
   );
 }

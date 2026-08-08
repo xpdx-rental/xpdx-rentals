@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ADDRESS, GEO, CONTACT } from "@/lib/business";
@@ -27,7 +28,22 @@ export type SiteContact = {
 
 export type OpeningHours = Record<string, string>;
 
-async function readSettings(): Promise<Record<string, Record<string, unknown>>> {
+/**
+ * One read of the whole `settings` table, shared for the life of a request.
+ *
+ * `getSiteContact()` and `getOpeningHours()` both need it, and both are called
+ * on almost every public page — the header, the footer and the LocalBusiness
+ * JSON-LD all want the contact block. Each was independently wrapped in
+ * `unstable_cache`, so a cold cache meant **two identical `SELECT key, value
+ * FROM settings`** per render, and the homepage issued both.
+ *
+ * `cache()` (React's per-request memo) collapses them into one. It composes
+ * with the `unstable_cache` wrappers below rather than replacing them: those
+ * still hold the value across requests, this deduplicates within one.
+ */
+const readSettings = cache(async function readSettings(): Promise<
+  Record<string, Record<string, unknown>>
+> {
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase.from("settings").select("key, value");
@@ -43,7 +59,7 @@ async function readSettings(): Promise<Record<string, Record<string, unknown>>> 
     // unreachable. Failing the whole page would lose every lead on it.
     return {};
   }
-}
+});
 
 function str(v: unknown): string | null {
   const s = typeof v === "string" ? v.trim() : "";

@@ -21,25 +21,33 @@ import { NoiseOverlay } from "@/components/animations/noise-overlay";
 // the loader runs at build time and cannot resolve a shared constant, so the
 // fallback arrays are repeated rather than extracted.
 
-const interDisplay = Inter({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-  preload: true,
-});
-
-const interSans = Inter({
+/**
+ * One font, loaded once.
+ *
+ * This was three separate `Inter()` calls — `interDisplay`, `interSans` and
+ * `interMono` — differing only in which CSS variable they exported and whether
+ * they set `preload`. They are the same family and the same subset, so
+ * `next/font` emitted the *same* woff2 twice: once as the preloaded copy for
+ * the two `preload: true` instances and once as a plain copy for the
+ * `preload: false` one. The browser downloaded both.
+ *
+ * Measured on the production build: two requests for the identical file,
+ * 47 KB each — 94 KB of fonts where 47 KB was needed, on every cold visit,
+ * plus 24 `@font-face` declarations for a single family.
+ *
+ * One instance exports all three variable names instead. `globals.css` already
+ * resolves `--font-heading` from `--font-display` and falls back through
+ * `ui-monospace` for `--font-mono`, so nothing about the rendered type changes.
+ *
+ * (The comment that used to sit here described an Archivo / IBM Plex Sans /
+ * IBM Plex Mono stack. That is not what the code loads, and has not been for
+ * some time — every one of the three was Inter.)
+ */
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
   preload: true,
-});
-
-const interMono = Inter({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-  preload: false,
 });
 
 export const viewport: Viewport = {
@@ -49,7 +57,7 @@ export const viewport: Viewport = {
   // REBRAND.md §5 specifies the brand orange for the manifest theme colour, so
   // the browser chrome matches rather than contradicting it. See
   // docs/conversion/01-plan.md Q7 on the exact orange.
-  themeColor: "#C9AB81",
+  themeColor: "#EA580C",
 };
 
 export const metadata: Metadata = {
@@ -125,7 +133,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-AU"
-      className={`dark ${interDisplay.variable} ${interSans.variable} ${interMono.variable} h-full antialiased`}
+      className={`dark ${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground font-sans tracking-tight">

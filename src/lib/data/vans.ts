@@ -21,8 +21,8 @@ import type {
 const BUCKET = "van-images";
 
 const VAN_SELECT = `
-  id, slug, name, body_type, wheelbase_label, roof, tonnage, transmission, fuel, seats,
-  price_weekly_from, price_monthly_from, min_hire_days, price_verified,
+  id, slug, name, make, model, year, registration, body_type, wheelbase_label, roof, tonnage, transmission, fuel, seats,
+  price_weekly_from, price_monthly_from, deposit_amount, min_hire_days, price_verified,
   length_mm, height_mm, width_mm, wheelbase_mm, load_volume_m3, payload_kg, dimensions_verified,
   features, summary, description, seo_title, seo_description,
   status, sort_order, created_at, updated_at
@@ -39,6 +39,10 @@ function toVan(r: VanRow): Van {
     id: r.id,
     slug: r.slug,
     name: r.name,
+    make: r.make,
+    model: r.model,
+    year: r.year,
+    registration: r.registration,
     bodyType: r.body_type,
     wheelbaseLabel: r.wheelbase_label,
     roof: r.roof,
@@ -49,6 +53,7 @@ function toVan(r: VanRow): Van {
 
     priceWeeklyFrom: Number(r.price_weekly_from),
     priceMonthlyFrom: r.price_monthly_from == null ? null : Number(r.price_monthly_from),
+    depositAmount: r.deposit_amount == null ? null : Number(r.deposit_amount),
     minHireDays: Number(r.min_hire_days),
     priceVerified: !!r.price_verified,
 

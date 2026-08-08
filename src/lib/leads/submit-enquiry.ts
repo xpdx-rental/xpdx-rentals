@@ -31,6 +31,13 @@ export type EnquiryDeps = {
   notify(input: EnquiryNotification): Promise<ChannelResult[]>;
   /** Salted hash of the caller's IP. Never a raw IP. */
   ipHash: string;
+  /**
+   * Server-side Turnstile verdict, resolved by the HTTP edge before calling in.
+   * Injected rather than fetched here so this module stays free of network I/O
+   * and the tests can drive every branch. Defaults to `"skipped"`, which is
+   * what every non-HTTP caller (and an unconfigured deployment) sees.
+   */
+  turnstile?: "skipped" | "passed" | "failed";
 };
 
 export type EnquiryOutcome =
@@ -78,17 +85,22 @@ export async function submitEnquiry(
 ): Promise<EnquiryOutcome> {
   const phone = normalizePhone(data.phone);
 
-  // Honeypot + time-to-submit + disposable email. No CAPTCHA (§9): it costs
-  // conversions, and this audience fills forms on a phone in a yard.
+  // Turnstile + honeypot + time-to-submit + disposable email.
   //
   // Spam is QUARANTINED, not rejected — stored with status 'spam' and still
   // acknowledged with success. A bot is never taught what tripped the filter,
   // and a false positive is still captured and still visible to staff in the
   // Spam tab. A rejected false positive is a lost customer.
+  //
+  // Turnstile joins that set rather than gating the request, for the same
+  // reason: the widget can fail for entirely innocent people (a corporate
+  // proxy, a hardened browser, a flaky network), and this form is how the
+  // business earns money.
   const spam = checkSpam({
     website: data.website,
     formRenderedAt: data.formRenderedAt,
     email: data.email,
+    turnstile: deps.turnstile ?? "skipped",
   });
 
   let vanId: string | null = null;

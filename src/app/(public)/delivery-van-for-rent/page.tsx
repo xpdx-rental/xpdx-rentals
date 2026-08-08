@@ -9,6 +9,7 @@ import { FaqList } from "@/components/public/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { faqPageSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { corePage } from "@/lib/seo/entities/core-pages";
 import { AnimatedSection } from "@/components/animations/animated-section";
 import { SplitTextReveal } from "@/components/animations/split-text-reveal";
 import { ALL_FAQS } from "@/lib/content/faqs";
@@ -16,12 +17,7 @@ import { formatMm, formatWeekly } from "@/lib/van";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  path: "/delivery-van-for-rent",
-  title: "Delivery van for rent — unlimited km",
-  description:
-    "Courier and delivery van hire in Sydney with genuinely unlimited kilometres. Automatic diesel vans, insurance and 24/7 roadside assistance included.",
-});
+export const metadata: Metadata = pageMetadata(corePage("/delivery-van-for-rent"));
 
 /**
  * Service page 2 of 3.

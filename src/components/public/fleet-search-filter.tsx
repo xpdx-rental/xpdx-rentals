@@ -232,13 +232,13 @@ function SortDropdown({
                   }}
                   className={`flex items-center gap-3 w-full px-4 py-3 text-sm text-left transition-colors hover:bg-white/[0.07] ${
                     value === o.value
-                      ? "text-[#C9AB81] font-semibold bg-[#C9AB81]/[0.06]"
+                      ? "text-[#EA580C] font-semibold bg-[#EA580C]/[0.06]"
                       : "text-white/70"
                   }`}
                 >
                   <span className="size-3.5 shrink-0 flex items-center justify-center">
                     {value === o.value && (
-                      <Check className="size-3.5 text-[#C9AB81]" />
+                      <Check className="size-3.5 text-[#EA580C]" />
                     )}
                   </span>
                   {o.label}
@@ -262,13 +262,13 @@ function ActivePill({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-[#C9AB81]/10 border border-[#C9AB81]/25 pl-3 pr-2 py-1 text-[11px] text-[#C9AB81] font-medium">
+    <span className="inline-flex items-center gap-1 rounded-full bg-[#EA580C]/10 border border-[#EA580C]/25 pl-3 pr-2 py-1 text-[11px] text-[#EA580C] font-medium">
       {label}
       <button
         type="button"
         onClick={onRemove}
         aria-label={`Remove filter: ${label}`}
-        className="ml-0.5 rounded-full p-0.5 hover:bg-[#C9AB81]/20 transition-colors"
+        className="ml-0.5 rounded-full p-0.5 hover:bg-[#EA580C]/20 transition-colors"
       >
         <X className="size-3" />
       </button>
@@ -374,7 +374,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               {activeCount > 0 && (
                 <span
                   aria-live="polite"
-                  className="flex size-5 items-center justify-center rounded-full bg-[#C9AB81] text-[10px] font-bold text-white"
+                  className="flex size-5 items-center justify-center rounded-full bg-[#EA580C] text-[10px] font-bold text-white"
                 >
                   {activeCount}
                 </span>
@@ -590,7 +590,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               <button
                 type="button"
                 onClick={clearAll}
-                className="text-[#C9AB81] underline underline-offset-2 hover:no-underline"
+                className="text-[#EA580C] underline underline-offset-2 hover:no-underline"
               >
                 clearing all
               </button>
@@ -599,7 +599,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
             <button
               type="button"
               onClick={clearAll}
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#C9AB81]/10 border border-[#C9AB81]/30 px-6 py-3 text-sm font-semibold text-[#C9AB81] hover:bg-[#C9AB81]/20 transition-colors"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#EA580C]/10 border border-[#EA580C]/30 px-6 py-3 text-sm font-semibold text-[#EA580C] hover:bg-[#EA580C]/20 transition-colors"
             >
               <X className="size-4" />
               Clear all filters

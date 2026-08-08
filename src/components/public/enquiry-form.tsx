@@ -5,7 +5,14 @@ import { CheckCircle2, Loader2, Phone } from "lucide-react";
 import { DURATIONS } from "@/lib/enquiry-options";
 import { telHref } from "@/lib/lead";
 import { MagneticButton } from "@/components/ui/magnetic-button";
-import { motion, AnimatePresence } from "framer-motion";
+import { Turnstile } from "@marsidev/react-turnstile";
+
+/**
+ * Read once at module scope. `NEXT_PUBLIC_*` values are inlined at build time,
+ * so this is a constant — but reading it in one place makes it obvious that an
+ * unset key means "no widget at all", not "widget with a placeholder key".
+ */
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /**
  * Enquiry form — the site's only conversion action.
@@ -41,6 +48,7 @@ export function EnquiryForm({
   const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [token, setToken] = useState<string>("");
   // Set in an effect, not during render: `Date.now()` is impure and calling it
   // in the render body is a React purity violation. Measuring from when the
   // form actually became interactive is also the more honest timing baseline
@@ -77,6 +85,10 @@ export function EnquiryForm({
       message: fd.get("message") || undefined,
       consent: fd.get("consent") === "on",
       website: fd.get("website") || "",
+      // Coerced to a string: `fd.get` returns null when the widget is not
+      // rendered, and a null would fail schema validation and 400 the whole
+      // enquiry over an optional anti-spam field.
+      token: (fd.get("cf-turnstile-response") as string | null) ?? "",
       formRenderedAt: renderedAt.current ?? undefined,
       meta: {
         pagePath: typeof window !== "undefined" ? window.location.pathname : undefined,
@@ -264,6 +276,45 @@ export function EnquiryForm({
             </>
           ) : null}
         </p>
+      ) : null}
+
+      {/*
+        Turnstile.
+
+        Two deliberate changes from the previous version, both of which were
+        costing leads:
+
+        1. **The widget only renders when a site key is actually configured.**
+           It used to fall back to `1x00000000000000000000AA` — Cloudflare's
+           *always-passes test key*. That loaded a third-party script on every
+           page carrying this form in every environment, and it produced tokens
+           that mean nothing. Worse, now that the server genuinely verifies
+           (lib/security/turnstile.ts), a test-key token against a real secret
+           would be rejected and quarantine every enquiry.
+
+        2. **A missing token no longer disables the submit button.** It did
+           before, so any visitor whose challenge failed to load — an
+           ad-blocker, a corporate proxy, a locked-down browser, a Cloudflare
+           outage — was left with a permanently greyed-out button and no
+           explanation. That is a silently lost customer, and CLAUDE.md §4 does
+           not allow it. The form always submits; the server decides what the
+           token was worth, and a bad one quarantines the lead rather than
+           refusing it.
+      */}
+      {TURNSTILE_SITE_KEY ? (
+        <div className="pt-2">
+          <Turnstile
+            siteKey={TURNSTILE_SITE_KEY}
+            onSuccess={setToken}
+            // Clear the stale token on expiry/error so we never post a token
+            // that Cloudflare will reject when an empty one is treated the same
+            // way and is honest about what happened.
+            onExpire={() => setToken("")}
+            onError={() => setToken("")}
+            options={{ theme: "dark", size: "flexible" }}
+          />
+          <input type="hidden" name="cf-turnstile-response" value={token} />
+        </div>
       ) : null}
 
       <div className="pt-2">

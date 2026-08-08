@@ -175,6 +175,47 @@ describe("spam is quarantined, not rejected", () => {
   });
 });
 
+describe("Turnstile joins the spam signals without ever rejecting", () => {
+  it("quarantines a definitively failed challenge, and still returns success", async () => {
+    const { deps, inserted } = makeDeps({ turnstile: "failed" });
+    const outcome = await submitEnquiry(VALID, deps);
+
+    // Stored, flagged, acknowledged. A bot learns nothing from the response,
+    // and a false positive is still a lead staff can see in the Spam tab.
+    expect(outcome.ok).toBe(true);
+    expect(inserted).toHaveLength(1);
+    expect(inserted[0].status).toBe("spam");
+    if (outcome.ok) expect(outcome.quarantined).toBe(true);
+  });
+
+  it("does not notify staff about a failed challenge", async () => {
+    const { deps } = makeDeps({ turnstile: "failed" });
+    const outcome = await submitEnquiry(VALID, deps);
+    if (outcome.ok) await outcome.runNotify();
+    expect(deps.notify).not.toHaveBeenCalled();
+  });
+
+  it("treats a passed challenge as a genuine lead", async () => {
+    const { deps, inserted } = makeDeps({ turnstile: "passed" });
+    await submitEnquiry(VALID, deps);
+    expect(inserted[0].status).toBe("new");
+  });
+
+  it("treats a skipped challenge as a genuine lead", async () => {
+    // `"skipped"` is what an unconfigured deployment produces. Turnstile being
+    // absent must never turn every enquiry into spam.
+    const { deps, inserted } = makeDeps({ turnstile: "skipped" });
+    await submitEnquiry(VALID, deps);
+    expect(inserted[0].status).toBe("new");
+  });
+
+  it("defaults to skipped when the caller says nothing about Turnstile", async () => {
+    const { deps, inserted } = makeDeps();
+    await submitEnquiry(VALID, deps);
+    expect(inserted[0].status).toBe("new");
+  });
+});
+
 describe("the lead row", () => {
   it("normalises the phone to E.164 and stores a hash, never a raw IP", () => {
     const row = buildLeadRow(VALID, {

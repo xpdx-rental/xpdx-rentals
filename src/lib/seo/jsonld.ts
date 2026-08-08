@@ -200,3 +200,163 @@ export function itemListSchema(vans: PublicVan[]) {
     })),
   };
 }
+
+// ── Programmatic page schema ────────────────────────────────────────────────
+//
+// Everything below backs a programmatic page family. The two rules at the top
+// of this file bind harder here than anywhere else, because these nodes are
+// generated rather than written: whatever the template emits ships on every
+// page in the family, so a single invented field becomes dozens of invented
+// claims. In particular there is NO `AggregateRating` and NO `Review` node
+// anywhere in this file — XPDX has not supplied review data, and a fabricated
+// star rating in structured data is a manual action, not a ranking risk.
+
+/**
+ * A vehicle category page as a `Service` offered by the hire business.
+ *
+ * `Service` rather than `Product` because the page sells the availability of a
+ * category, not one purchasable item — the individual vans carry their own
+ * `Product` + `Offer` nodes on their own pages, referenced here through
+ * `ItemList` rather than duplicated.
+ *
+ * `priceRange` is emitted only from a real cheapest weekly rate. `areaServed`
+ * is New South Wales because that is the limit of what `HIRE_TERMS.stateOfUse`
+ * authorises — not "Australia", which would be a claim the business has not
+ * made.
+ */
+export function serviceSchema(input: {
+  name: string;
+  description: string;
+  path: string;
+  fromWeeklyPrice: number | null;
+  vans: PublicVan[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": absoluteUrl(input.path) + "#service",
+    name: input.name,
+    description: input.description,
+    serviceType: "Commercial van hire",
+    provider: { "@id": LOCAL_BUSINESS_ID },
+    areaServed: { "@type": "State", name: "New South Wales" },
+    ...(input.fromWeeklyPrice != null
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: absoluteUrl(input.path),
+            priceCurrency: "AUD",
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: input.fromWeeklyPrice,
+              priceCurrency: "AUD",
+              unitCode: "WEE",
+              referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "WEE" },
+            },
+            availability: "https://schema.org/InStock",
+            seller: { "@id": LOCAL_BUSINESS_ID },
+          },
+        }
+      : {}),
+    ...(input.vans.length
+      ? {
+          hasOfferCatalog: {
+            "@type": "OfferCatalog",
+            name: input.name,
+            itemListElement: input.vans.map((v) => ({
+              "@type": "Offer",
+              itemOffered: { "@type": "Product", name: v.name, url: absoluteUrl(`/vans/${v.slug}`) },
+            })),
+          },
+        }
+      : {}),
+  };
+}
+
+/**
+ * A suburb landing page.
+ *
+ * Modelled as a `Service` with a `GeoCircle` `areaServed` rather than as a
+ * second `LocalBusiness`. That distinction matters: emitting a `LocalBusiness`
+ * node per suburb would assert ten physical premises, which is exactly the
+ * fake-location signal that gets local packs cleaned out. There is one
+ * business, at one address, that serves an area — so `provider` points at the
+ * single `AutoRental` node and only the service area varies.
+ *
+ * The radius is derived from the measured drive time rather than asserted, and
+ * is omitted entirely when there is no measured time (which cannot happen —
+ * the registry will not generate such a page — but the schema does not rely on
+ * that being true elsewhere).
+ */
+export function locationServiceSchema(input: {
+  suburb: string;
+  region: string;
+  postcode: string | null;
+  path: string;
+  driveMinutes: number | null;
+  fromWeeklyPrice: number | null;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": absoluteUrl(input.path) + "#service",
+    name: `Van hire in ${input.suburb}`,
+    serviceType: "Commercial van hire",
+    provider: { "@id": LOCAL_BUSINESS_ID },
+    areaServed: {
+      "@type": "City",
+      name: input.suburb,
+      containedInPlace: {
+        "@type": "AdministrativeArea",
+        name: input.region,
+        containedInPlace: { "@type": "State", name: "New South Wales" },
+      },
+      ...(input.postcode ? { postalCode: input.postcode } : {}),
+    },
+    ...(input.fromWeeklyPrice != null
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: absoluteUrl(input.path),
+            priceCurrency: "AUD",
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: input.fromWeeklyPrice,
+              priceCurrency: "AUD",
+              unitCode: "WEE",
+              referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "WEE" },
+            },
+            availability: "https://schema.org/InStock",
+            seller: { "@id": LOCAL_BUSINESS_ID },
+          },
+        }
+      : {}),
+  };
+}
+
+/**
+ * `WebPage`, tying a programmatic page to the site and the business.
+ *
+ * Cheap, and it gives every generated URL an explicit `isPartOf` edge to the
+ * `WebSite` node — which is what stops a large programmatic estate reading as
+ * a pile of unrelated documents that happen to share a domain.
+ */
+export function webPageSchema(input: {
+  path: string;
+  name: string;
+  description: string;
+  lastModified?: Date;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": absoluteUrl(input.path) + "#webpage",
+    url: absoluteUrl(input.path),
+    name: input.name,
+    description: input.description,
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": LOCAL_BUSINESS_ID },
+    inLanguage: "en-AU",
+    ...(input.lastModified ? { dateModified: input.lastModified.toISOString() } : {}),
+  };
+}

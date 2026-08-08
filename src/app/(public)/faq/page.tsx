@@ -5,15 +5,11 @@ import { FAQ_GROUPS, ALL_FAQS, FAQ_CLOSING } from "@/lib/content/faqs";
 import { JsonLd } from "@/components/json-ld";
 import { faqPageSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { corePage } from "@/lib/seo/entities/core-pages";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  path: "/faq",
-  title: "Van hire FAQ — bond, insurance, eligibility",
-  description:
-    "Bond, insurance, minimum hire period, kilometre limits, who can rent, servicing and payment. Everything you need to know before hiring a van from XPDX Rentals.",
-});
+export const metadata: Metadata = pageMetadata(corePage("/faq"));
 
 const GROUP_ICONS: Record<string, string> = {
   "your-rental": "📦",
@@ -38,18 +34,18 @@ export default function FaqPage() {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-0 w-[50vw] h-[40vh] bg-[#C9AB81]/[0.06] blur-[100px] -translate-x-1/4 -translate-y-1/4 rounded-full" />
+          <div className="absolute top-0 left-0 w-[50vw] h-[40vh] bg-[#EA580C]/[0.06] blur-[100px] -translate-x-1/4 -translate-y-1/4 rounded-full" />
           <div className="absolute inset-0 opacity-[0.025]"
             style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-28">
           <div className="flex items-center gap-3 mb-5">
-            <div className="h-px w-8 bg-[#C9AB81]" />
-            <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">FAQ</span>
+            <div className="h-px w-8 bg-[#EA580C]" />
+            <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">FAQ</span>
           </div>
           <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tight text-white leading-tight">
             Got questions?<br />
-            <span className="text-[#C9AB81]">We've got answers.</span>
+            <span className="text-[#EA580C]">We&apos;ve got answers.</span>
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/50 leading-relaxed">
             Bond, insurance, eligibility and what happens on the road — everything you need to know
@@ -62,7 +58,7 @@ export default function FaqPage() {
               <a
                 key={g.id}
                 href={`#${g.id}`}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/60 hover:border-[#C9AB81]/40 hover:text-white transition-all duration-200 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/60 hover:border-[#EA580C]/40 hover:text-white transition-all duration-200 backdrop-blur-sm"
               >
                 <span aria-hidden="true">{GROUP_ICONS[g.id]}</span>
                 {g.title}
@@ -93,12 +89,12 @@ export default function FaqPage() {
                 >
                   <span className="text-base" aria-hidden="true">{GROUP_ICONS[g.id]}</span>
                   <span>{g.title}</span>
-                  <ArrowRight className="size-3.5 ml-auto opacity-0 group-hover:opacity-100 text-[#C9AB81] transition-opacity" />
+                  <ArrowRight className="size-3.5 ml-auto opacity-0 group-hover:opacity-100 text-[#EA580C] transition-opacity" />
                 </a>
               ))}
 
-              <div className="mt-8 rounded-2xl border border-[#C9AB81]/20 bg-[#C9AB81]/[0.06] p-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#C9AB81] mb-2">
+              <div className="mt-8 rounded-2xl border border-[#EA580C]/20 bg-[#EA580C]/[0.06] p-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#EA580C] mb-2">
                   Still unsure?
                 </p>
                 <p className="text-xs text-white/50 leading-relaxed mb-3">
@@ -106,7 +102,7 @@ export default function FaqPage() {
                 </p>
                 <Link
                   href="/contact-us"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C9AB81] hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#EA580C] hover:underline"
                 >
                   Contact us <ArrowRight className="size-3" />
                 </Link>
@@ -125,7 +121,7 @@ export default function FaqPage() {
                   <div className="flex items-center gap-4 mb-6">
                     <span className="text-2xl" aria-hidden="true">{GROUP_ICONS[group.id]}</span>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9AB81] mb-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EA580C] mb-0.5">
                         Section
                       </p>
                       <h2
@@ -147,13 +143,13 @@ export default function FaqPage() {
                       >
                         <summary className="flex cursor-pointer select-none items-center justify-between gap-4 px-6 py-5 text-left font-semibold text-white/80 hover:text-white hover:bg-white/[0.03] transition-colors [&::-webkit-details-marker]:hidden">
                           <span className="flex items-center gap-3">
-                            <span className="flex size-7 items-center justify-center rounded-lg bg-[#C9AB81]/10 border border-[#C9AB81]/15 text-[#C9AB81] text-xs font-bold font-mono shrink-0">
+                            <span className="flex size-7 items-center justify-center rounded-lg bg-[#EA580C]/10 border border-[#EA580C]/15 text-[#EA580C] text-xs font-bold font-mono shrink-0">
                               {String(i + 1).padStart(2, "0")}
                             </span>
                             {faq.question}
                           </span>
-                          <span className="size-6 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-open:bg-[#C9AB81]/10 group-open:border-[#C9AB81]/30 transition-colors">
-                            <svg className="size-3 text-white/40 group-open:text-[#C9AB81] group-open:rotate-180 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <span className="size-6 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-open:bg-[#EA580C]/10 group-open:border-[#EA580C]/30 transition-colors">
+                            <svg className="size-3 text-white/40 group-open:text-[#EA580C] group-open:rotate-180 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                           </span>
@@ -167,7 +163,7 @@ export default function FaqPage() {
                                 <ul key={bi} className="space-y-1.5 ml-1">
                                   {block.items.map((item) => (
                                     <li key={item} className="flex items-start gap-2.5">
-                                      <span className="mt-2 size-1.5 rounded-full bg-[#C9AB81] shrink-0" />
+                                      <span className="mt-2 size-1.5 rounded-full bg-[#EA580C] shrink-0" />
                                       {item}
                                     </li>
                                   ))}
@@ -177,7 +173,7 @@ export default function FaqPage() {
                               <ol key={bi} className="space-y-2 ml-1">
                                 {block.items.map((item, ii) => (
                                   <li key={item} className="flex items-start gap-3">
-                                    <span className="flex size-5 items-center justify-center rounded-full bg-[#C9AB81]/10 text-[#C9AB81] text-[10px] font-bold shrink-0 mt-0.5">
+                                    <span className="flex size-5 items-center justify-center rounded-full bg-[#EA580C]/10 text-[#EA580C] text-[10px] font-bold shrink-0 mt-0.5">
                                       {ii + 1}
                                     </span>
                                     {item}
@@ -200,11 +196,11 @@ export default function FaqPage() {
       {/* ── CTA ── */}
       <section className="relative bg-muted border-t border-white/[0.06] py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[#C9AB81]/[0.07] blur-[80px] rounded-full" />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[#EA580C]/[0.07] blur-[80px] rounded-full" />
         </div>
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center">
-          <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-[#C9AB81]/10 border border-[#C9AB81]/20 mb-6">
-            <MessageCircle className="size-7 text-[#C9AB81]" />
+          <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-[#EA580C]/10 border border-[#EA580C]/20 mb-6">
+            <MessageCircle className="size-7 text-[#EA580C]" />
           </div>
           <h2 className="font-heading text-3xl sm:text-4xl font-black text-white tracking-tight">
             Still have a question?

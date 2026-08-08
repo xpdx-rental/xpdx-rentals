@@ -1,62 +1,49 @@
 import type { MetadataRoute } from "next";
-import { getPublicVanSlugs } from "@/lib/data/public-vans";
+import { sitemapPages } from "@/lib/seo/registry";
 import { siteBaseUrl } from "@/lib/seo/site";
 
 export const revalidate = 3600;
 
 /**
- * XML sitemap, generated from the database.
+ * XML sitemap, generated from the SEO registry.
  *
- * Two rules carried over from the previous build, both still right:
+ * The registry is the ONLY input. That is the entire design: a sitemap built
+ * from its own hand-maintained list of paths is the subsystem that always
+ * drifts first, and the drift is invisible — it takes a Search Console
+ * "Submitted URL marked noindex" report weeks later to find out that the
+ * sitemap and the pages disagree about what should be indexed. Here they read
+ * the same field (`decision.sitemap`, which is strictly narrower than
+ * `decision.index`), so they cannot.
  *
- *  1. Only indexable URLs. `/privacy-policy` and `/terms-of-hire` are
- *     deliberately absent — they are `noindex` placeholders until the client
- *     supplies the text, and listing a noindex URL asks Google to crawl a page
- *     we simultaneously tell it to ignore.
- *  2. Real `lastModified`. Van pages carry their own `updated_at`; the fleet
- *     hub inherits the freshest of them, so it re-crawls when the fleet
- *     actually changes rather than on a date that never moves.
+ * What that buys, concretely:
  *
- * Draft vans are excluded by RLS, not by a filter here — see
- * `lib/data/public-vans.ts`.
+ *   • Pages the quality gate declined never appear — including the ones the
+ *     old file listed by hand and the ones it forgot entirely (`/use-cases`
+ *     and every `/locations/*` page were missing from the previous version, so
+ *     sixteen URLs were invisible to Google).
+ *   • A page canonicalised onto another for cannibalisation is excluded
+ *     automatically, because a URL that points its canonical elsewhere has no
+ *     business asking for crawl budget.
+ *   • `/privacy-policy` and `/terms-of-hire` stay out while they are noindex
+ *     placeholders — the registry simply does not carry them.
+ *   • `lastModified` comes from real `updated_at` values on the vans behind
+ *     each page, so a category page re-crawls when its fleet actually changes.
+ *
+ * ON SHARDING: Next supports `generateSitemaps()` for splitting this into a
+ * sitemap index. It is not used, because this estate is around fifty URLs and
+ * Google's limit is 50,000 — an index here would be ceremony, and it would
+ * cost a redirect-chasing crawler an extra round trip for nothing. If the
+ * estate ever passes a few thousand URLs, shard on `page.kind`; the registry
+ * already groups by it.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteBaseUrl();
-  const vans = await getPublicVanSlugs();
+  const pages = await sitemapPages();
 
-  const freshest = vans.reduce<Date>((latest, v) => {
-    const d = v.updatedAt ? new Date(v.updatedAt) : null;
-    return d && d > latest ? d : latest;
-  }, new Date(0));
-  const fleetDate = freshest.getTime() === 0 ? new Date() : freshest;
-
-  const url = (
-    path: string,
-    lastModified: Date,
-    priority: number,
-    changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"],
-  ): MetadataRoute.Sitemap[number] => ({
-    url: `${base}${path}`,
-    lastModified,
-    changeFrequency,
-    priority,
-  });
-
-  const now = new Date();
-
-  return [
-    url("/", fleetDate, 1, "weekly"),
-    url("/vans", fleetDate, 0.9, "weekly"),
-    // The three service pages are the ranking assets (CLAUDE.md §8).
-    url("/local-van-hire", now, 0.8, "monthly"),
-    url("/delivery-van-for-rent", now, 0.8, "monthly"),
-    url("/business-van-rental", now, 0.8, "monthly"),
-    url("/service-area", now, 0.7, "monthly"),
-    url("/about-us", now, 0.6, "monthly"),
-    url("/faq", now, 0.7, "monthly"),
-    url("/contact-us", now, 0.7, "monthly"),
-    ...vans.map((v) =>
-      url(`/vans/${v.slug}`, v.updatedAt ? new Date(v.updatedAt) : now, 0.9, "weekly"),
-    ),
-  ];
+  return pages.map((page) => ({
+    url: `${base}${page.path === "/" ? "" : page.path}`,
+    lastModified: page.lastModified,
+    changeFrequency: page.changeFrequency,
+    priority: page.priority,
+  }));
 }

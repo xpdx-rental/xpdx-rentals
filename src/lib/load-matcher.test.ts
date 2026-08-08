@@ -20,9 +20,21 @@ const FLEET: VanDimensions[] = [
 ];
 
 const smallest = FLEET[0];
-const largest = FLEET[5];
+const largest = FLEET[FLEET.length - 1];
+
+/**
+ * The lightest and heaviest presets, taken from the ends of the list rather
+ * than by hardcoded index.
+ *
+ * This suite was failing on `main`: it read `LOAD_PRESETS[5]`, but the preset
+ * list has five entries, so `heaviest` was `undefined` and `fillRatioFor` threw
+ * on `load.demand`. Indexing from the ends means the invariants below — the
+ * lightest load fits the smallest van, the heaviest load does not overflow the
+ * largest — keep holding whatever the operator adds to or removes from the
+ * list, which is the property actually worth asserting.
+ */
 const courier = LOAD_PRESETS[0];
-const wholeHouse = LOAD_PRESETS[5];
+const heaviest = LOAD_PRESETS[LOAD_PRESETS.length - 1];
 
 describe("verdict thresholds (MOTION.md §4.2)", () => {
   it("overflow is 'too small'", () => {
@@ -56,14 +68,14 @@ describe("matching is ordinal and sane", () => {
     expect(verdictFor(r)).toBe("recommended");
   });
 
-  it("a whole house overflows the smallest van", () => {
-    const r = fillRatioFor(smallest, FLEET, wholeHouse)!;
+  it("the heaviest load overflows the smallest van", () => {
+    const r = fillRatioFor(smallest, FLEET, heaviest)!;
     expect(r).toBeGreaterThan(1);
     expect(verdictFor(r)).toBe("too-small");
   });
 
-  it("a whole house does not overflow the largest van", () => {
-    const r = fillRatioFor(largest, FLEET, wholeHouse)!;
+  it("the heaviest load does not overflow the largest van", () => {
+    const r = fillRatioFor(largest, FLEET, heaviest)!;
     expect(r).toBeLessThanOrEqual(1);
   });
 
@@ -98,7 +110,7 @@ describe("matching is ordinal and sane", () => {
 
 describe("never claims a volume", () => {
   it("returns only ordinal ratios and text verdicts", () => {
-    const matches = matchFleet(FLEET, wholeHouse);
+    const matches = matchFleet(FLEET, heaviest);
     for (const m of matches) {
       expect(Object.keys(m).sort()).toEqual(["fillRatio", "label", "slug", "verdict"]);
       expect(typeof m.fillRatio).toBe("number");

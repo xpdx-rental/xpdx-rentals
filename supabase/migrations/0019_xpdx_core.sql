@@ -452,8 +452,8 @@ for select using (app_private.is_staff());
 -- The old `media` and `lead-attachments` buckets are the other client's
 -- (REBRAND.md §7). Their objects must be deleted from the project, which is a
 -- console/API task this migration cannot perform — see docs/handover.md.
-delete from storage.objects where bucket_id in ('media', 'lead-attachments');
-delete from storage.buckets where id in ('media', 'lead-attachments');
+-- SKIPPED: delete from storage.objects where bucket_id in ('media', 'lead-attachments');
+-- SKIPPED: delete from storage.buckets where id in ('media', 'lead-attachments');
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (

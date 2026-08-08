@@ -66,34 +66,85 @@ export async function rateLimitSlidingWindow(
 
   const now = Date.now();
   const windowStart = now - windowMs;
-  const resetAt = new Date(now + windowMs);
+  const redisKey = `ratelimit:${key}`;
 
-  const pipeline = redis.pipeline();
+  // ── Why this is a Lua script and not a pipeline ────────────────────────────
+  //
+  // Two bugs in the pipeline version this replaces:
+  //
+  //  1. **It recorded rejected requests.** `zadd` ran unconditionally, so every
+  //     blocked attempt pushed a fresh timestamp into the window. An attacker
+  //     hammering the endpoint kept their own window permanently full — which
+  //     sounds like a feature until you notice it applies identically to a
+  //     legitimate customer who tripped the limit once and now cannot get
+  //     back in for as long as they keep retrying. It also meant unbounded
+  //     writes to Redis under exactly the load where you least want them.
+  //  2. **It was not atomic.** A pipeline is one round trip, not one
+  //     transaction: with two instances serving the same key, both could read
+  //     `zcard` before either wrote, and both would allow.
+  //
+  // The script also returns the true oldest entry, so `Retry-After` tells the
+  // caller when a slot actually frees up rather than always claiming a full
+  // window.
+  const script = `
+    local key = KEYS[1]
+    local now = tonumber(ARGV[1])
+    local window_start = tonumber(ARGV[2])
+    local limit = tonumber(ARGV[3])
+    local window_ms = tonumber(ARGV[4])
+    local member = ARGV[5]
 
-  // Remove entries outside the window
-  pipeline.zremrangebyscore(`ratelimit:${key}`, "-inf", windowStart);
+    redis.call('zremrangebyscore', key, '-inf', window_start)
+    local count = redis.call('zcard', key)
 
-  // Count current entries in window
-  pipeline.zcard(`ratelimit:${key}`);
+    if count < limit then
+      redis.call('zadd', key, now, member)
+      redis.call('pexpire', key, window_ms)
+      return {1, count + 1, 0}
+    end
 
-  // Add current request
-  pipeline.zadd(`ratelimit:${key}`, now, `${now}:${Math.random()}`);
+    -- Denied: do NOT add an entry. Report when the oldest one ages out.
+    redis.call('pexpire', key, window_ms)
+    local oldest = redis.call('zrange', key, 0, 0, 'WITHSCORES')
+    local retry_ms = window_ms
+    if oldest[2] then
+      retry_ms = (tonumber(oldest[2]) + window_ms) - now
+      if retry_ms < 0 then retry_ms = 0 end
+    end
+    return {0, count, retry_ms}
+  `;
 
-  // Set expiry on the key
-  pipeline.pexpire(`ratelimit:${key}`, windowMs);
+  let allowed: boolean;
+  let count: number;
+  let retryMs: number;
 
-  const results = await pipeline.exec();
-  const currentCount = (results?.[1]?.[1] as number) ?? 0;
+  try {
+    const result = (await redis.eval(
+      script,
+      1,
+      redisKey,
+      now,
+      windowStart,
+      limit,
+      windowMs,
+      // Collision-resistant member id. Two requests landing in the same
+      // millisecond must not overwrite each other in the sorted set.
+      `${now}:${Math.random().toString(36).slice(2)}`,
+    )) as [number, number, number];
 
-  const allowed = currentCount < limit;
-  const remaining = Math.max(0, limit - currentCount - 1);
+    [allowed, count, retryMs] = [result[0] === 1, result[1], result[2]];
+  } catch {
+    // A Redis failure must not take down the enquiry endpoint. Degrade to the
+    // per-instance limiter, which is weaker but still bounds a single burst.
+    return fallbackSlidingWindow(key, limit, windowMs);
+  }
 
   return {
     allowed,
     limit,
-    remaining,
-    resetAt,
-    retryAfter: allowed ? undefined : Math.ceil((resetAt.getTime() - now) / 1000),
+    remaining: Math.max(0, limit - count),
+    resetAt: new Date(now + (allowed ? windowMs : retryMs)),
+    retryAfter: allowed ? undefined : Math.max(1, Math.ceil(retryMs / 1000)),
   };
 }
 

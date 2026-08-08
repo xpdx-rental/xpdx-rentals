@@ -14,6 +14,12 @@
  */
 export const NAV_LINKS = [
   { href: "/vans", label: "Our fleet" },
+  // The hub of the programmatic estate. Every generated category, suburb and
+  // use-case page is one hop from here, which is what stops forty landing
+  // pages being forty orphans. It is in the primary nav for that reason, not
+  // for balance — a hub nobody links to is not a hub.
+  { href: "/van-hire", label: "Van hire" },
+  { href: "/use-cases", label: "Use cases" },
   { href: "/business-van-rental", label: "Business hire" },
   { href: "/service-area", label: "Service area" },
   { href: "/about-us", label: "About us" },

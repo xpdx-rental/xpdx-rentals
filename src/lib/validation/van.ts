@@ -56,6 +56,10 @@ const optionalText = (max: number) =>
 export const vanSchema = z.object({
   // ── Identity ──
   name: requiredText("Name"),
+  make: optionalText(50),
+  model: optionalText(50),
+  year: optionalInt(2100),
+  registration: optionalText(20),
   slug: z
     .string()
     .trim()
@@ -83,6 +87,7 @@ export const vanSchema = z.object({
     .positive("Weekly rate must be greater than zero")
     .max(100000, "Weekly rate looks wrong"),
   priceMonthlyFrom: optionalInt(1000000),
+  depositAmount: optionalInt(10000),
   // 28 days is the contractual minimum everywhere on the site. No page may
   // imply daily or weekly hire is available (CLAUDE.md §3, "Resolved"), so the
   // editor cannot set a shorter term.

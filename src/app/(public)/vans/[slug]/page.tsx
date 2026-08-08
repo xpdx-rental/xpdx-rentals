@@ -9,7 +9,8 @@ import { ContactLink } from "@/components/public/contact-link";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { JsonLd } from "@/components/json-ld";
 import { vanSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { registryMetadata, suppressedMetadata } from "@/lib/seo/metadata";
+import { getSeoPage } from "@/lib/seo/registry";
 import { formatWeekly, formatMm, ROOF_LABELS } from "@/lib/van";
 import { telHref, waHref } from "@/lib/lead";
 import { HIRE_TERMS, INCLUSIONS } from "@/lib/business";
@@ -25,25 +26,30 @@ function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {
   return { viewTransitionName: `van-${kind}-${slug}` } as React.CSSProperties;
 }
 
+/**
+ * Metadata comes from the SEO registry, which already derives this page's
+ * title, description, canonical and robots directive from the same van record
+ * — including the operator's `seo_title` / `seo_description` overrides when
+ * they are set. Building a second copy here is how a VDP ends up noindexed by
+ * its own `<head>` while sitting in the sitemap.
+ *
+ * The fallback path stays: `getSeoPage` can miss during a build race or a
+ * stale-param request, and returning an indexable head for a page about to
+ * 404 is how soft-404s enter an index.
+ */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const van = await getPublicVanBySlug(slug);
-  if (!van) return { title: "Van not found", robots: { index: false, follow: true } };
+  const [page, van] = await Promise.all([
+    getSeoPage(`/vans/${slug}`),
+    getPublicVanBySlug(slug),
+  ]);
+  if (!page || !page.decision.generate || !van) return suppressedMetadata(`/vans/${slug}`);
 
-  return pageMetadata({
-    path: `/vans/${van.slug}`,
-    // The weekly rate pushed this past the SERP truncation point on the
-    // longer van names, and it is already in the description.
-    title: van.seoTitle ?? `${van.name} hire`,
-    description:
-      van.seoDescription ??
-      `Hire a ${van.name} from ${formatWeekly(van.priceWeeklyFrom)} per week. Unlimited kilometres, comprehensive insurance and 24/7 roadside assistance included. ${HIRE_TERMS.minHireDays} day minimum hire, Condell Park, Sydney.`,
-    image: van.primaryImage?.url,
-  });
+  return registryMetadata(page, van.primaryImage?.url ?? null);
 }
 
 /** A spec row renders only when the figure exists — never a guessed number. */

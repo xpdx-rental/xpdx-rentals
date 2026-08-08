@@ -21,6 +21,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { isAllowlistedAdminEmail } from "@/lib/security/admin-allowlist";
 import { isAllowedBot } from "@/lib/security/bots";
+import { canonicalLowercasePath } from "@/lib/routing";
 import {
   GEO_BLOCKED_PATH,
   evaluateGeoAccess,
@@ -269,12 +270,20 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── 6. Strict SEO canonical lowercasing for programmatic routes ──────────────
-  if (
-    (path.startsWith("/locations/") || path.startsWith("/categories/")) &&
-    path !== path.toLowerCase()
-  ) {
+  //
+  // Mixed-case URLs are the classic duplicate-content source on a programmatic
+  // estate: `/Van-Hire/Bankstown` from a hand-typed link or a careless CMS
+  // export resolves in Next but is a distinct URL to Google. One 301 collapses
+  // every casing variant onto the canonical.
+  //
+  // The prefixes below are the families that actually exist. The previous
+  // version canonicalised `/locations/` and `/categories/`: `/locations/*` has
+  // since been replaced by `/van-hire/*`, and `/categories/*` was never a route
+  // on this site at all — so neither rule could ever fire.
+  const lowercasePath = canonicalLowercasePath(path);
+  if (lowercasePath) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = path.toLowerCase();
+    redirectUrl.pathname = lowercasePath;
     return NextResponse.redirect(redirectUrl, 301);
   }
 

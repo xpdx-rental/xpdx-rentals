@@ -78,7 +78,7 @@ export default function PrivacyPolicyPage() {
             <li>Full name and date of birth</li>
             <li>Residential and business address</li>
             <li>Phone number and email address</li>
-            <li>Driver's licence number, state of issue, expiry date and licence class</li>
+            <li>Driver&apos;s licence number, state of issue, expiry date and licence class</li>
             <li>Business name and ABN (for business hirers)</li>
           </ul>
 
@@ -161,7 +161,7 @@ export default function PrivacyPolicyPage() {
 
           <h3 className="font-semibold text-foreground mt-4">5.1 Overseas disclosure</h3>
           <p>
-            Some of our service providers (e.g. cloud hosting, analytics, GPS platform) may process or store data on servers located outside Australia. Before disclosing information to an overseas recipient, we take reasonable steps to ensure the recipient's privacy practices are consistent with the Australian Privacy Principles. By using our services, you consent to this transfer where it is reasonably necessary for our operations.
+            Some of our service providers (e.g. cloud hosting, analytics, GPS platform) may process or store data on servers located outside Australia. Before disclosing information to an overseas recipient, we take reasonable steps to ensure the recipient&apos;s privacy practices are consistent with the Australian Privacy Principles. By using our services, you consent to this transfer where it is reasonably necessary for our operations.
           </p>
         </Section>
 

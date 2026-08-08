@@ -1,75 +1,114 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding assistants when working with code in this repository.
 
 @AGENTS.md
 
 ## What this project is
 
-**cars365** (`package.json` name `cars365-app`) — a **single-company used-car SALES lead-generation website** for the Australian market. It is NOT a booking/rental platform and NOT multi-tenant. There are no buyer accounts: the public site shows vehicles **for sale**, and visitors convert by submitting **enquiries/leads** (forms, WhatsApp click-to-chat, contact). Staff manage inventory and the leads pipeline through an internal `admin` panel.
+**XPDX Rentals** — a long-term cargo van hire website for XPDX based in Condell Park, Sydney, Australia. Visitors browse the fleet, submit enquiries, and find location-specific landing pages. Staff manage leads, vans, blog posts and settings via an admin dashboard.
 
-> **History / doc drift:** this repo was pivoted from an earlier multi-tenant car-**rental** SaaS. That pivot is complete and merged to `main`. Several docs and some code strings still reflect the old product — treat them as stale:
-> - `README.md` and `docs/ARCHITECTURE.md` still describe a multi-tenant rental marketplace with `customer`/`vendor` portals, Stripe payments, Resend email, and Upstash Redis. **None of that is true anymore** (see below). `Used-Car-Marketplace-SRS-BRD.docx` is the product source of truth.
-> - Lingering legacy terminology (e.g. "rental lead", "vendor reminder" functions in `src/lib/email/ses.ts`) survives in code even though the product is now sales-only. Don't take those strings as evidence of rental features.
-> - When docs and code disagree, **trust the code**.
+> **Important:** This repo was previously a multi-tenant car-rental SaaS (cars365 / car365). The pivot to XPDX Rentals is complete. Treat any references to "vendor portal", "customer portal", Typesense, Stripe, Resend, Upstash, newsletter, chat, bids, or the multi-tenant model as dead code stubs or doc drift — **when docs and code disagree, trust the code**.
 
 ## Commands
 
 ```bash
 npm run dev            # Next.js dev server (localhost:3000)
 npm run build          # Production build
-npm run lint           # ESLint — zero-warnings policy (see CI note)
-npx tsc --noEmit       # Typecheck (not an npm script, but required by CI)
-npm run test           # Vitest, single run
+npm run lint           # ESLint — zero-warnings policy
+npm run typecheck      # TypeScript type check (no emit)
+npm run test           # Vitest unit/property tests, single run
 npm run test:watch     # Vitest watch mode
-npx vitest run src/lib/finance.test.ts     # Single test file
-npx vitest run -t "test name substring"    # Single test by name
-supabase db push       # Apply SQL migrations in supabase/migrations/
+npm run test:rls       # Supabase RLS integration tests (requires live project)
+npm run db:types       # Regenerate TS types from linked Supabase project
 ```
-
-CI (`.github/workflows/ci.yml`) runs `lint` → `tsc --noEmit` → `test` on every PR/push to `master`/`main`. The `build` job is opt-in (needs live Supabase secrets) and only runs when the repo variable `RUN_BUILD=true` is set. **ESLint warnings (including unused vars/imports) fail CI** — run lint/typecheck/test locally before opening a PR.
 
 ## Architecture
 
-Next.js 16 App Router (React 19, Tailwind v4) on Supabase (Postgres + Auth + RLS), with Typesense search, `ioredis`-backed rate limiting, Cloudflare Turnstile, and email over SMTP via `nodemailer` (AWS SES SMTP).
+Next.js 16 App Router (React 19, Tailwind v4) on Supabase (Postgres + Auth + RLS), with `ioredis`-backed rate limiting, optional Cloudflare Turnstile, and transactional email over SMTP via `nodemailer` (AWS SES SMTP).
 
-### Two application boundaries under `src/app`
-- **`(public)`** — the unauthenticated buyer site: SEO/marketing pages plus `used-cars` (inventory + search), `sell-your-car`, `trade-in`, `finance`, `contact`, `testimonials`, `messages`, `faq`, etc. This is where leads are captured.
-- **`admin`** — internal staff control room: `inventory`, `leads`, `catalogue`, `testimonials`, `faqs`, `roles`, `settings`, `audit`. Sign-in is at `admin-login`.
+### Application structure under `src/app`
 
-Supporting route groups: `auth` (Supabase auth callbacks/sign-in), `api` (route handlers & webhooks), `actions` (route-adjacent Server Actions), `offline` (PWA fallback). There is **no** `customer` or `vendor` boundary — if you see references to them anywhere, they're stale.
+- **`(public)`** — the unauthenticated public site: homepage, fleet listing (`/vans`), vehicle detail pages (`/vans/[slug]`), programmatic SEO landing pages (`/van-hire/[suburb]`, `/use-cases/[slug]`, `/[serviceSlug]`), static pages (about, FAQ, contact, service area, etc.).
+- **`admin`** — internal staff dashboard: `leads`, `vans`, `blog`, `roles`, `settings`, `testimonials`, `audit`, `seo`.
+- **`admin-login`** — login page (redirects to `/admin` on success).
+- **`auth`** — Supabase OAuth callbacks (`/auth/callback`), MFA (`/auth/mfa`), sign-out.
+- **`api/v1`** — public REST endpoints: `/api/v1/enquiries` (lead capture), `/api/v1/cta-clicks` (analytics).
+- **`api/cron`** — `/api/cron/reminders` — staff lead-reminder emails (protected by `CRON_SECRET`).
+- **`api/health`** — `/api/health` — health check.
+- **`geo-blocked`** — geo-restriction landing page (served to out-of-region visitors).
+- **`offline`** — PWA offline fallback.
 
 ### Request enforcement (`src/proxy.ts`)
-The first enforcement layer, in order: (1) hard-block known bad-actor bots by UA while never blocking legit SEO/social crawlers; (2) **geo-restrict the site to AU + IN** (see `src/lib/security/geo-restriction.ts`); (3) 403 mutation requests to `/api/*` with a missing/suspiciously-short UA; (4) inject `X-Robots-Tag: noindex` on `/api`, `/admin`, `/auth` and strip fingerprinting headers; (5) redirect `/?code=` OAuth codes to `/auth/callback`; (6) 301 lowercase-canonicalize `/locations/*` and `/categories/*` (SEO). **Only `/admin` (except `/admin-login`) is auth-protected** — everything else is public and skips the Supabase session check for performance. Admin authorization is checked here AND at the route layer (defense-in-depth); Postgres RLS is the real backstop (a misauthorized query returns 0 rows, not an error).
 
-> **File location matters.** Next resolves this convention *next to the `app` directory*. Because `app` lives in `src/`, the file must be `src/proxy.ts` — a root-level `middleware.ts` is silently ignored and **none of these rules run** (that was the case in this repo until it was moved). Next 16 also renamed `middleware` → `proxy`; the exported function is `proxy`.
+The file `src/proxy.ts` (NOT `middleware.ts`) is the Next.js 16 middleware. Order of enforcement:
+1. Hard-block known bad-actor bots (403).
+2. Geo-restriction — serve AU + IN only (451 / branded page).
+3. 403 mutation requests to `/api/*` with missing/suspiciously-short UA.
+4. Inject `X-Robots-Tag: noindex` on non-public paths; strip fingerprinting headers.
+5. Redirect `/?code=` OAuth codes to `/auth/callback`.
+6. 301 lowercase-canonicalize programmatic SEO routes (`/van-hire/*`, `/use-cases/*`, etc.).
+7. Authenticate and authorize `/admin` (defence-in-depth; RLS is the backstop).
 
-### Auth/authorization helpers (`src/lib/security/auth.ts`)
-Admin access = allowlisted email (`src/lib/security/admin-allowlist.ts`) **OR** `app_metadata.platform_role` in {owner, admin, moderator} **OR** an active row in the `admin_roles` table. Guards:
-- Redirect-based (Server Components/Actions): `requireUser()`, `requireAdmin()`, `requireAdminRole(roles)`.
-- `NextResponse`-returning (route handlers): `requireApiUser()`, `requireApiAdmin()`.
-`getCurrentUser()`/`userHasAdminAccess()` are `react.cache`-wrapped for per-request dedup.
+**Only `/admin` (except `/admin-login`) is auth-protected** — public pages skip the Supabase session check.
 
-### Data & business-logic layout
-- `src/lib/supabase/{client,server,admin}.ts` — three clients (browser, SSR/server-component, service-role admin). `createAdminClient()` **bypasses RLS** — only call it after authorization is already checked.
-- `src/lib/data/` — read-side data access, grouped by concern: `admin.ts`, `public.ts`, `inventory.ts`, `leads.ts`, `dashboard.ts`, `featured.ts`, `content.ts`, `locations.ts`, `settings.ts`, `redirects.ts`.
-- `src/lib/leads/` — the lead lifecycle: `submit.ts`, `spam-check.ts`, `notify.ts`, `status.ts`.
-- `src/lib/validation/` — Zod schemas (`vehicle.ts`, `lead.ts`, `newsletter.ts`, `content.ts`, `admin.ts`, `schemas.ts`). **Every Server Action and API route must validate input through these.**
-- `src/lib/security/` — `auth.ts`, `admin-allowlist.ts`, `rate-limit.ts` / `rate-limit-redis.ts` (ioredis; falls back to in-memory with a loud prod warning when `REDIS_URL` is unset), `turnstile.ts`.
-- `src/lib/email/ses.ts` — transactional email via `nodemailer` SMTP (AWS SES). No-ops when SMTP env is unset.
-- `src/lib/search/typesense.ts` — Typesense query/config; the index is kept in sync by the `supabase/functions/search-index-worker` edge function driven off the `search_index_jobs` table.
-- `src/lib/seo/` — large surface: JSON-LD (`jsonld.ts`), sitemap/discovery, slug canonicalization, cache invalidation on vehicle changes. SEO is a first-class product concern here.
-- `src/lib/whatsapp.ts` — **just** phone normalization + `wa.me` click-to-chat link building (AU number handling). It is **not** a bot/webhook (the old inbound WhatsApp auto-responder was removed in the pivot).
-- Server Actions live route-locally (`src/app/**/actions.ts`, `src/app/actions/`) or shared in `src/lib/actions/`. Prefer Server Actions; reserve `src/app/api/*` for webhooks, cron, and the public REST endpoints under `api/v1/` (`leads`, `newsletter`, `cta-clicks`).
+### Auth/authorization
+
+Admin access = allowlisted email (`ADMIN_EMAIL_ALLOWLIST`) **OR** `app_metadata.platform_role` in {owner, admin, moderator} **OR** active row in `admin_roles` table.
+
+Guards in `src/lib/security/auth.ts`:
+- **Server Components/Actions**: `requireUser()`, `requireAdmin()`, `requireAdminRole(roles)`.
+- **Route Handlers**: `requireApiUser()`, `requireApiAdmin()`.
+
+`createAdminClient()` (in `src/lib/supabase/admin.ts`) **bypasses RLS** — only call it after authorization is already checked.
+
+### Data layout (`src/lib/`)
+
+| Module | Purpose |
+|---|---|
+| `src/lib/supabase/{client,server,admin}.ts` | Three Supabase clients (browser, SSR, service-role) |
+| `src/lib/data/` | Read-side data access: `public-vans.ts`, `vans.ts`, `leads.ts`, `content.ts`, `settings.ts`, `rows.ts`, `use-cases.ts`, `redirects.ts` |
+| `src/lib/leads/` | Lead lifecycle: `submit-enquiry.ts`, `spam-check.ts`, `channels.ts` |
+| `src/lib/validation/` | Zod schemas for all inputs (`lead.ts`, `van.ts`, `content.ts`, `admin.ts`) |
+| `src/lib/security/` | Auth guards, admin allowlist, rate limiting, Turnstile, geo-restriction, image validation, bot lists |
+| `src/lib/email/ses.ts` | Transactional email via SMTP. No-ops when SMTP env is unset |
+| `src/lib/redis.ts` | Read-through cache + `invalidateCache()`. Uses the rate-limiter's ioredis client |
+| `src/lib/seo/` | JSON-LD, sitemap registry, metadata helpers, SEO quality gate, taxonomy |
+| `src/lib/observability/` | API call usage tracking and provider monitoring |
+| `src/lib/business.ts` | Canonical business facts: address, geo-coordinates, phone, hours |
+| `src/lib/van.ts` | Van display utilities (formatting, feature lists) |
 
 ### Cron
-`src/app/api/cron/reminders/route.ts` sends staff reminder emails (pending inventory, unread leads). It fail-closes on a `CRON_SECRET` bearer token — if the secret is unset, the endpoint refuses all calls. Note `vercel.json` currently registers **no** crons, so this must be triggered by an external scheduler if desired.
+
+`/api/cron/reminders` sends staff reminder emails for unread leads. Fail-closed on `CRON_SECRET` bearer auth — refuses all calls if the secret is unset. `vercel.json` does not register any crons; use an external scheduler (e.g. Vercel Cron or a managed service).
 
 ### Database
-Postgres via Supabase with RLS. Migrations are **forward-only SQL files** in `supabase/migrations/` (`0001`–`0013`) — never edit schema via the Supabase dashboard; always add a new numbered file. Core tables reflect the sales/lead model: `vehicles` (+ `vehicle_images`, `vehicle_features`, `vehicle_price_history`, `vehicle_daily_stats`), `makes`/`models`/`locations`/`features` (reference data), `leads` (+ `lead_events`, `lead_reminders`), `profiles`/`admin_roles`/`activity_logs` (staff & audit), `testimonials`, `newsletter_subscribers`, `faqs`/`pages`/`redirects`/`settings` (CMS-ish content), `chat_threads`/`chat_messages` + `bids` (buyer↔staff messaging), `search_index_jobs`. See `docs/DATABASE.md` for detail (verify against migrations — docs may lag).
 
-### `.kiro/specs/`
-Spec-driven-development artifacts (requirements/design/tasks) for past and in-flight features — useful background when working in an area with a matching spec folder.
+Postgres via Supabase with RLS. Migrations are **forward-only SQL files** in `supabase/migrations/` (`0001`–`0021`). Never edit schema via the Supabase dashboard; always add a new numbered file. Key tables: `vehicles`, `vehicle_images`, `vehicle_features`, `leads`, `profiles`, `admin_roles`, `activity_logs`, `testimonials`, `blog_articles`, `settings`, `content_pages`, `redirects`, `site_rows`. See `docs/DATABASE.md`.
 
-## Testing notes
-Vitest with jsdom + Testing Library. Property-based tests (fast-check) live under `src/__tests__/properties/`. Co-located `*.test.ts` files sit next to the code they cover (e.g. `src/lib/finance.test.ts`, `src/lib/vehicle-badges.test.ts`, `src/lib/security/admin-allowlist.test.ts`).
+### SEO system
+
+- **Registry** (`src/lib/seo/registry.ts`): single source of truth for all indexable URLs. The sitemap reads from it directly — no drift.
+- **Quality gate** (`src/lib/seo/quality.ts`): enforced at build time; thin/duplicate pages are excluded.
+- **JSON-LD** (`src/lib/seo/jsonld.ts`): AutoRental, LocalBusiness, FAQPage, BreadcrumbList schemas.
+- **Programmatic SEO**: `src/lib/seo/entities/locations.ts` (10 suburbs), `services.ts` (6 service pages), `core-pages.ts`.
+
+### Security
+
+- **Geo-restriction**: middleware + `src/lib/security/geo-restriction.ts`. Defaults to AU + IN. Controlled via `GEO_RESTRICTION_ENABLED`, `GEO_ALLOWED_COUNTRIES`.
+- **Rate limiting**: sliding-window Lua script in ioredis (or in-memory fallback). Applied to enquiry submission and CTA clicks.
+- **Turnstile**: `src/lib/security/turnstile.ts`. Optional — fails open (lead is stored, flagged `spam`).
+- **Image validation**: `src/lib/security/image-validation.ts`. Applied to van image uploads.
+- **CSP**: hardened Content-Security-Policy in `next.config.ts`. Never weaken it.
+
+## Key conventions
+
+- **Server/client boundary**: keep server components server-side. Client components have `"use client"` at the top. Heavy deps (three.js, leaflet, CKEditor) are lazy-loaded with `next/dynamic`.
+- **Zero console.log in production**: only `console.error` for legitimate runtime errors is acceptable.
+- **Type safety**: `strict` TypeScript. Never use `as any` or `// @ts-ignore` without an explicit justification comment.
+- **ESLint zero-warnings policy**: all ESLint warnings are treated as errors in CI.
+- **Env guards**: never commit secrets. All env vars are documented in `.env.example`.
+
+## Testing
+
+Vitest + jsdom + Testing Library. Property-based tests (fast-check) in `src/__tests__/properties/`. Co-located `*.test.ts` next to the code they cover.

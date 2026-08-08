@@ -12,17 +12,17 @@
   --text-primary: #F5F4F2;
   --text-secondary: #B6B8BC;
   --text-muted: #7A7D84;
-  --champagne: #C9AB81;    /* Premium Accent */
-  --champagne-dk: #B69A73; /* Hover Accent */
+  --brand-orange: #EA580C;    /* Premium Accent */
+  --brand-orange-dk: #C2410C; /* Hover Accent */
   --border-subtle: rgba(255, 255, 255, 0.08);
 
   /* ── Semantic mapping ────────────────────────────────────────────────────── */
-  --primary: var(--champagne);
-  --primary-hover: var(--champagne-dk);
-  --primary-foreground: var(--charcoal);
+  --primary: var(--brand-orange);
+  --primary-hover: var(--brand-orange-dk);
+  --primary-foreground: #FFFFFF;
 
-  --link: var(--champagne);
-  --accent-dark: var(--champagne);
+  --link: var(--brand-orange);
+  --accent-dark: var(--brand-orange);
 
   --success: #34D399; /* Muted Emerald */
   --warning: #FBBF24;
@@ -47,13 +47,22 @@
   --destructive: var(--danger);
   --border: var(--border-subtle);
   --input: var(--border-subtle);
-  --ring: var(--champagne);
+  --ring: var(--brand-orange);
 
-  /* ── Type — REBRAND.md §5 ──────────────────────────────────────────────────
-     Display: Archivo. Body: IBM Plex Sans. Utility/data: IBM Plex Mono.
-     Mono for specs is deliberate, not decoration: it is the vernacular of spec
-     sheets and number plates, and it makes dimension tables align. */
-  --font-heading: var(--font-display, "Archivo"), ui-sans-serif, system-ui, sans-serif;
+  /* ── Type ─────────────────────────────────────────────────────────────────
+     One webfont is loaded — Inter, via `next/font` in `app/layout.tsx`, which
+     exports it as `--font-sans`. The display and utility roles alias onto it
+     rather than each loading their own copy: `layout.tsx` previously called
+     `Inter()` three times, and next/font emitted the identical woff2 twice
+     (47 KB × 2) as a result.
+
+     `--font-display` and `--font-mono` are still separate variables on purpose
+     — they are the seam where a real display face and a real monospace face
+     get introduced without touching any component. Until then both fall back
+     to the loaded family, then to the platform stack. */
+  --font-display: var(--font-sans);
+  --font-mono: var(--font-sans), ui-monospace, SFMono-Regular, monospace;
+  --font-heading: var(--font-display), ui-sans-serif, system-ui, sans-serif;
 
   /* Border Radius */
   --radius: 0.5rem;
@@ -91,7 +100,7 @@ h1, h2, h3, h4 {
   --destructive: var(--danger);
   --border: var(--border-subtle);
   --input: var(--border-subtle);
-  --ring: var(--champagne);
+  --ring: var(--brand-orange);
 }
 :root {
   /* Premium Shadow Elevation Scale (Softer, deeper) */
@@ -340,7 +349,7 @@ h4, h5, h6 {
   &:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-xl);
-    border-color: rgba(201, 171, 129, 0.3); /* Champagne Gold tint */
+    border-color: rgba(234, 88, 12, 0.3); /* Brand Orange tint */
   }
 }
 
@@ -451,7 +460,7 @@ p {
 }
 /* Focus ring on the silhouette itself (§4.1), not on an invisible wrapper. */
 .fleet-line__van:focus-visible .van-body {
-  stroke: var(--color-primary, #C9AB81);
+  stroke: var(--color-primary, #EA580C);
   stroke-width: 2.5;
 }
 
@@ -517,7 +526,7 @@ p {
 }
 .fleet-line__van:hover + .fleet-line__caption,
 .fleet-line__caption[data-selected="true"] {
-  border-top-color: var(--color-primary, #C9AB81);
+  border-top-color: var(--color-primary, #EA580C);
 }
 .fleet-line__caption-name {
   display: block;
@@ -571,11 +580,11 @@ p {
   transition: border-color 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .load-matcher__option[data-active="true"] {
-  border-color: var(--color-primary, #C9AB81);
+  border-color: var(--color-primary, #EA580C);
   border-width: 2px;
 }
 .load-matcher__option:focus-visible {
-  outline: 2px solid var(--color-primary, #C9AB81);
+  outline: 2px solid var(--color-primary, #EA580C);
   outline-offset: 2px;
 }
 .load-matcher__option-label { display: block; font-weight: 600; font-size: 0.875rem; }
@@ -600,8 +609,8 @@ p {
   background: var(--color-card, #fff);
 }
 .load-matcher__van--recommended {
-  border-color: var(--color-primary, #C9AB81);
-  background: color-mix(in srgb, var(--color-primary, #C9AB81) 5%, var(--color-card, #fff));
+  border-color: var(--color-primary, #EA580C);
+  background: color-mix(in srgb, var(--color-primary, #EA580C) 5%, var(--color-card, #fff));
 }
 /* Overflow: the van desaturates to 40% so the mistake is unmistakable. The
    verdict is also stated in text — colour is never the sole signal (§11). */
@@ -622,8 +631,8 @@ p {
 }
 .load-matcher__ground { stroke: var(--color-border, #e5e7eb); stroke-width: 1; }
 .load-matcher__carton {
-  fill: color-mix(in srgb, var(--color-primary, #C9AB81) 55%, transparent);
-  stroke: color-mix(in srgb, var(--color-primary, #C9AB81) 80%, transparent);
+  fill: color-mix(in srgb, var(--color-primary, #EA580C) 55%, transparent);
+  stroke: color-mix(in srgb, var(--color-primary, #EA580C) 80%, transparent);
   stroke-width: 0.5;
 }
 .load-matcher__carton--over {
@@ -632,7 +641,7 @@ p {
 
 .load-matcher__meta { margin-top: 0.5rem; }
 .load-matcher__name { font-weight: 600; font-size: 0.875rem; }
-.load-matcher__name a:hover { color: var(--color-primary, #C9AB81); }
+.load-matcher__name a:hover { color: var(--color-primary, #EA580C); }
 .load-matcher__verdict {
   font-family: var(--font-mono, ui-monospace), monospace;
   font-size: 0.75rem;
@@ -640,7 +649,7 @@ p {
   letter-spacing: 0.04em;
   margin-top: 0.15rem;
 }
-.load-matcher__van--recommended .load-matcher__verdict { color: var(--color-primary, #C9AB81); }
+.load-matcher__van--recommended .load-matcher__verdict { color: var(--color-primary, #EA580C); }
 .load-matcher__price { font-size: 0.75rem; color: var(--color-muted-foreground, #6d7681); }
 .load-matcher__note {
   margin-top: 1rem;

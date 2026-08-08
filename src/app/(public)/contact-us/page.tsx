@@ -2,19 +2,17 @@ import type { Metadata } from "next";
 import { Phone, Mail, MapPin, MessageCircle, Clock, ArrowRight, Zap } from "lucide-react";
 import { getSiteContact, getOpeningHours } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
+import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
+import { GEO } from "@/lib/business";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbSchema, autoRentalSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { corePage } from "@/lib/seo/entities/core-pages";
 import { telHref, waHref } from "@/lib/lead";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  path: "/contact-us",
-  title: "Contact us — our yard at Condell Park",
-  description:
-    "Call, message or email XPDX Rentals. Our yard is at 16 Ilma Street, Condell Park NSW 2200. Send an enquiry and we'll come back to you quickly.",
-});
+export const metadata: Metadata = pageMetadata(corePage("/contact-us"));
 
 const DAY_LABELS: Record<string, string> = {
   mon: "Monday", tue: "Tuesday", wed: "Wednesday",
@@ -47,29 +45,29 @@ export default async function ContactUsPage() {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[55vw] h-[55vh] bg-[#C9AB81]/[0.07] blur-[120px] translate-x-1/4 -translate-y-1/4 rounded-full" />
+          <div className="absolute top-0 right-0 w-[55vw] h-[55vh] bg-[#EA580C]/[0.07] blur-[120px] translate-x-1/4 -translate-y-1/4 rounded-full" />
           <div className="absolute inset-0 opacity-[0.025]"
             style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-28">
           <div className="flex items-center gap-3 mb-5">
-            <div className="h-px w-8 bg-[#C9AB81]" />
-            <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Contact</span>
+            <div className="h-px w-8 bg-[#EA580C]" />
+            <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Contact</span>
           </div>
           <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tight text-white leading-tight">
-            Let's talk.<br />
-            <span className="text-[#C9AB81]">We're ready.</span>
+            Let&apos;s talk.<br />
+            <span className="text-[#EA580C]">We&apos;re ready.</span>
           </h1>
           <p className="mt-5 max-w-lg text-lg text-white/50 leading-relaxed">
-            The quickest way to get an answer is to call. If we're with a customer,
-            leave a message and we'll come back to you fast.
+            The quickest way to get an answer is to call. If we&apos;re with a customer,
+            leave a message and we&apos;ll come back to you fast.
           </p>
 
           {/* Quick facts row */}
           <div className="mt-10 flex flex-wrap gap-4">
             {QUICK_FACTS.map(({ icon: Icon, label, text }) => (
               <div key={label} className="flex items-center gap-3 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 backdrop-blur-sm">
-                <Icon className="size-4 text-[#C9AB81] shrink-0" />
+                <Icon className="size-4 text-[#EA580C] shrink-0" />
                 <div className="text-sm">
                   <span className="text-white/40">{label}: </span>
                   <span className="text-white font-semibold">{text}</span>
@@ -99,14 +97,14 @@ export default async function ContactUsPage() {
                       href={telHref(contact.phone)}
                       className="flex items-center gap-4 px-5 py-4 group hover:bg-white/[0.04] transition-colors"
                     >
-                      <div className="flex size-10 items-center justify-center rounded-xl bg-[#C9AB81]/10 border border-[#C9AB81]/20 shrink-0 group-hover:bg-[#C9AB81]/15 transition-colors">
-                        <Phone className="size-4 text-[#C9AB81]" />
+                      <div className="flex size-10 items-center justify-center rounded-xl bg-[#EA580C]/10 border border-[#EA580C]/20 shrink-0 group-hover:bg-[#EA580C]/15 transition-colors">
+                        <Phone className="size-4 text-[#EA580C]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">Call us</p>
                         <p className="font-semibold text-white text-sm">{contact.phone}</p>
                       </div>
-                      <ArrowRight className="size-4 text-white/20 group-hover:text-[#C9AB81] group-hover:translate-x-0.5 transition-all" />
+                      <ArrowRight className="size-4 text-white/20 group-hover:text-[#EA580C] group-hover:translate-x-0.5 transition-all" />
                     </a>
                   )}
 
@@ -169,7 +167,7 @@ export default async function ContactUsPage() {
               {/* Opening hours */}
               <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
-                  <Clock className="size-4 text-[#C9AB81]" />
+                  <Clock className="size-4 text-[#EA580C]" />
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Opening hours</p>
                 </div>
                 <div className="px-5 py-4">
@@ -190,31 +188,54 @@ export default async function ContactUsPage() {
                 </div>
               </div>
 
-              {/* Map embed placeholder */}
+              {/*
+                The yard, on the same Leaflet map the footer, /service-area and
+                /local-van-hire use.
+
+                This was a `maps.google.com/maps?…&output=embed` iframe, and it
+                had to change for two reasons. It was the last consumer of the
+                `maps.google.com` and `www.google.com` entries in `frame-src`,
+                which were removed from the CSP along with the Google Maps JS
+                API — so it would have rendered as a blocked, empty box. And it
+                is a third-party frame that sets Google cookies, on the page
+                whose entire purpose is collecting a customer's name, phone and
+                email; the enquiry form's own consent copy does not cover it.
+
+                The address is hardcoded here no longer either — `ADDRESS`/`GEO`
+                in lib/business are the single source for where the yard is.
+              */}
               <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden aspect-[4/3] relative">
-                <iframe
-                  title="XPDX Rentals location map"
-                  src="https://maps.google.com/maps?q=16+Ilma+Street+Condell+Park+NSW+2200&output=embed"
-                  className="w-full h-full grayscale opacity-70"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
+                <DynamicServiceMap
+                  center={[GEO.latitude, GEO.longitude]}
+                  address={contact.address}
+                  radiusMiles={20}
+                  zoom={12}
+                  className="size-full"
                 />
                 <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/[0.07] rounded-2xl" />
               </div>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 block text-center text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+              >
+                Get directions &rarr;
+              </a>
             </div>
 
             {/* ── Right: Enquiry form ── */}
             <div>
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-px w-8 bg-[#C9AB81]" />
-                  <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Enquiry</span>
+                  <div className="h-px w-8 bg-[#EA580C]" />
+                  <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Enquiry</span>
                 </div>
                 <h2 className="font-heading text-3xl sm:text-4xl font-black tracking-tight text-white">
                   Send us a message
                 </h2>
                 <p className="mt-3 text-white/40 leading-relaxed">
-                  Tell us what you need and when. We'll get back to you — usually same business day.
+                  Tell us what you need and when. We&apos;ll get back to you — usually same business day.
                 </p>
               </div>
 

@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+
+    // ESLint's own JSON report, written by the lint tooling itself.
+    "lint-report.json",
   ]),
 ]);
 

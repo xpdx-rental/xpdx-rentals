@@ -1,10 +1,13 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/security/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isVanSlugAvailable } from "@/lib/data/vans";
+import { VANS_CACHE_KEY } from "@/lib/data/public-vans";
+import { invalidateCache } from "@/lib/redis";
+import { isValidVanStorageKey, validateStoredImage } from "@/lib/security/image-validation";
 import { vanSchema, vanImageSchema, parseFeaturesTextarea } from "@/lib/validation/van";
 import { slugifyVanName, type VanStatus } from "@/lib/van";
 
@@ -12,7 +15,7 @@ import { slugifyVanName, type VanStatus } from "@/lib/van";
  * Fleet mutations.
  *
  * Every action re-authorises with `requireAdmin()` before touching the
- * service-role client — a Server Action is a public HTTP endpoint, so the
+ * service-role client â€” a Server Action is a public HTTP endpoint, so the
  * page-level guard is not enough on its own.
  *
  * Errors come back as `{ error }` for the form to render. Nothing throws a raw
@@ -24,6 +27,47 @@ import { slugifyVanName, type VanStatus } from "@/lib/van";
 type Result = { ok?: true; error?: string; fieldErrors?: Record<string, string> };
 
 const BUCKET = "van-images";
+
+/**
+ * Pushes a fleet change out to the public site.
+ *
+ * Every mutation in this file used to revalidate only `/admin/*`. Nothing
+ * cleared the Redis fleet cache (1 hour TTL) and nothing revalidated the public
+ * ISR routes, so an operator who corrected a weekly rate saw it immediately in
+ * the portal while customers were quoted the old price â€” on the homepage, the
+ * fleet grid, the van's own page and the JSON-LD offer inside it â€” for up to an
+ * hour afterwards. On a hire business, a stale published price is a consumer-law
+ * problem, not a caching nicety.
+ *
+ * Redis first, then ISR: revalidating the pages before dropping the cache key
+ * would let the re-render repopulate Redis with the value we are trying to
+ * evict.
+ *
+ * Best-effort throughout â€” the write has already committed, and an operator
+ * must never see a save fail because a cache did.
+ */
+async function publishFleetChange(slug?: string | null): Promise<void> {
+  try {
+    await invalidateCache(VANS_CACHE_KEY);
+  } catch {
+    // Stale-until-TTL is the old behaviour; never fail a save over it.
+  }
+
+  revalidatePath("/");
+  revalidatePath("/vans");
+  revalidatePath("/van-hire");
+  revalidatePath("/sitemap.xml");
+  if (slug) revalidatePath(`/vans/${slug}`);
+}
+
+/** Looks up a van's slug so the change can be pushed to its public page too. */
+async function slugForVan(
+  supabase: ReturnType<typeof createAdminClient>,
+  id: string,
+): Promise<string | null> {
+  const { data } = await supabase.from("vans").select("slug").eq("id", id).maybeSingle();
+  return (data as { slug?: string } | null)?.slug ?? null;
+}
 
 function readVanForm(formData: FormData) {
   const raw = {
@@ -60,7 +104,7 @@ function readVanForm(formData: FormData) {
     sortOrder: formData.get("sortOrder") ?? 0,
   };
 
-  // An empty slug field means "derive it from the name" — the common case when
+  // An empty slug field means "derive it from the name" â€” the common case when
   // adding a van. The operator can still override it.
   if (!String(raw.slug ?? "").trim()) {
     raw.slug = slugifyVanName(String(raw.name ?? ""));
@@ -129,6 +173,7 @@ export async function createVan(_prev: Result | null, formData: FormData): Promi
   if (error) return { error: error.message };
 
   revalidatePath("/admin/vans");
+  await publishFleetChange(parsed.data.slug);
   redirect(`/admin/vans/${data.id}?created=1`);
 }
 
@@ -155,6 +200,7 @@ export async function updateVan(_prev: Result | null, formData: FormData): Promi
 
   revalidatePath("/admin/vans");
   revalidatePath(`/admin/vans/${id}`);
+  await publishFleetChange(parsed.data.slug);
   return { ok: true };
 }
 
@@ -165,6 +211,9 @@ export async function setVanStatus(id: string, status: VanStatus): Promise<Resul
   const { error } = await supabase.from("vans").update({ status }).eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/admin/vans");
+  // Availability is the single most time-sensitive field on the site â€” a van
+  // marked unavailable must stop being offered now, not within the hour.
+  await publishFleetChange(await slugForVan(supabase, id));
   return { ok: true };
 }
 
@@ -203,6 +252,7 @@ export async function moveVan(id: string, direction: "up" | "down"): Promise<Res
   }
 
   revalidatePath("/admin/vans");
+  await publishFleetChange();
   return { ok: true };
 }
 
@@ -223,11 +273,41 @@ export async function deleteVan(id: string): Promise<Result> {
   if (error) return { error: error.message };
 
   revalidatePath("/admin/vans");
+  await publishFleetChange();
   redirect("/admin/vans");
 }
 
-// ── Images ──────────────────────────────────────────────────────────────────
+// â”€â”€ Images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+/**
+ * Registers an already-uploaded object against a van.
+ *
+ * ── Why the validation below is not optional ────────────────────────────────
+ * This is a **direct-to-Storage** flow: the browser uploads to the `van-images`
+ * bucket itself and then calls this action with the key it picked. So both the
+ * key and the bytes arrive from the client, and a Server Action is a public
+ * HTTP endpoint — `requireAdmin()` proves *who* is calling, not *what* they are
+ * handing us.
+ *
+ * Previously `input.storagePath` went straight into `van_images.storage_path`
+ * with no checks at all, and `lib/data/public-vans.ts` concatenates that value
+ * into a public URL. A key containing `../` escapes the bucket, so
+ * `../lead-attachments/<file>` would have published a private lead attachment
+ * through the public van gallery.
+ *
+ * Three gates now, cheapest first:
+ *   1. The key must match the exact format `vanStorageKey()` emits, and sit
+ *      under *this* van's slug folder — checked against the slug in the
+ *      database, not one supplied by the caller.
+ *   2. The object must actually exist and decode as a real image, verified by
+ *      reading its magic bytes with sharp rather than trusting the extension or
+ *      the `Content-Type` the uploader declared.
+ *   3. Its dimensions must be sane — the upper bound is what stops a
+ *      decompression bomb, since `next/image` resizes every one of these on
+ *      request.
+ *
+ * A file that fails is deleted rather than left orphaned in the bucket.
+ */
 export async function addVanImage(
   vanId: string,
   input: { storagePath: string; alt: string },
@@ -239,6 +319,29 @@ export async function addVanImage(
   }
 
   const supabase = createAdminClient();
+
+  // The van's real slug, from the database — the caller does not get to assert
+  // which folder its upload belongs in.
+  const slug = await slugForVan(supabase, vanId);
+  if (!slug) return { error: "That van no longer exists." };
+
+  if (!isValidVanStorageKey(input.storagePath, slug)) {
+    // Deliberately not echoed back: the caller learns the upload was refused,
+    // not which part of the key was rejected.
+    return { error: "That upload could not be accepted. Please try again." };
+  }
+
+  const validation = await validateStoredImage(supabase, BUCKET, input.storagePath);
+  if (!validation.ok) {
+    // Remove the rejected bytes. Leaving them costs storage and leaves a
+    // publicly-readable object in a public bucket that no screen can reach.
+    await supabase.storage
+      .from(BUCKET)
+      .remove([input.storagePath])
+      .catch(() => {});
+    return { error: validation.error };
+  }
+
   const { count } = await supabase
     .from("van_images")
     .select("id", { count: "exact", head: true })
@@ -256,6 +359,8 @@ export async function addVanImage(
   if (error) return { error: error.message };
 
   revalidatePath(`/admin/vans/${vanId}`);
+  // `slug` is already in hand from the ownership check above — no second query.
+  await publishFleetChange(slug);
   return { ok: true };
 }
 
@@ -268,6 +373,7 @@ export async function updateVanImageAlt(imageId: string, vanId: string, alt: str
   const { error } = await supabase.from("van_images").update({ alt: parsed.data }).eq("id", imageId);
   if (error) return { error: error.message };
   revalidatePath(`/admin/vans/${vanId}`);
+  await publishFleetChange(await slugForVan(supabase, vanId));
   return { ok: true };
 }
 
@@ -286,6 +392,7 @@ export async function setPrimaryVanImage(imageId: string, vanId: string): Promis
   if (error) return { error: error.message };
 
   revalidatePath(`/admin/vans/${vanId}`);
+  await publishFleetChange(await slugForVan(supabase, vanId));
   return { ok: true };
 }
 
@@ -317,6 +424,7 @@ export async function moveVanImage(
   }
 
   revalidatePath(`/admin/vans/${vanId}`);
+  await publishFleetChange(await slugForVan(supabase, vanId));
   return { ok: true };
 }
 
@@ -349,5 +457,6 @@ export async function deleteVanImage(imageId: string, vanId: string): Promise<Re
   }
 
   revalidatePath(`/admin/vans/${vanId}`);
+  await publishFleetChange(await slugForVan(supabase, vanId));
   return { ok: true };
 }

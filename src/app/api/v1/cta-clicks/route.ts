@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { clientIp } from "@/lib/security/rate-limit";
+import { clientIp, hashIp } from "@/lib/leads/spam-check";
 import { rateLimitSlidingWindow } from "@/lib/security/rate-limit-redis";
 
 export const runtime = "nodejs";
@@ -17,8 +17,13 @@ const schema = z.object({
 export async function POST(request: NextRequest) {
   // Rate limit: 20 click events per minute per IP.
   // Prevents bots from inflating CTA conversion counts.
-  const ip = clientIp(request.headers);
-  const rl = await rateLimitSlidingWindow(`cta:${ip}`, 20, 60_000);
+  //
+  // Keyed on the salted *hash*, not the raw address. The key was `cta:${ip}`,
+  // which wrote every visitor's plain IP into Redis — the exact thing SRS §20
+  // forbids, and which `hashIp` exists to prevent everywhere else in this
+  // codebase. Hashing is deterministic, so the limit still works identically.
+  const ipHash = hashIp(clientIp(request.headers));
+  const rl = await rateLimitSlidingWindow(`cta:${ipHash}`, 20, 60_000);
   if (!rl.allowed) {
     return NextResponse.json(
       { ok: false },

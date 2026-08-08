@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Truck, Inbox, MessageSquareQuote,
-  Settings, Users, ScrollText, Menu, X,
+  LayoutDashboard, Truck, Inbox, MessageSquareQuote,
+  Settings, Users, ScrollText, Menu, X, FileText, Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +18,12 @@ import { cn } from "@/lib/utils";
 // `faqs` table the public site had stopped reading, so an operator could edit
 // an answer, see it save, and never see the site change.
 const NAV = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Leads", icon: Inbox },
   { href: "/admin/vans", label: "Fleet", icon: Truck },
+  { href: "/admin/blog", label: "Blog", icon: FileText },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote },
+  { href: "/admin/seo", label: "SEO registry", icon: Search },
   { href: "/admin/settings", label: "Settings", icon: Settings },
   { href: "/admin/roles", label: "Users & Roles", icon: Users },
   { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
@@ -30,7 +33,10 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) => {
+    if (href === "/admin") return pathname === "/admin";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   const links = (
     <nav className="flex flex-col gap-1 p-3">

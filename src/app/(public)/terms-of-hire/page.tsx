@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { HIRE_TERMS, BRAND, ADDRESS, CONTACT } from "@/lib/business";
+import { HIRE_TERMS, ADDRESS, CONTACT } from "@/lib/business";
 import { breadcrumbSchema } from "@/lib/seo/jsonld";
 import { JsonLd } from "@/components/json-ld";
 
@@ -146,7 +146,7 @@ export default function TermsOfHirePage() {
         <Section id="formation" title="2. Formation of Agreement">
           <Clause number="2.1" heading="Acceptance">
             <p>
-              The Agreement is formed when the Hirer signs the Hire Agreement, pays the Bond and first period's hire charge, and collects the Vehicle. No Agreement is formed until the Owner has countersigned and the Vehicle has been collected.
+              The Agreement is formed when the Hirer signs the Hire Agreement, pays the Bond and first period&apos;s hire charge, and collects the Vehicle. No Agreement is formed until the Owner has countersigned and the Vehicle has been collected.
             </p>
           </Clause>
           <Clause number="2.2" heading="Online enquiries">
@@ -170,12 +170,12 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="3.2" heading="Licence requirements">
             <p>
-              All Authorised Drivers must hold a current, full (not learner or provisional) Australian driver's licence that has been held for at least {HIRE_TERMS.minLicenceMonths} months, or an equivalent overseas licence acceptable to the Owner. The Hirer must produce the original licence (not a copy) at the time of vehicle collection. The Owner reserves the right to refuse hire if a licence cannot be verified.
+              All Authorised Drivers must hold a current, full (not learner or provisional) Australian driver&apos;s licence that has been held for at least {HIRE_TERMS.minLicenceMonths} months, or an equivalent overseas licence acceptable to the Owner. The Hirer must produce the original licence (not a copy) at the time of vehicle collection. The Owner reserves the right to refuse hire if a licence cannot be verified.
             </p>
           </Clause>
           <Clause number="3.3" heading="Demerit points and disqualifications">
             <p>
-              The Hirer warrants that no Authorised Driver is currently disqualified from driving, suspended, or subject to a zero blood-alcohol condition. If any Authorised Driver's licence is cancelled, suspended or subject to conditions during the Hire Period, the Hirer must notify the Owner immediately and cease driving the Vehicle.
+              The Hirer warrants that no Authorised Driver is currently disqualified from driving, suspended, or subject to a zero blood-alcohol condition. If any Authorised Driver&apos;s licence is cancelled, suspended or subject to conditions during the Hire Period, the Hirer must notify the Owner immediately and cease driving the Vehicle.
             </p>
           </Clause>
           <Clause number="3.4" heading="Additional drivers">
@@ -238,7 +238,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="5.3" heading="Overdue vehicles">
             <p>
-              If the Vehicle is not returned by the agreed return date and time, the Hirer will be charged the full daily rate for each additional day until the Vehicle is returned. The Owner may, after giving reasonable notice, treat the overdue hire as a default and repossess the Vehicle at the Hirer's cost.
+              If the Vehicle is not returned by the agreed return date and time, the Hirer will be charged the full daily rate for each additional day until the Vehicle is returned. The Owner may, after giving reasonable notice, treat the overdue hire as a default and repossess the Vehicle at the Hirer&apos;s cost.
             </p>
           </Clause>
         </Section>
@@ -259,11 +259,11 @@ export default function TermsOfHirePage() {
               <li>off-road or on unsealed roads for which the Vehicle is not designed;</li>
               <li>to transport illegal substances, firearms or controlled goods;</li>
               <li>while the driver is impaired by alcohol, drugs (prescribed or otherwise) or fatigue;</li>
-              <li>to carry loads exceeding the Vehicle's manufacturer-rated payload capacity;</li>
+              <li>to carry loads exceeding the Vehicle&apos;s manufacturer-rated payload capacity;</li>
               <li>in a reckless, negligent or dangerous manner;</li>
               <li>by any person other than an Authorised Driver;</li>
               <li>outside {HIRE_TERMS.stateOfUse} without prior written consent;</li>
-              <li>for any purpose that would void the Vehicle's insurance policy.</li>
+              <li>for any purpose that would void the Vehicle&apos;s insurance policy.</li>
             </ul>
           </Clause>
           <Clause number="6.3" heading="Kilometres">
@@ -309,11 +309,11 @@ export default function TermsOfHirePage() {
               <li>not admit liability to any third party;</li>
               <li>collect the names, contact details, licence numbers and insurance details of all involved parties and witnesses;</li>
               <li>notify the Owner by phone at {COMPANY_PHONE} within 24 hours;</li>
-              <li>complete and return the Owner's accident report form within 48 hours;</li>
+              <li>complete and return the Owner&apos;s accident report form within 48 hours;</li>
               <li>cooperate fully with any insurer or investigation.</li>
             </ol>
             <p className="mt-2">
-              Failure to comply with these obligations may void the Hirer's LDW protection and render the Hirer fully liable.
+              Failure to comply with these obligations may void the Hirer&apos;s LDW protection and render the Hirer fully liable.
             </p>
           </Clause>
           <Clause number="7.6" heading="Theft">
@@ -332,12 +332,12 @@ export default function TermsOfHirePage() {
         <Section id="insurance" title="8. Insurance and Liability">
           <Clause number="8.1" heading="Comprehensive insurance">
             <p>
-              The Vehicle is covered by comprehensive motor vehicle insurance arranged by the Owner. The Hirer is not a party to this policy and has no right to make a claim directly against the Owner's insurer.
+              The Vehicle is covered by comprehensive motor vehicle insurance arranged by the Owner. The Hirer is not a party to this policy and has no right to make a claim directly against the Owner&apos;s insurer.
             </p>
           </Clause>
           <Clause number="8.2" heading="Loss Damage Waiver">
             <p>
-              Where LDW is included or purchased, the Hirer's liability for accidental damage is limited to the excess amount specified in the Hire Agreement, provided the damage is not Excluded Damage under clause 8.3.
+              Where LDW is included or purchased, the Hirer&apos;s liability for accidental damage is limited to the excess amount specified in the Hire Agreement, provided the damage is not Excluded Damage under clause 8.3.
             </p>
           </Clause>
           <Clause number="8.3" heading="Excluded Damage — full liability applies">
@@ -362,7 +362,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="8.4" heading="Third-party liability">
             <p>
-              Third-party property damage and injury arising from a covered accident is handled via the Owner's policy, subject to the terms of that policy. The Hirer indemnifies the Owner against any claim to the extent caused by the Hirer's breach of these Terms.
+              Third-party property damage and injury arising from a covered accident is handled via the Owner&apos;s policy, subject to the terms of that policy. The Hirer indemnifies the Owner against any claim to the extent caused by the Hirer&apos;s breach of these Terms.
             </p>
           </Clause>
           <Clause number="8.5" heading="Personal property">
@@ -386,7 +386,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="9.3" heading="Assessment of damage costs">
             <p>
-              Damage costs are assessed by the Owner's repairer or an independent assessor chosen by the Owner. The Hirer may request a copy of any repair quote and has 5 business days to raise a written objection. The Owner may deduct assessed damage costs from the Bond.
+              Damage costs are assessed by the Owner&apos;s repairer or an independent assessor chosen by the Owner. The Hirer may request a copy of any repair quote and has 5 business days to raise a written objection. The Owner may deduct assessed damage costs from the Bond.
             </p>
           </Clause>
           <Clause number="9.4" heading="Loss of use">
@@ -405,7 +405,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="10.2" heading="Toll accounts">
             <p>
-              The Hirer must either use their own registered toll account linked to the Vehicle's plate, or arrange toll payment directly with the relevant road authority. Where the Owner receives a toll notice for which the Hirer has not made payment, the Owner will pass on the toll amount plus an A$25 administration fee per notice.
+              The Hirer must either use their own registered toll account linked to the Vehicle&apos;s plate, or arrange toll payment directly with the relevant road authority. Where the Owner receives a toll notice for which the Hirer has not made payment, the Owner will pass on the toll amount plus an A$25 administration fee per notice.
             </p>
           </Clause>
           <Clause number="10.3" heading="Infringement notices">
@@ -434,7 +434,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="11.3" heading="Mechanical failure">
             <p>
-              If the Vehicle suffers a mechanical failure that is not caused by the Hirer's misuse or neglect, the Owner will arrange a replacement vehicle where reasonably practicable, or will refund hire charges for the days the Vehicle was unavailable. This is the Hirer's sole remedy for mechanical failure.
+              If the Vehicle suffers a mechanical failure that is not caused by the Hirer&apos;s misuse or neglect, the Owner will arrange a replacement vehicle where reasonably practicable, or will refund hire charges for the days the Vehicle was unavailable. This is the Hirer&apos;s sole remedy for mechanical failure.
             </p>
           </Clause>
         </Section>
@@ -443,7 +443,7 @@ export default function TermsOfHirePage() {
         <Section id="gps" title="12. GPS Tracking">
           <Clause number="12.1" heading="Consent to tracking">
             <p>
-              All Vehicles are fitted with GPS tracking devices. By entering into this Agreement, the Hirer and all Authorised Drivers consent to the continuous monitoring of the Vehicle's location, speed, journey history and driving behaviour throughout the Hire Period.
+              All Vehicles are fitted with GPS tracking devices. By entering into this Agreement, the Hirer and all Authorised Drivers consent to the continuous monitoring of the Vehicle&apos;s location, speed, journey history and driving behaviour throughout the Hire Period.
             </p>
           </Clause>
           <Clause number="12.2" heading="Use of data">
@@ -513,7 +513,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="15.2" heading="Repossession">
             <p>
-              On a default event, the Owner may repossess the Vehicle without notice and without liability to the Hirer. The Hirer authorises the Owner to enter any premises (with the landowner's consent) for this purpose. All costs of repossession, including towing and any legal costs on a solicitor-client basis, are payable by the Hirer.
+              On a default event, the Owner may repossess the Vehicle without notice and without liability to the Hirer. The Hirer authorises the Owner to enter any premises (with the landowner&apos;s consent) for this purpose. All costs of repossession, including towing and any legal costs on a solicitor-client basis, are payable by the Hirer.
             </p>
           </Clause>
           <Clause number="15.3" heading="Debt recovery">
@@ -537,7 +537,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="16.3" heading="Maximum liability">
             <p>
-              Subject to clause 16.1, the Owner's total liability to the Hirer for any claim arising from or in connection with this Agreement is limited to the total hire charges paid by the Hirer in the 28 days immediately preceding the event giving rise to the claim.
+              Subject to clause 16.1, the Owner&apos;s total liability to the Hirer for any claim arising from or in connection with this Agreement is limited to the total hire charges paid by the Hirer in the 28 days immediately preceding the event giving rise to the claim.
             </p>
           </Clause>
         </Section>
@@ -553,7 +553,7 @@ export default function TermsOfHirePage() {
         <Section id="disputes" title="18. Disputes">
           <Clause number="18.1" heading="Informal resolution">
             <p>
-              If a dispute arises, the parties agree to first attempt to resolve it in good faith through direct negotiation. Either party may initiate this process by sending a written notice of dispute to the other party's address on the Hire Agreement.
+              If a dispute arises, the parties agree to first attempt to resolve it in good faith through direct negotiation. Either party may initiate this process by sending a written notice of dispute to the other party&apos;s address on the Hire Agreement.
             </p>
           </Clause>
           <Clause number="18.2" heading="NSW Fair Trading">
@@ -563,7 +563,7 @@ export default function TermsOfHirePage() {
           </Clause>
           <Clause number="18.3" heading="NCAT">
             <p>
-              Consumer disputes falling within the jurisdiction of the NSW Civil and Administrative Tribunal (NCAT) may be referred to NCAT at the Hirer's election.
+              Consumer disputes falling within the jurisdiction of the NSW Civil and Administrative Tribunal (NCAT) may be referred to NCAT at the Hirer&apos;s election.
             </p>
           </Clause>
         </Section>

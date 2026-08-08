@@ -54,10 +54,14 @@ export type VanImageEmbedRow = Pick<
 >;
 
 /** The columns `vans.ts` and `public-vans.ts` share. */
-type VanCoreRow = {
+export type VanRow = {
   id: string;
   slug: string;
   name: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  registration: string | null;
   body_type: string;
   wheelbase_label: string;
   roof: RoofHeightRow;
@@ -65,9 +69,10 @@ type VanCoreRow = {
   transmission: string;
   fuel: string;
   seats: number | null;
-  price_weekly_from: number;
-  price_monthly_from: number | null;
-  min_hire_days: number;
+  price_weekly_from: number | string;
+  price_monthly_from: number | string | null;
+  deposit_amount: number | string | null;
+  min_hire_days: number | string;
   length_mm: number | null;
   height_mm: number | null;
   width_mm: number | null;
@@ -82,19 +87,21 @@ type VanCoreRow = {
   status: VanStatusRow;
   sort_order: number | null;
   updated_at: string;
-};
-
-/** `public.vans` as selected by `VAN_SELECT` in `vans.ts`. */
-export type VanRow = VanCoreRow & {
   price_verified: boolean | null;
   dimensions_verified: boolean | null;
   created_at: string;
 };
 
 /** `public.vans` as selected by `SELECT` in `public-vans.ts`. */
-export type PublicVanRow = VanCoreRow & {
-  van_images: VanImageEmbedRow[] | null;
-};
+export type PublicVanRow = Pick<
+  VanRow,
+  | "id" | "slug" | "name" | "make" | "model" | "year" | "registration"
+  | "body_type" | "wheelbase_label" | "roof" | "tonnage" | "transmission" | "fuel" | "seats"
+  | "price_weekly_from" | "price_monthly_from" | "deposit_amount" | "min_hire_days"
+  | "length_mm" | "height_mm" | "width_mm" | "wheelbase_mm" | "load_volume_m3" | "payload_kg"
+  | "features" | "summary" | "description" | "seo_title" | "seo_description"
+  | "status" | "sort_order" | "updated_at"
+> & { van_images: VanImageEmbedRow[] | null };
 
 /** The narrow projection behind the staff fleet list. */
 export type VanListRow = Pick<

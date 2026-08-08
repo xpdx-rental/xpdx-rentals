@@ -9,19 +9,17 @@ import { FaqList } from "@/components/public/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { faqPageSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { corePage } from "@/lib/seo/entities/core-pages";
 import { AnimatedSection } from "@/components/animations/animated-section";
 import { SplitTextReveal } from "@/components/animations/split-text-reveal";
+import { FadeIn } from "@/components/animations/fade-in";
+import { BusinessHeroVideo } from "@/components/public/business-hero-video";
 import { ALL_FAQS } from "@/lib/content/faqs";
 import { HIRE_TERMS } from "@/lib/business";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  path: "/business-van-rental",
-  title: "Business van rental in NSW",
-  description:
-    "Commercial van rental for NSW businesses. One van or a whole fleet, with maintenance, insurance and support included. 28 day minimum hire.",
-});
+export const metadata: Metadata = pageMetadata(corePage("/business-van-rental"));
 
 /**
  * Service page 3 of 3.
@@ -59,41 +57,59 @@ export default async function BusinessVanRentalPage() {
         ]}
       />
 
-      <section className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          {/* Trust Badge */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="size-4 text-amber-500 fill-amber-500" />
-              ))}
-            </div>
-            <span className="text-foreground/80 text-xs font-medium tracking-wide">
-              <span className="font-bold text-foreground">5.0</span> average on Google
-            </span>
-          </div>
+      <section className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-black">
+        <div className="absolute inset-0 z-0">
+          <BusinessHeroVideo />
+          {/* Million dollar cinematic lighting */}
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/90" />
+          <div className="absolute left-0 top-0 h-[60vh] w-[60vw] bg-primary/20 blur-[160px] mix-blend-screen opacity-50" />
+        </div>
 
-          <div className="flex flex-wrap items-end gap-6">
-            <h1 className="max-w-3xl font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              Business van rental
-            </h1>
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pt-40 pb-24 sm:px-6 lg:px-8 flex flex-col justify-end min-h-[85vh]">
+          <div className="flex flex-col items-start max-w-3xl">
+            {/* Trust Badge */}
+            <FadeIn direction="up" delay={0.1}>
+              <div className="flex items-center gap-3 mb-8 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 backdrop-blur-xl shadow-2xl ring-1 ring-white/10 transition-all hover:bg-white/10">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="size-4 text-[#EA580C] fill-[#EA580C] drop-shadow-md" />
+                  ))}
+                </div>
+                <div className="h-4 w-[1px] bg-white/20 mx-1" />
+                <span className="text-[12px] font-bold tracking-[0.2em] text-white uppercase">
+                  5.0 Google Average
+                </span>
+              </div>
+            </FadeIn>
+
+            <SplitTextReveal
+              text="Business Van Rental"
+              as="h1"
+              className="font-heading text-6xl font-black tracking-tighter text-white sm:text-7xl lg:text-[7rem] leading-[0.9] drop-shadow-2xl"
+            />
+
+            <FadeIn delay={0.4} direction="up" className="mt-8">
+              <p className="text-xl sm:text-2xl font-light leading-relaxed text-white/90 drop-shadow-lg">
+                One van or a whole fleet, on terms that flex with the work. Maintenance, insurance
+                and support are part of the hire, not extras you manage separately.
+              </p>
+            </FadeIn>
             
             {/* Live Availability Indicator */}
-            <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-1.5 sm:mb-2.5">
-              <div className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+            <FadeIn delay={0.5} direction="up" className="mt-10">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-6 py-3 backdrop-blur-md transition-colors hover:bg-white/10">
+                <div className="relative flex size-3 shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex size-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.9)]"></span>
+                </div>
+                <span className="text-sm font-bold uppercase tracking-widest text-white">
+                  Vans Available Today
+                </span>
               </div>
-              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold tracking-wider uppercase">
-                Vans Available Today
-              </span>
-            </div>
+            </FadeIn>
           </div>
-          
-          <p className="mt-6 max-w-2xl text-lg text-body">
-            One van or a whole fleet, on terms that flex with the work. Maintenance, insurance
-            and support are part of the hire, not extras you manage separately.
-          </p>
         </div>
       </section>
 

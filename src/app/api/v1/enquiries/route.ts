@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { enquirySchema } from "@/lib/validation/lead";
 import { rateLimitSlidingWindow } from "@/lib/security/rate-limit-redis";
+import { verifyTurnstile } from "@/lib/security/turnstile";
 import { hashIp, clientIp } from "@/lib/leads/spam-check";
 import { notifyAllChannels } from "@/lib/leads/channels";
 import { submitEnquiry } from "@/lib/leads/submit-enquiry";
@@ -71,10 +72,16 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Verified here, at the HTTP edge, and passed down as a verdict — the
+  // pipeline itself stays free of network calls so its tests can drive every
+  // branch. A "failed" verdict quarantines the lead; it never rejects it.
+  const turnstile = await verifyTurnstile(parsed.data.token, ip);
+
   const supabase = createAdminClient();
 
   const outcome = await submitEnquiry(parsed.data, {
     ipHash,
+    turnstile,
     async findVanIdBySlug(slug) {
       const { data } = await supabase.from("vans").select("id").eq("slug", slug).maybeSingle();
       return data?.id ?? null;

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { getPublicVans } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
 import { VanCard } from "@/components/public/van-card";
@@ -9,19 +9,15 @@ import { FaqList } from "@/components/public/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { faqPageSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { corePage } from "@/lib/seo/entities/core-pages";
 import { AnimatedSection } from "@/components/animations/animated-section";
 import { SplitTextReveal } from "@/components/animations/split-text-reveal";
+import { ServiceAreaMap } from "@/components/public/service-area-map";
 import { ALL_FAQS } from "@/lib/content/faqs";
-import { HIRE_TERMS } from "@/lib/business";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  path: "/local-van-hire",
-  title: "Local van hire, Condell Park",
-  description:
-    "Local van hire from our Condell Park yard, serving south-west and greater Sydney. Unlimited kilometres, in-house mechanic, 28 day minimum.",
-});
+export const metadata: Metadata = pageMetadata(corePage("/local-van-hire"));
 
 /**
  * Service page 1 of 3 — CLAUDE.md §8: "The three service pages are the real
@@ -101,23 +97,112 @@ export default async function LocalVanHirePage() {
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
         <AnimatedSection>
           <SplitTextReveal className="font-heading text-2xl font-bold tracking-tight text-foreground">
-            A yard, not a counter
+            Where we hire from
           </SplitTextReveal>
           <p className="mt-3 text-body">
-            We are a family-owned business running a small fleet from one location. That means the
-            person who hands you the keys is the person who knows the van, and the mechanic who
-            services it works here too. If something needs looking at, it does not go into a
-            queue at a depot on the other side of the city.
+            Vans are collected from and returned to our yard at 16 Ilma Street, Condell Park NSW 2200. Once you have the keys, they are approved for use across New South Wales.
           </p>
-          <p className="mt-3 text-body">
-            It also means we can be straight with you about what we have. If the van you want is
-            out, we will say so and tell you when it is back, rather than moving you onto
-            something that will not fit the job.
-          </p>
+          
+          <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+            <h3 className="font-heading text-lg font-bold text-foreground">Our yard</h3>
+            <p className="mt-1 text-body">16 Ilma Street, Condell Park NSW 2200</p>
+            <p className="mt-3">
+              <a href="https://maps.google.com/?q=16+Ilma+Street,+Condell+Park+NSW+2200" target="_blank" rel="noopener noreferrer" className="font-semibold text-link hover:underline">
+                Get directions →
+              </a>
+            </p>
+          </div>
         </AnimatedSection>
 
         <AnimatedSection delay={0.1}>
-          <SplitTextReveal className="mt-10 font-heading text-2xl font-bold tracking-tight text-foreground">
+          <SplitTextReveal className="mt-12 font-heading text-2xl font-bold tracking-tight text-foreground">
+            Easy to reach from
+          </SplitTextReveal>
+          <p className="mt-3 text-body">
+            We are a short drive from most of south-west and inner Sydney. These are the areas our customers most often travel from.
+          </p>
+          
+          {/*
+            These four area groups are <h3>, not <h4>. Their parent section is
+            an <h2> ("Easy to reach from"), so <h4> skipped a level — a WCAG
+            1.3.1 failure that costs a screen-reader user the structure of the
+            page when they navigate by heading. The visual size comes from the
+            classes, not the tag, so nothing about the design changes.
+          */}
+          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+            <div>
+              <h3 className="font-semibold text-foreground">Canterbury-Bankstown</h3>
+              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                <li>Condell Park</li>
+                <li>Bankstown</li>
+                <li>Yagoona</li>
+                <li>Punchbowl</li>
+                <li>Greenacre</li>
+                <li>Chullora</li>
+                <li>Padstow</li>
+                <li>Revesby</li>
+                <li>Panania</li>
+                <li>Milperra</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">South-west Sydney</h3>
+              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                <li>Liverpool</li>
+                <li>Moorebank</li>
+                <li>Chipping Norton</li>
+                <li>Prestons</li>
+                <li>Casula</li>
+                <li>Fairfield</li>
+                <li>Smithfield</li>
+                <li>Wetherill Park</li>
+                <li>Villawood</li>
+                <li>Lansvale</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Inner west and south</h3>
+              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                <li>Strathfield</li>
+                <li>Burwood</li>
+                <li>Campsie</li>
+                <li>Marrickville</li>
+                <li>Rockdale</li>
+                <li>Kogarah</li>
+                <li>Hurstville</li>
+                <li>Peakhurst</li>
+                <li>Riverwood</li>
+                <li>Beverly Hills</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Western Sydney</h3>
+              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                <li>Parramatta</li>
+                <li>Auburn</li>
+                <li>Silverwater</li>
+                <li>Blacktown</li>
+                <li>Rydalmere</li>
+                <li>Seven Hills</li>
+                <li>Girraween</li>
+                <li>Merrylands</li>
+                <li>Guildford</li>
+                <li>Regents Park</li>
+              </ul>
+            </div>
+          </div>
+        </AnimatedSection>
+      </article>
+
+      <section aria-labelledby="service-map" className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <AnimatedSection>
+          <ServiceAreaMap />
+        </AnimatedSection>
+      </section>
+
+      <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+        <AnimatedSection delay={0.1}>
+          <SplitTextReveal className="mt-4 font-heading text-2xl font-bold tracking-tight text-foreground">
             How collection works
           </SplitTextReveal>
           <ol className="mt-4 space-y-3 text-body">
@@ -154,32 +239,16 @@ export default async function LocalVanHirePage() {
         </AnimatedSection>
 
         <AnimatedSection delay={0.2}>
-          <SplitTextReveal className="mt-10 font-heading text-2xl font-bold tracking-tight text-foreground">
-            Hiring locally, long term
+          <SplitTextReveal className="mt-12 font-heading text-2xl font-bold tracking-tight text-foreground">
+            Travelling outside NSW
           </SplitTextReveal>
           <p className="mt-3 text-body">
-            Our minimum hire is {HIRE_TERMS.minHireDays} days. That makes us a poor fit for a
-            weekend move and a good fit if you need a van as part of how you work — a run you have
-            just picked up, a contract for a few months, or a stand-in while your own vehicle is
-            off the road.
+            Our vehicles are primarily approved for use within New South Wales. If you require interstate travel, please contact our team before booking to discuss your requirements — it is usually fine, but it needs arranging in advance so your cover is not affected.
           </p>
-          <ul className="mt-4 space-y-2">
-            {[
-              "Unlimited kilometres, so a busy week never costs more than a quiet one",
-              "Comprehensive insurance included, subject to the rental agreement",
-              "Servicing handled by us, not by you",
-              "Discounts at three months and again past six",
-            ].map((t) => (
-              <li key={t} className="flex items-start gap-2.5 text-body">
-                <Check className="mt-0.5 size-5 shrink-0 text-link" aria-hidden="true" />
-                {t}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 text-body">
-            If you need to cover a wider area, our vans are approved for use across{" "}
-            {HIRE_TERMS.stateOfUse}. Interstate travel is possible by prior arrangement — talk to
-            us before you book.
+          <p className="mt-4">
+            <Link href="/faq#can-i-take-the-vehicle-interstate" className="font-medium text-link hover:underline">
+              See can I take the vehicle interstate? →
+            </Link>
           </p>
         </AnimatedSection>
       </article>

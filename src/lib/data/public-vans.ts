@@ -1,7 +1,9 @@
+import { cache } from "react";
 import { createPublicClient } from "@/lib/supabase/public";
 import { requireEnv } from "@/lib/config";
 import type { RoofHeight, VanStatus } from "@/lib/van";
 import type { PublicVanRow, VanImageEmbedRow, VanSlugRow } from "@/lib/data/rows";
+import { withCache, cacheKey } from "@/lib/redis";
 
 /**
  * Public fleet reads.
@@ -27,6 +29,10 @@ export type PublicVan = {
   id: string;
   slug: string;
   name: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  registration: string | null;
   bodyType: string;
   wheelbaseLabel: string;
   roof: RoofHeight;
@@ -36,6 +42,7 @@ export type PublicVan = {
   seats: number | null;
   priceWeeklyFrom: number;
   priceMonthlyFrom: number | null;
+  depositAmount: number | null;
   minHireDays: number;
   lengthMm: number | null;
   heightMm: number | null;
@@ -55,35 +62,45 @@ export type PublicVan = {
   primaryImage: PublicVanImage | null;
 };
 
+/**
+ * Memoised storage base URL.
+ *
+ * `imageUrl` runs once per image per van, so on a ten-van fleet with a gallery
+ * each this was doing dozens of `process.env` reads and regex replaces per
+ * render. It stays lazy rather than becoming a module constant because
+ * `requireEnv` throws, and throwing at import time would break the
+ * database-less demo path that the `MOCK_VANS` fallback exists to support.
+ */
+let storageBase: string | null = null;
+
 function imageUrl(storagePath: string): string {
-  const base = requireEnv("NEXT_PUBLIC_SUPABASE_URL").replace(/\/$/, "");
-  return `${base}/storage/v1/object/public/${BUCKET}/${storagePath}`;
+  storageBase ??= requireEnv("NEXT_PUBLIC_SUPABASE_URL").replace(/\/$/, "");
+  return `${storageBase}/storage/v1/object/public/${BUCKET}/${storagePath}`;
 }
 
 const SELECT = `
-  id, slug, name, body_type, wheelbase_label, roof, tonnage, transmission, fuel, seats,
-  price_weekly_from, price_monthly_from, min_hire_days,
+  id, slug, name, make, model, year, registration, body_type, wheelbase_label, roof, tonnage, transmission, fuel, seats,
+  price_weekly_from, price_monthly_from, deposit_amount, min_hire_days,
   length_mm, height_mm, width_mm, wheelbase_mm, load_volume_m3, payload_kg,
-  features, summary, description, seo_title, seo_description, status, sort_order, updated_at,
+  features, summary, description, seo_title, seo_description,
+  status, sort_order, updated_at,
   van_images ( storage_path, alt, is_primary, sort_order )
 `;
 
 function toPublicVan(r: PublicVanRow): PublicVan {
-  const rows: VanImageEmbedRow[] = (r.van_images ?? [])
-    .slice()
-    .sort(
-      (a, b) =>
-        Number(b.is_primary) - Number(a.is_primary) || (a.sort_order ?? 0) - (b.sort_order ?? 0),
-    );
-  const images: PublicVanImage[] = rows.map((i) => ({
-    url: imageUrl(i.storage_path),
-    alt: i.alt,
+  const images = ((r.van_images ?? []) as VanImageEmbedRow[]).map((img) => ({
+    url: imageUrl(img.storage_path),
+    alt: img.alt,
   }));
 
   return {
     id: r.id,
     slug: r.slug,
     name: r.name,
+    make: r.make,
+    model: r.model,
+    year: r.year,
+    registration: r.registration,
     bodyType: r.body_type,
     wheelbaseLabel: r.wheelbase_label,
     roof: r.roof,
@@ -93,6 +110,7 @@ function toPublicVan(r: PublicVanRow): PublicVan {
     seats: r.seats ?? null,
     priceWeeklyFrom: Number(r.price_weekly_from),
     priceMonthlyFrom: r.price_monthly_from == null ? null : Number(r.price_monthly_from),
+    depositAmount: r.deposit_amount == null ? null : Number(r.deposit_amount),
     minHireDays: Number(r.min_hire_days),
     lengthMm: r.length_mm ?? null,
     heightMm: r.height_mm ?? null,
@@ -114,19 +132,26 @@ function toPublicVan(r: PublicVanRow): PublicVan {
 }
 
 /**
- * The published fleet, in the operator's display order.
+ * Demo fleet, served when the database is unreachable or empty.
  *
- * Returns an empty array rather than throwing when the database is
- * unreachable: a fleet grid that fails to load must not take down the phone
- * number and enquiry form alongside it. Callers render an explicit empty
- * state.
+ * **Module scope, not function scope.** This array literal was declared inside
+ * `getPublicVans()`, so roughly 20 KB of object graph — ten vans, each with
+ * multi-paragraph prose — was allocated, and thrown away, on every single call
+ * to that function, including the calls that hit the cache and never looked at
+ * it. As a module constant it is built once per process.
+ *
+ * `readonly` because it is now shared: a caller that mutated a returned van
+ * would corrupt the fallback for every subsequent request on the instance.
  */
-export async function getPublicVans(): Promise<PublicVan[]> {
-  const MOCK_VANS: PublicVan[] = [
+const MOCK_VANS: readonly PublicVan[] = [
     {
       id: "mock-1",
       slug: "mercedes-sprinter-313-l2h2",
       name: "Mercedes-Benz Sprinter 313 CDI L2H2",
+      make: "Mercedes-Benz",
+      model: "Sprinter 313 CDI",
+      year: 2022,
+      registration: "XPDX-001",
       bodyType: "Panel Van",
       wheelbaseLabel: "MWB",
       roof: "high",
@@ -136,6 +161,7 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       seats: 3,
       priceWeeklyFrom: 490,
       priceMonthlyFrom: 1750,
+      depositAmount: 500,
       minHireDays: 28,
       lengthMm: 5932,
       heightMm: 2751,
@@ -160,6 +186,10 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       id: "mock-2",
       slug: "toyota-hiace-slwb",
       name: "Toyota HiAce Super LWB Panel Van",
+      make: "Toyota",
+      model: "HiAce",
+      year: 2023,
+      registration: "XPDX-002",
       bodyType: "Panel Van",
       wheelbaseLabel: "SLWB",
       roof: "standard",
@@ -167,9 +197,10 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       transmission: "Automatic",
       fuel: "Diesel",
       seats: 2,
-      priceWeeklyFrom: 395,
-      priceMonthlyFrom: 1450,
-      minHireDays: 28,
+      priceWeeklyFrom: 420,
+      priceMonthlyFrom: 1550,
+      depositAmount: 500,
+      minHireDays: 14,
       lengthMm: 5265,
       heightMm: 1990,
       widthMm: 1950,
@@ -191,18 +222,23 @@ export async function getPublicVans(): Promise<PublicVan[]> {
     },
     {
       id: "mock-3",
-      slug: "mercedes-sprinter-519-l3h3",
-      name: "Mercedes-Benz Sprinter 519 CDI L3H3",
+      slug: "mercedes-vito-111-cdi",
+      name: "Mercedes-Benz Vito 111 CDI LWB",
+      make: "Mercedes-Benz",
+      model: "Vito 111 CDI",
+      year: 2021,
+      registration: "XPDX-005",
       bodyType: "Panel Van",
-      wheelbaseLabel: "LWB High",
-      roof: "high",
-      tonnage: 5.0,
+      wheelbaseLabel: "LWB",
+      roof: "low",
+      tonnage: 2.8,
       transmission: "Automatic",
       fuel: "Diesel",
       seats: 3,
-      priceWeeklyFrom: 620,
-      priceMonthlyFrom: 2200,
-      minHireDays: 28,
+      priceWeeklyFrom: 380,
+      priceMonthlyFrom: 1400,
+      depositAmount: 500,
+      minHireDays: 14,
       lengthMm: 6945,
       heightMm: 2988,
       widthMm: 2020,
@@ -224,18 +260,23 @@ export async function getPublicVans(): Promise<PublicVan[]> {
     },
     {
       id: "mock-4",
-      slug: "ford-transit-custom-swb",
-      name: "Ford Transit Custom 340L SWB",
+      slug: "ford-transit-custom",
+      name: "Ford Transit Custom 340L",
+      make: "Ford",
+      model: "Transit Custom",
+      year: 2022,
+      registration: "XPDX-008",
       bodyType: "Panel Van",
-      wheelbaseLabel: "SWB",
+      wheelbaseLabel: "LWB",
       roof: "standard",
       tonnage: 3.4,
       transmission: "Automatic",
       fuel: "Diesel",
-      seats: 2,
-      priceWeeklyFrom: 360,
-      priceMonthlyFrom: 1300,
-      minHireDays: 28,
+      seats: 3,
+      priceWeeklyFrom: 430,
+      priceMonthlyFrom: 1550,
+      depositAmount: 500,
+      minHireDays: 14,
       lengthMm: 4973,
       heightMm: 1974,
       widthMm: 2034,
@@ -292,6 +333,10 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       id: "mock-6",
       slug: "toyota-hiace-lwb-high-roof",
       name: "Toyota HiAce LWB High Roof",
+      make: "Toyota",
+      model: "HiAce",
+      year: 2022,
+      registration: "XPDX-007",
       bodyType: "Panel Van",
       wheelbaseLabel: "LWB",
       roof: "high",
@@ -301,6 +346,7 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       seats: 2,
       priceWeeklyFrom: 420,
       priceMonthlyFrom: 1520,
+      depositAmount: 500,
       minHireDays: 28,
       lengthMm: 5380,
       heightMm: 2285,
@@ -323,8 +369,12 @@ export async function getPublicVans(): Promise<PublicVan[]> {
     },
     {
       id: "mock-7",
-      slug: "ford-transit-350-lwb",
-      name: "Ford Transit 350 LWB High Roof",
+      slug: "ldv-deliver-9-lwb",
+      name: "LDV Deliver 9 LWB High Roof",
+      make: "LDV",
+      model: "Deliver 9",
+      year: 2023,
+      registration: "XPDX-003",
       bodyType: "Panel Van",
       wheelbaseLabel: "LWB",
       roof: "high",
@@ -332,8 +382,9 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       transmission: "Automatic",
       fuel: "Diesel",
       seats: 3,
-      priceWeeklyFrom: 460,
-      priceMonthlyFrom: 1650,
+      priceWeeklyFrom: 450,
+      priceMonthlyFrom: 1600,
+      depositAmount: 500,
       minHireDays: 28,
       lengthMm: 6170,
       heightMm: 2752,
@@ -356,18 +407,23 @@ export async function getPublicVans(): Promise<PublicVan[]> {
     },
     {
       id: "mock-8",
-      slug: "toyota-hiace-mwb-commuter",
-      name: "Toyota HiAce Crew Van MWB",
-      bodyType: "Crew Van",
+      slug: "iveco-daily-35s14-pantech",
+      name: "Iveco Daily 35S14 Pantech (Tail Lift)",
+      make: "Iveco",
+      model: "Daily 35S14",
+      year: 2022,
+      registration: "XPDX-004",
+      bodyType: "Pantech",
       wheelbaseLabel: "MWB",
       roof: "standard",
-      tonnage: 2.5,
+      tonnage: 3.5,
       transmission: "Automatic",
       fuel: "Diesel",
-      seats: 5,
-      priceWeeklyFrom: 410,
-      priceMonthlyFrom: 1500,
-      minHireDays: 28,
+      seats: 3,
+      priceWeeklyFrom: 650,
+      priceMonthlyFrom: 2400,
+      depositAmount: 500,
+      minHireDays: 14,
       lengthMm: 5380,
       heightMm: 2200,
       widthMm: 1950,
@@ -422,18 +478,23 @@ export async function getPublicVans(): Promise<PublicVan[]> {
     },
     {
       id: "mock-10",
-      slug: "toyota-hiace-van-commuter-12-seat",
-      name: "Toyota HiAce Commuter 12-Seat",
-      bodyType: "People Mover",
-      wheelbaseLabel: "LWB",
+      slug: "toyota-hiace-commuter",
+      name: "Toyota HiAce Commuter (12-Seat Minibus)",
+      make: "Toyota",
+      model: "HiAce Commuter",
+      year: 2022,
+      registration: "XPDX-010",
+      bodyType: "Minibus",
+      wheelbaseLabel: "SLWB",
       roof: "high",
       tonnage: 3.5,
       transmission: "Automatic",
       fuel: "Diesel",
       seats: 12,
-      priceWeeklyFrom: 540,
-      priceMonthlyFrom: 1950,
-      minHireDays: 28,
+      priceWeeklyFrom: 600,
+      priceMonthlyFrom: 2200,
+      depositAmount: 500,
+      minHireDays: 7,
       lengthMm: 5380,
       heightMm: 2285,
       widthMm: 1950,
@@ -453,29 +514,53 @@ export async function getPublicVans(): Promise<PublicVan[]> {
       ],
       primaryImage: { url: "/vans/hiace-lwb.jpg", alt: "White Toyota HiAce Commuter 12-seat minibus — XPDX Rentals Sydney" },
     },
-  ];
+] as unknown as readonly PublicVan[];
 
-  try {
-    const supabase = createPublicClient();
-    const { data, error } = await supabase
-      .from("vans")
-      .select(SELECT)
-      .order("sort_order", { ascending: true })
-      .order("name", { ascending: true });
-    if (error || !data || data.length === 0) return MOCK_VANS;
-    return ((data ?? []) as PublicVanRow[]).map(toPublicVan);
-  } catch {
-    return MOCK_VANS;
-  }
-}
+/**
+ * The published fleet, in the operator's display order.
+ *
+ * Falls back to `MOCK_VANS` rather than throwing when the database is
+ * unreachable: a fleet grid that fails to load must not take down the phone
+ * number and enquiry form alongside it.
+ *
+ * Two layers of caching, deliberately:
+ *   • `cache()` — React's per-request memo. The homepage alone calls this from
+ *     the page body, and `/vans` calls it from both `generateMetadata` and the
+ *     component tree; without this each of those is a separate round-trip
+ *     inside one render.
+ *   • `withCache()` — Redis, shared across requests and instances.
+ *
+ * Invalidated by name from the admin van actions (see `VANS_CACHE_KEY`), so an
+ * operator's edit is live immediately instead of up to an hour later.
+ */
+export const VANS_CACHE_KEY = cacheKey("vans", "public-list");
 
-export async function getPublicVanBySlug(slug: string): Promise<PublicVan | null> {
-  // Build the same mock dataset for fallback
+export const getPublicVans = cache(async function getPublicVans(): Promise<PublicVan[]> {
+  const vans = await withCache(VANS_CACHE_KEY, 3600, async () => {
+    try {
+      const supabase = createPublicClient();
+      const { data, error } = await supabase
+        .from("vans")
+        .select(SELECT)
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true });
+      if (error || !data || data.length === 0) return MOCK_VANS;
+      return ((data ?? []) as PublicVanRow[]).map(toPublicVan);
+    } catch {
+      return MOCK_VANS;
+    }
+  });
+  return vans as PublicVan[];
+});
+
+export const getPublicVanBySlug = cache(async function getPublicVanBySlug(
+  slug: string,
+): Promise<PublicVan | null> {
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase.from("vans").select(SELECT).eq("slug", slug).maybeSingle();
     if (error || !data) {
-      // Fall back to mock data so detail pages work without a DB
+      // Fall back to the demo fleet so detail pages work without a database.
       const mocks = await getPublicVans();
       return mocks.find((v) => v.slug === slug) ?? null;
     }
@@ -484,10 +569,12 @@ export async function getPublicVanBySlug(slug: string): Promise<PublicVan | null
     const mocks = await getPublicVans();
     return mocks.find((v) => v.slug === slug) ?? null;
   }
-}
+});
 
 /** Slugs for `generateStaticParams` and the sitemap. Drafts excluded by RLS. */
-export async function getPublicVanSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
+export const getPublicVanSlugs = cache(async function getPublicVanSlugs(): Promise<
+  { slug: string; updatedAt: string }[]
+> {
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase.from("vans").select("slug, updated_at");
@@ -500,4 +587,4 @@ export async function getPublicVanSlugs(): Promise<{ slug: string; updatedAt: st
     const mocks = await getPublicVans();
     return mocks.map((v) => ({ slug: v.slug, updatedAt: v.updatedAt }));
   }
-}
+});

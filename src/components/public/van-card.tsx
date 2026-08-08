@@ -46,7 +46,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       id={`van-card-${van.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-card/50 backdrop-blur-md shadow-lg transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(201,171,129,0.15)] hover:border-[#C9AB81]/40 hover:-translate-y-1.5"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-card/50 backdrop-blur-md shadow-lg transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(201,171,129,0.15)] hover:border-[#EA580C]/40 hover:-translate-y-1.5"
     >
       <motion.div
         className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"

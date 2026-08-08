@@ -55,6 +55,10 @@ export type Van = {
   id: string;
   slug: string;
   name: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  registration: string | null;
   bodyType: string;
   wheelbaseLabel: string;
   roof: RoofHeight;
@@ -65,6 +69,7 @@ export type Van = {
 
   priceWeeklyFrom: number;
   priceMonthlyFrom: number | null;
+  depositAmount: number | null;
   minHireDays: number;
   priceVerified: boolean;
 

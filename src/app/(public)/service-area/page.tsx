@@ -1,21 +1,20 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { getSiteContact } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
+import { BackgroundVideo } from "@/components/public/background-video";
 import { JsonLd } from "@/components/json-ld";
+import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
 import { breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { corePage } from "@/lib/seo/entities/core-pages";
 import { HIRE_TERMS } from "@/lib/business";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  path: "/service-area",
-  title: "Service area — Sydney and NSW",
-  description:
-    "XPDX Rentals hires vans from Condell Park in south-west Sydney. Our vans are approved for use across New South Wales, with interstate travel by prior arrangement.",
-});
+export const metadata: Metadata = pageMetadata(corePage("/service-area"));
 
 /**
  * ⚠ NEWLY AUTHORED — needs client approval.
@@ -74,45 +73,102 @@ export default async function ServiceAreaPage() {
         ])}
       />
 
-      <section className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          <h1 className="max-w-3xl font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Where we hire from
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-body">
-            Vans are collected from and returned to our yard at {contact.address}. Once you have
-            the keys, they are approved for use across {HIRE_TERMS.stateOfUse}.
-          </p>
+      <section className="relative overflow-hidden border-b border-border bg-muted/30">
+        <div className="absolute inset-0 pointer-events-none">
+          {/*
+            Same fix as the about-us hero: 3 MB of video was being fetched to
+            render at 10% opacity under a full-width gradient.
+          */}
+          <div className="absolute inset-0 opacity-10">
+            <BackgroundVideo
+              src="/videos/hero-van.mp4"
+              poster="/business-hero-poster.jpg"
+              className="size-full"
+              priority={false}
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-transparent" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Your Local Sydney Van Hire Partner
+              </h1>
+              <p className="mt-6 text-lg text-body leading-relaxed">
+                Conveniently located at our Condell Park depot, our premium fleet of commercial vans is ready to hit the road. Whether you&apos;re navigating local streets or taking your business across {HIRE_TERMS.stateOfUse}, XPDX Rentals delivers the ultimate combination of flexibility, reliability, and unparalleled value. Vans are collected from and returned to our secure yard at {contact.address}.
+              </p>
+            </div>
+            <div className="relative aspect-video overflow-hidden rounded-2xl shadow-xl hidden lg:block border border-border">
+              <Image 
+                src="/images/service-hero-branded.webp" 
+                alt="Premium commercial van ready to hit the road in Sydney" 
+                fill 
+                className="object-cover" 
+                sizes="(min-width: 1024px) 50vw, 100vw"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <h2 className="flex items-center gap-2 font-heading text-xl font-bold text-foreground">
-            <MapPin className="size-5 text-link" aria-hidden="true" />
-            Our yard
-          </h2>
-          <address className="mt-2 not-italic text-body">{contact.address}</address>
-          <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex min-h-11 items-center rounded-lg border border-border px-4 font-semibold text-foreground hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          >
-            Get directions
-          </a>
+        <div className="overflow-hidden rounded-3xl border border-border bg-surface mb-12 shadow-md">
+          <div className="grid md:grid-cols-2 gap-0">
+            <div className="p-8 sm:p-12 flex flex-col justify-center">
+              <h2 className="flex items-center gap-3 font-heading text-3xl font-bold text-foreground">
+                <MapPin className="size-8 text-primary shrink-0" aria-hidden="true" />
+                Our Condell Park Depot
+              </h2>
+              <address className="mt-6 not-italic text-lg text-foreground font-semibold">{contact.address}</address>
+              <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
+                Situated in the heart of south-west Sydney, our depot offers rapid, hassle-free access to our entire fleet. Our standard operating zone guarantees exceptional service within a 20-mile radius, perfectly catering to both local residents and dynamic businesses.
+              </p>
+              <div className="mt-8">
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-12 items-center rounded-full bg-primary px-8 font-bold text-primary-foreground transition-all hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary shadow-sm"
+                >
+                  Get directions
+                </a>
+              </div>
+            </div>
+            <div className="relative min-h-[300px] md:min-h-full w-full">
+              <Image 
+                src="/images/xpdx-real-yard-pro.webp" 
+                alt="XPDX Rentals yard at Condell Park" 
+                fill 
+                className="object-cover" 
+                sizes="(min-width: 768px) 50vw, 100vw"
+              />
+            </div>
+          </div>
         </div>
 
+        <section aria-labelledby="service-map-heading" className="mt-12 mb-16">
+          <div className="text-center mb-8">
+            <h2 id="service-map-heading" className="font-heading text-2xl font-bold tracking-tight text-foreground">
+              Our Primary Service Zone
+            </h2>
+            <p className="mt-2 text-body max-w-2xl mx-auto">
+              While our vans are fully approved for use across all of New South Wales, the map below highlights our primary 20-mile service radius—where we support hundreds of local businesses and residents every single week.
+            </p>
+          </div>
+          {/* Condell Park coordinates: -33.916, 151.011 */}
+          <DynamicServiceMap center={[-33.916, 151.011]} address={contact.address} />
+        </section>
+
         <section aria-labelledby="nearby" className="mt-12">
-          <h2
+            <h2
             id="nearby"
             className="font-heading text-2xl font-bold tracking-tight text-foreground"
           >
-            Easy to reach from
+            Strategically Located for Your Convenience
           </h2>
           <p className="mt-2 max-w-2xl text-body">
-            We are a short drive from most of south-west and inner Sydney. These are the areas
-            our customers most often travel from.
+            Getting to our depot couldn&apos;t be easier. We are just a short drive from major transport links across south-west and inner Sydney, making us the top choice for customers across these key regions:
           </p>
 
           <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
@@ -136,13 +192,10 @@ export default async function ServiceAreaPage() {
             id="interstate"
             className="font-heading text-2xl font-bold tracking-tight text-foreground"
           >
-            Travelling outside NSW
+            Need to Go Interstate?
           </h2>
-          <p className="mt-3 text-body">
-            Our vehicles are primarily approved for use within New South Wales. If you require
-            interstate travel, please contact our team before booking to discuss your
-            requirements — it is usually fine, but it needs arranging in advance so your cover is
-            not affected.
+          <p className="mt-3 text-body text-lg">
+            While our vans are primed and approved for NSW roads, we understand that your journey might take you further. Interstate travel is absolutely possible—simply speak with our expert team prior to booking so we can arrange the necessary comprehensive coverage and ensure your trip goes off without a hitch.
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
             See{" "}

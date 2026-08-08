@@ -45,11 +45,24 @@ export const enquirySchema = z.object({
 
   consent: z.literal(true, { message: "Please agree to be contacted about this enquiry" }),
 
-  // ── Anti-spam (CLAUDE.md §9: honeypot plus a timing check, no CAPTCHA) ──
+  // ── Anti-spam ───────────────────────────────────────────────────────────
   /** Honeypot. Must stay empty; real users never see this field. */
   website: z.string().max(0).optional().or(z.literal("")),
   /** Epoch ms when the form rendered, for the time-to-submit check. */
   formRenderedAt: z.coerce.number().optional(),
+  /**
+   * Cloudflare Turnstile token.
+   *
+   * The form has always posted this, but it was absent from this schema — and
+   * because Zod strips unknown keys, it was silently dropped before anything
+   * could check it. Declaring it here is what lets
+   * `/api/v1/enquiries` verify it server-side (see lib/security/turnstile.ts).
+   *
+   * Optional, and a bad value never fails validation: an unverified token
+   * quarantines the lead alongside the other spam signals rather than rejecting
+   * it, so a broken challenge can never cost a real customer.
+   */
+  token: z.string().max(2048).optional().or(z.literal("")),
 
   /** Attribution, filled in by the client. */
   meta: z
