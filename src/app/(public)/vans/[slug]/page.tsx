@@ -16,10 +16,10 @@ import { telHref, waHref } from "@/lib/lead";
 import { HIRE_TERMS, INCLUSIONS } from "@/lib/business";
 
 export const revalidate = 300;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const slugs = await getPublicVanSlugs();
-  return slugs.map((s) => ({ slug: s.slug }));
+  return []; // Skip SSG at build time to dramatically speed up Vercel deployments
 }
 
 function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {

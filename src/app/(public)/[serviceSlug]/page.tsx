@@ -55,16 +55,12 @@ import { formatWeekly, ROOF_LABELS } from "@/lib/van";
  */
 
 export const revalidate = 3600;
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 type Props = { params: Promise<{ serviceSlug: string }> };
 
 export async function generateStaticParams() {
-  const registry = await getSeoRegistry();
-  return registry
-    .filter((p) => p.kind === "service" && p.decision.generate)
-    // The registry stores the public path; the route param is its one segment.
-    .map((p) => ({ serviceSlug: p.path.replace(/^\//, "") }));
+  return []; // Skip SSG at build time to dramatically speed up Vercel deployments
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

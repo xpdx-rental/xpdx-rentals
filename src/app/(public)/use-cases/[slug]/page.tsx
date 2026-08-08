@@ -43,13 +43,12 @@ import { HIRE_TERMS } from "@/lib/business";
  */
 
 export const revalidate = 3600;
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  const slugs = await generatedSlugs("use-case");
-  return slugs.map((slug) => ({ slug }));
+  return []; // Skip SSG at build time to dramatically speed up Vercel deployments
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

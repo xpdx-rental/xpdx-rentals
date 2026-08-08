@@ -62,13 +62,12 @@ import { formatWeekly } from "@/lib/van";
 
 export const revalidate = 3600;
 /** A suburb the gate rejected is a 404, not a thin page. */
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 type Props = { params: Promise<{ suburb: string }> };
 
 export async function generateStaticParams() {
-  const slugs = await generatedSlugs("location");
-  return slugs.map((suburb) => ({ suburb }));
+  return []; // Skip SSG at build time to dramatically speed up Vercel deployments
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
