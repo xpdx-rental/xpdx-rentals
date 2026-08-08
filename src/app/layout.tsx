@@ -5,6 +5,7 @@ import "./globals.css";
 import { siteBaseUrl } from "@/lib/seo/site";
 import { LenisProvider } from "@/components/animations/lenis-provider";
 import { NoiseOverlay } from "@/components/animations/noise-overlay";
+import { AnalyticsTracker } from "@/components/public/analytics-tracker";
 
 // REBRAND.md §5 type stack. Inter and Plus Jakarta Sans — the previous faces —
 // are gone from next/font, the CSS and the preconnects.
@@ -137,6 +138,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground font-sans tracking-tight">
+        <AnalyticsTracker />
         <NoiseOverlay />
         <LenisProvider>
         {/*

@@ -94,7 +94,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
         >
           <VanTransitionLink
             href={`/vans/${van.slug}`}
-            className="hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary after:absolute after:inset-0 after:z-10"
           >
             {van.name}
           </VanTransitionLink>
@@ -128,7 +128,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
           </p>
           <VanTransitionLink
             href={`/vans/${van.slug}`}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,171,129,0.3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="relative z-20 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,171,129,0.3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             View van
             <ArrowRight className="size-4" aria-hidden="true" />

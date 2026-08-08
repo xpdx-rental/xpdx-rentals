@@ -3,6 +3,7 @@ import { getPublicVans } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
 import { LoadMatcherLazy } from "@/components/fleet/fleet-visuals";
 import { Star } from "lucide-react";
+import { Suspense } from "react";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { JsonLd } from "@/components/json-ld";
 import { itemListSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
@@ -108,7 +109,9 @@ export default async function VansPage() {
             Our fleet is not available to browse right now. Please call us.
           </p>
         ) : (
-          <FleetSearchFilter vans={vans} />
+          <Suspense fallback={<div className="py-16 text-center text-white/50">Loading fleet...</div>}>
+            <FleetSearchFilter vans={vans} />
+          </Suspense>
         )}
       </section>
 

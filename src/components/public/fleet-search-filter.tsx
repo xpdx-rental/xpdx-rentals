@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Check,
 } from "lucide-react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { VanCard } from "@/components/public/van-card";
 import type { PublicVan } from "@/lib/data/public-vans";
@@ -149,13 +150,13 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 ${
+      className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
         active
           ? "bg-primary border-primary text-primary-foreground shadow-[0_0_14px_rgba(201,171,129,0.35)]"
           : "bg-black/20 border-white/5 text-white/60 hover:border-white/10 hover:text-white hover:bg-black/40 shadow-inner"
       }`}
     >
-      {active && <Check className="size-3 shrink-0" aria-hidden="true" />}
+      {active && <Check className="size-4 shrink-0" aria-hidden="true" />}
       {label}
     </button>
   );
@@ -203,7 +204,7 @@ function SortDropdown({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="inline-flex items-center gap-2 rounded-xl border border-white/5 bg-black/20 px-4 py-2.5 text-sm font-semibold text-white/80 shadow-inner transition-colors hover:border-white/10 hover:text-white"
+        className="inline-flex items-center gap-2 rounded-xl border border-white/5 bg-black/20 px-4 py-3 text-sm font-semibold text-white/80 shadow-inner transition-colors hover:border-white/10 hover:text-white"
       >
         {label}
         <ChevronDown
@@ -230,7 +231,7 @@ function SortDropdown({
                     onChange(o.value);
                     setOpen(false);
                   }}
-                  className={`flex items-center gap-3 w-full px-4 py-3 text-sm text-left transition-colors hover:bg-white/[0.07] ${
+                  className={`flex items-center gap-3 w-full px-5 py-4 sm:px-4 sm:py-3 text-sm text-left transition-colors hover:bg-white/[0.07] ${
                     value === o.value
                       ? "text-[#EA580C] font-semibold bg-[#EA580C]/[0.06]"
                       : "text-white/70"
@@ -279,11 +280,29 @@ function ActivePill({
 // ─── Main FleetSearchFilter ───────────────────────────────────────────────────
 
 export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const [filters, setFilters] = useState<Filters>(() => ({
+    ...DEFAULT_FILTERS,
+    q: searchParams.get("q") ?? "",
+  }));
   const [sort, setSort] = useState<SortKey>("recommended");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [, startTransition] = useTransition();
   const searchId = useId();
+
+  // Sync state changes to URL for the 'q' parameter
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (filters.q) {
+      params.set("q", filters.q);
+    } else {
+      params.delete("q");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [filters.q, pathname, router, searchParams]);
 
   // Derived option lists computed once from the dataset
   const bodyTypes = useMemo(
@@ -342,7 +361,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               placeholder="Search by model, body type, feature…"
               autoComplete="off"
               spellCheck={false}
-              className="w-full rounded-xl border border-white/5 bg-black/20 shadow-inner pl-11 pr-10 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors"
+              className="w-full rounded-xl border border-white/5 bg-black/20 shadow-inner pl-11 pr-10 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors"
             />
             {filters.q && (
               <button
@@ -363,7 +382,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               onClick={() => setFiltersOpen((o) => !o)}
               aria-expanded={filtersOpen}
               aria-controls="filter-panel"
-              className={`relative inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all backdrop-blur-sm ${
+              className={`relative inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all backdrop-blur-sm ${
                   filtersOpen || activeCount > 0
                     ? "border-primary/50 bg-primary/10 text-primary shadow-[0_0_15px_rgba(201,171,129,0.2)]"
                     : "border-white/5 bg-black/20 shadow-inner text-white/70 hover:border-white/10 hover:text-white hover:bg-black/40"
@@ -395,7 +414,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
                   type="button"
                   onClick={clearAll}
                   aria-label="Clear all filters"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2.5 text-sm text-white/50 hover:text-white hover:border-white/25 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-3 text-sm text-white/50 hover:text-white hover:border-white/25 transition-colors"
                 >
                   <X className="size-3.5" />
                   <span className="hidden sm:inline">Clear</span>
