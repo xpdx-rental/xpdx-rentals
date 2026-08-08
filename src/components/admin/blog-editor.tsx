@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentProps } from "react";
+import { useState, useRef, type ComponentProps } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { Loader2, ImagePlus } from "lucide-react";
@@ -11,7 +11,42 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
   const [slug, setSlug] = useState(initialSlug);
   const [content, setContent] = useState(initialContent);
   const [saving, setSaving] = useState(false);
-  
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const supabase = createClient();
+      const filename = `${Date.now()}-${file.name}`;
+      
+      const { error } = await supabase.storage
+        .from("media")
+        .upload(`blog/covers/${filename}`, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+        
+      if (error) throw error;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from("media")
+        .getPublicUrl(`blog/covers/${filename}`);
+        
+      setCoverUrl(publicUrl);
+    } catch (error) {
+      console.error("Upload failed", error);
+      alert("Failed to upload cover image.");
+    } finally {
+      setUploadingCover(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const handleSave = async (status: 'draft' | 'published') => {
     setSaving(true);
     // Simulate save
@@ -126,10 +161,39 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
 
             <div className="space-y-2 pt-2">
               <label className="text-sm font-medium text-muted-foreground">Cover Image</label>
-              <button className="flex h-20 w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-background/50 text-muted-foreground hover:bg-background hover:text-foreground transition-colors">
-                <ImagePlus className="size-5" />
-                <span className="text-xs font-medium">Upload Cover</span>
-              </button>
+              
+              {coverUrl ? (
+                <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coverUrl} alt="Cover preview" className="object-cover w-full h-full" />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-white text-xs font-medium bg-black/50 px-3 py-1.5 rounded hover:bg-black/70 transition-colors"
+                      disabled={uploadingCover}
+                    >
+                      {uploadingCover ? "Uploading..." : "Change Image"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingCover}
+                  className="flex h-20 w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-background/50 text-muted-foreground hover:bg-background hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  {uploadingCover ? <Loader2 className="size-5 animate-spin" /> : <ImagePlus className="size-5" />}
+                  <span className="text-xs font-medium">{uploadingCover ? "Uploading..." : "Upload Cover"}</span>
+                </button>
+              )}
+              
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleCoverUpload} 
+                accept="image/*" 
+                className="hidden" 
+              />
             </div>
 
             <div className="pt-4 flex flex-col gap-3">

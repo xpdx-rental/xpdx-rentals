@@ -119,22 +119,11 @@ export async function assignAdminRole(
   const supabase = createAdminClient();
 
   // Look up the user
-  let user = await searchUserByEmail(email);
+  const user = await searchUserByEmail(email);
   if (!user) {
-    // User doesn't exist, invite them
-    const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email);
-    if (inviteError) {
-      return { status: "error", message: `Failed to invite user: ${inviteError.message}` };
-    }
-    
-    // Ensure profile exists for the newly invited user
-    const { deriveProfileFromUser } = await import("@/lib/auth/profile");
-    await supabase.from("profiles").upsert(deriveProfileFromUser(inviteData.user), { onConflict: "id" });
-    
-    user = {
-      id: inviteData.user.id,
-      email: inviteData.user.email!,
-      fullName: null,
+    return { 
+      status: "error", 
+      message: "User not found. The user must sign up or sign in to the platform before they can be assigned an admin role." 
     };
   }
 

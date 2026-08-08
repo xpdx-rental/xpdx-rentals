@@ -25,7 +25,6 @@ import type { PublicVan } from "@/lib/data/public-vans";
 import { formatWeekly } from "@/lib/van";
 import { telHref, waHref } from "@/lib/lead";
 import { useRef, useState } from "react";
-import { Van360Viewer, preloadVanScene } from "./van-360-viewer";
 import { BackgroundVideo } from "@/components/public/background-video";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import type { SiteContact } from "@/lib/data/settings";
@@ -150,7 +149,6 @@ export function ArtisticHero({
   vans: PublicVan[];
 }) {
   const containerRef = useRef<HTMLElement>(null);
-  const [is360Open, setIs360Open] = useState(false);
   const [vehicle, setVehicle] = useState("all");
   const router = useRouter();
 
@@ -339,27 +337,7 @@ export function ArtisticHero({
               </span>
             </MagneticButton>
 
-            {/*
-              360 view. The three.js scene behind this is code-split (see
-              van-360-viewer.tsx); `preloadVanScene` warms that chunk on hover
-              or keyboard focus, so anyone who genuinely intends to open it
-              usually finds it already downloaded — without charging the other
-              ~99% of visitors for a 3D runtime they never ask for.
-            */}
-            <span onPointerEnter={preloadVanScene} onFocusCapture={preloadVanScene}>
-            <MagneticButton
-              onClick={(e) => {
-                e.preventDefault();
-                setIs360Open(true);
-              }}
-              className="group inline-flex h-14 items-center gap-3 rounded-full border border-white/20 bg-black/40 px-7 font-bold text-white text-[15px] tracking-tight backdrop-blur-md transition-all hover:border-white/40 hover:bg-white/10 cursor-pointer"
-            >
-              <div className="flex items-center justify-center size-6 rounded-full bg-white/10 text-[10px] font-black group-hover:bg-primary transition-colors text-white group-hover:text-primary-foreground">
-                360°
-              </div>
-              View Interactive
-            </MagneticButton>
-            </span>
+
 
             {contact?.phone && (
               <MagneticButton
@@ -452,8 +430,7 @@ export function ArtisticHero({
           </motion.div>
       </div>
 
-      <Van360Viewer isOpen={is360Open} onClose={() => setIs360Open(false)} />
-      
+
       {/* Quick Search Bar */}
       <motion.div
         initial={{ opacity: 0, x: "-50%", y: "150%" }}

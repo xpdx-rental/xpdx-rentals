@@ -14,11 +14,11 @@ export function BrandLogo({ className, imageClassName, priority = false }: Brand
   return (
     <div className={cn("relative shrink-0 flex items-center", className)}>
       <Image
-        src="/images/xpdx-logo.png"
+        src="/images/xpdx-logo-transparent.png"
         alt="XPDX Rentals"
-        width={1024}
-        height={682}
-        className={cn("h-10 w-auto", imageClassName)}
+        width={1000}
+        height={300}
+        className={cn("h-16 w-auto object-contain", imageClassName)}
         priority={priority}
       />
     </div>

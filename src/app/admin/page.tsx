@@ -47,47 +47,10 @@ export default async function AdminIndexPage() {
           <p className="mt-1 text-xs text-muted-foreground">{activeVanCount ?? 0} active</p>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-muted-foreground">Website Views</h3>
-            <Eye className="size-5 text-primary" />
-          </div>
-          <p className="mt-2 text-3xl font-bold text-foreground">1,204</p>
-          <p className="mt-1 text-xs text-emerald-500">+5.4% from last week</p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-muted-foreground">Conversion Rate</h3>
-            <MousePointerClick className="size-5 text-primary" />
-          </div>
-          <p className="mt-2 text-3xl font-bold text-foreground">3.2%</p>
-          <p className="mt-1 text-xs text-muted-foreground">Based on total views</p>
-        </div>
       </div>
 
-      {/* Charts / Data visualization (Simulated for now) */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-semibold text-foreground">Traffic Overview</h3>
-            <select className="text-xs border border-border rounded bg-background px-2 py-1">
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
-            </select>
-          </div>
-          <div className="h-[250px] flex items-end justify-between gap-2 px-2 pb-2">
-            {/* Simulated bar chart */}
-            {[40, 70, 45, 90, 65, 85, 110].map((height, i) => (
-              <div key={i} className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/40 transition-colors relative group" style={{ height: `${(height / 110) * 100}%` }}>
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-800 text-white text-xs py-1 px-2 rounded">{height}</div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-2 px-2 text-xs text-muted-foreground border-t border-border pt-2">
-            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-          </div>
-        </div>
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
         <div className="col-span-1 rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
