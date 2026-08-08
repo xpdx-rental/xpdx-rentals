@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     const userAgent = request.headers.get("user-agent") || "unknown";
     // IP hash to anonymously uniquely identify visitors without storing raw IP (GDPR friendly)
-    const ip = request.headers.get("x-forwarded-for") || request.ip || "127.0.0.1";
+    const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
     const ipHash = crypto.createHash("sha256").update(ip).digest("hex").slice(0, 16);
 
     const supabase = createAdminClient();
