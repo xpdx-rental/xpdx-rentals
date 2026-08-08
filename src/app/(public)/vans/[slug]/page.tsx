@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { vanTransitionName } from "@/components/fleet/van-transition-link";
 import { Phone, MessageCircle, Check } from "lucide-react";
 import { getPublicVanBySlug, getPublicVanSlugs } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
@@ -20,6 +19,10 @@ export const revalidate = 300;
 export async function generateStaticParams() {
   const slugs = await getPublicVanSlugs();
   return slugs.map((s) => ({ slug: s.slug }));
+}
+
+function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {
+  return { viewTransitionName: `van-${kind}-${slug}` } as React.CSSProperties;
 }
 
 export async function generateMetadata({
@@ -93,7 +96,7 @@ export default async function VanDetailPage({ params }: { params: Promise<{ slug
               must not change it.
             */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted">
-              <span className="block size-full" style={vanTransitionName("photo", van.slug)}>
+              <span className="relative block size-full" style={vanTransitionName("photo", van.slug)}>
                 <VanPhoto
                   src={van.primaryImage?.url}
                   alt={van.primaryImage?.alt}

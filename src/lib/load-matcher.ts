@@ -39,10 +39,9 @@ export type LoadPreset = {
 export const LOAD_PRESETS: LoadPreset[] = [
   { id: "courier", label: "Courier round", hint: "Parcels and satchels", demand: 0.1 },
   { id: "trade", label: "Tools and trade gear", hint: "Toolboxes, ladder, materials", demand: 0.3 },
-  { id: "studio", label: "Studio move", hint: "Bed, sofa, boxes", demand: 0.5 },
-  { id: "two-bed", label: "Two-bedroom unit", hint: "Full household, one trip", demand: 0.72 },
-  { id: "pallet", label: "Pallet freight", hint: "Standard pallets, upright", demand: 0.85 },
-  { id: "house", label: "Whole house", hint: "Large household move", demand: 1 },
+  { id: "event", label: "Event & exhibition", hint: "AV gear, staging, displays", demand: 0.5 },
+  { id: "pallet", label: "Pallet freight", hint: "Standard pallets, upright", demand: 0.72 },
+  { id: "bulky", label: "Bulky goods", hint: "Large commercial deliveries", demand: 1 },
 ];
 
 export type Verdict = "recommended" | "tight" | "too-small";

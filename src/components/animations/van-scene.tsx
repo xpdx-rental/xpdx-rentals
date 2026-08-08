@@ -29,16 +29,16 @@ export function VanScene() {
     <div className="w-full h-[300px] lg:h-[450px] relative cursor-move z-10">
       <Canvas shadows dpr={[1, 2]} camera={{ position: [4, 2, 6], fov: 45 }}>
         <Suspense fallback={null}>
-          <Environment preset="city" />
+          <ambientLight intensity={1.5} />
+          <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
           <PresentationControls
             global
-
             snap={true}
             rotation={[0.1, 0.5, 0]}
             polar={[-Math.PI / 3, Math.PI / 3]}
             azimuth={[-Math.PI / 1.4, Math.PI / 2]}
           >
-            <Stage environment="city" intensity={0.5} castShadow={false}>
+            <Stage environment={null} intensity={0.5} castShadow={false}>
               <VanModel />
             </Stage>
           </PresentationControls>

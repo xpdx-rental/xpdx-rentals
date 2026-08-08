@@ -1,14 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Phone, ArrowRight, Check } from "lucide-react";
+import {
+  Phone,
+  ArrowRight,
+  Infinity as InfinityIcon,
+  Shield,
+  Wrench,
+  Calendar,
+  Zap,
+  Users,
+  Tag,
+  Headphones,
+  Cog,
+  Quote,
+  type LucideIcon,
+} from "lucide-react";
 import { getPublicVans } from "@/lib/data/public-vans";
 import { getSiteContact, getOpeningHours } from "@/lib/data/settings";
 import { getApprovedTestimonials } from "@/lib/data/content";
+import Image from "next/image";
 import { VanCard } from "@/components/public/van-card";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { FaqSummaryList } from "@/components/public/faq-list";
-import { VanScene } from "@/components/animations/van-scene";
 import { FadeIn } from "@/components/animations/fade-in";
+import { SplitTextReveal } from "@/components/animations/split-text-reveal";
+import { ArtisticHero } from "@/components/public/artistic-hero";
+import { SizeGuideVideo } from "@/components/public/size-guide-video";
 import { JsonLd } from "@/components/json-ld";
 import { autoRentalSchema, websiteSchema, faqPageSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -17,6 +34,19 @@ import { ADVANTAGES } from "@/lib/content/about";
 import { HIRE_TERMS, BRAND } from "@/lib/business";
 import { formatWeekly, formatMm } from "@/lib/van";
 import { telHref } from "@/lib/lead";
+
+const ADVANTAGE_ICONS: Record<string, LucideIcon> = {
+  infinity: InfinityIcon,
+  shield: Shield,
+  phone: Phone,
+  wrench: Wrench,
+  calendar: Calendar,
+  zap: Zap,
+  users: Users,
+  tag: Tag,
+  headset: Headphones,
+  cog: Cog,
+};
 
 export const revalidate = 300;
 
@@ -59,65 +89,18 @@ export default async function HomePage() {
         with no fade and no stagger. MOTION.md §2.3 makes this a hard rule and
         Phase 4b must not animate it.
       */}
-      <section className="border-b border-border bg-muted/30 relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
-          <div className="relative z-20">
-            <p className="font-mono text-sm font-medium uppercase tracking-widest text-link">
-              {BRAND.tagline}
-            </p>
-            <h1 className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Long-term van hire for Sydney trades and couriers
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg text-body">
-              Automatic diesel cargo vans from our yard at Condell Park. Unlimited kilometres,
-              comprehensive insurance and 24/7 roadside assistance included in every hire.
-              {HIRE_TERMS.minHireDays} day minimum.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/vans"
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground shadow-[0_0_20px_rgba(240,90,34,0.3)] transition-all duration-300 hover:shadow-[0_0_30px_rgba(240,90,34,0.6)] hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                See the fleet
-                <ArrowRight className="size-5" aria-hidden="true" />
-              </Link>
-              {contact.phone ? (
-                <a
-                  href={telHref(contact.phone)}
-                  className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border px-6 font-bold text-foreground hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  <Phone className="size-5" aria-hidden="true" />
-                  {contact.phone}
-                </a>
-              ) : null}
-            </div>
-
-            {cheapest !== null && Number.isFinite(cheapest) ? (
-              <p className="mt-6 font-mono text-sm text-muted-foreground">
-                From {formatWeekly(cheapest as number)} per week · Unlimited km · Insurance included
-              </p>
-            ) : null}
-          </div>
-          <div className="mt-12 lg:mt-0 relative z-10 -mx-4 sm:mx-0">
-            <FadeIn delay={0.2}>
-              <VanScene />
-            </FadeIn>
-          </div>
-        </div>
-      </section>
-
+      <ArtisticHero contact={contact} cheapest={cheapest} vans={vans} />
       {/* Fleet */}
-      <section aria-labelledby="fleet" className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20 relative z-10">
+      <section aria-labelledby="fleet" className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32 relative z-10">
         <FadeIn>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2
-                id="fleet"
-                className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-              >
-              Our vans
-            </h2>
+              <h2 id="fleet" className="sr-only">Our vans</h2>
+              <SplitTextReveal
+                text="Our vans"
+                as="div"
+                className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
+              />
             <p className="mt-2 text-body">
               Six cargo vans, from a HiAce for courier rounds to a long-wheelbase high-roof
               Sprinter.
@@ -159,29 +142,53 @@ export default async function HomePage() {
                 >
                 Which size do I need?
               </h2>
-              <div className="mt-5 overflow-x-auto rounded-xl border border-border">
+              <p className="mt-2 max-w-xl text-body">
+                Every van is measured the same way you&apos;d measure a job — length, height, and what it
+                costs to have it for the week.
+              </p>
+              <div className="relative mt-5 aspect-video w-full overflow-hidden rounded-xl border border-border bg-muted">
+                <SizeGuideVideo />
+              </div>
+
+              <div className="mt-6 overflow-x-auto rounded-xl border border-border">
                 <table className="w-full min-w-[32rem] text-left text-sm">
                   <caption className="sr-only">Van lengths, heights and weekly rates</caption>
                   <thead className="border-b border-border bg-muted/50 font-mono text-xs uppercase tracking-wide text-muted-foreground">
                     <tr>
-                      <th scope="col" className="p-3">Van</th>
-                      <th scope="col" className="p-3">Length</th>
-                      <th scope="col" className="p-3">Height</th>
-                      <th scope="col" className="p-3">From</th>
+                      <th scope="col" className="p-3.5 sm:p-4">Van</th>
+                      <th scope="col" className="p-3.5 sm:p-4">Length</th>
+                      <th scope="col" className="p-3.5 sm:p-4">Height</th>
+                      <th scope="col" className="p-3.5 text-right sm:p-4">From</th>
+                      <th scope="col" className="p-3.5 sr-only sm:p-4">View</th>
                     </tr>
                   </thead>
                   <tbody className="font-mono">
                     {vans.map((v) => (
-                      <tr key={v.id} className="border-b border-border last:border-0">
-                        <th scope="row" className="p-3 font-sans font-medium">
-                          <Link href={`/vans/${v.slug}`} className="hover:text-link">
+                      <tr
+                        key={v.id}
+                        className="group border-b border-border transition-colors last:border-0 hover:bg-muted/40"
+                      >
+                        <th scope="row" className="p-3.5 font-sans font-medium sm:p-4">
+                          <Link
+                            href={`/vans/${v.slug}`}
+                            className="hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                          >
                             {v.name}
                           </Link>
                         </th>
-                        <td className="p-3 tabular-nums text-body">{formatMm(v.lengthMm)}</td>
-                        <td className="p-3 tabular-nums text-body">{formatMm(v.heightMm)}</td>
-                        <td className="p-3 tabular-nums text-foreground">
+                        <td className="p-3.5 tabular-nums text-body sm:p-4">{formatMm(v.lengthMm)}</td>
+                        <td className="p-3.5 tabular-nums text-body sm:p-4">{formatMm(v.heightMm)}</td>
+                        <td className="p-3.5 text-right tabular-nums font-semibold text-foreground sm:p-4">
                           {formatWeekly(v.priceWeeklyFrom)}/wk
+                        </td>
+                        <td className="p-3.5 text-right sm:p-4">
+                          <Link
+                            href={`/vans/${v.slug}`}
+                            aria-label={`View ${v.name}`}
+                            className="inline-flex items-center gap-1 font-sans text-xs font-semibold text-link opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
+                          >
+                            View <ArrowRight className="size-3" aria-hidden="true" />
+                          </Link>
                         </td>
                       </tr>
                     ))}
@@ -195,45 +202,72 @@ export default async function HomePage() {
         </FadeIn>
       </section>
 
-      {/* Why us — the ten stated advantages, verbatim and unabridged. */}
-      <section aria-labelledby="why-us" className="border-y border-white/5 bg-muted/10">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <FadeIn>
-            <h2
-              id="why-us"
-              className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-            >
-              Why hire with us
-            </h2>
-          </FadeIn>
-          <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-            {ADVANTAGES.map((a, i) => (
-              <FadeIn key={a.label} delay={i * 0.05} direction="up">
-                <div className="flex items-start gap-3 text-body">
-                  <Check className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                  <span className="font-medium text-foreground">{a.label}</span>
-                </div>
-              </FadeIn>
-            ))}
+      {/* Why us — the ten stated advantages, verbatim and unabridged. Layout
+          only: sticky intro beside a card grid, breaking from the pure-
+          centered rhythm of the sections around it. */}
+      {/* Why us */}
+      <section aria-labelledby="why-us" className="relative overflow-hidden border-y border-border bg-muted/10">
+        <div aria-hidden="true" className="ambient-glow -left-40 top-0 size-[26rem] bg-primary/5" />
+        <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+          <div className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-16">
+            <FadeIn>
+              <div className="lg:sticky lg:top-28">
+                <h2 id="why-us" className="sr-only">Why hire with us</h2>
+                <SplitTextReveal
+                  text="Why hire with us"
+                  as="div"
+                  className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
+                />
+                <p className="mt-3 text-body">
+                  Ten things you don&apos;t have to ask about, because they&apos;re already included.
+                </p>
+              </div>
+            </FadeIn>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {ADVANTAGES.map((a, i) => {
+                const Icon = ADVANTAGE_ICONS[a.icon] ?? Zap;
+                return (
+                  <FadeIn key={a.label} delay={i * 0.05} direction="up">
+                    <div className="card-lift group flex h-full items-start gap-4 rounded-2xl border border-border bg-card p-5 hover:border-primary/30">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                        <Icon className="size-5" aria-hidden="true" />
+                      </span>
+                      <span className="pt-1.5 font-medium text-foreground">{a.label}</span>
+                    </div>
+                  </FadeIn>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Reviews. Hidden entirely when there are none — no invented proof. */}
       {testimonials.length > 0 ? (
-        <section aria-labelledby="reviews" className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <h2
-            id="reviews"
-            className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-          >
-            What our customers say
-          </h2>
-          <ul className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((t) => (
-              <li key={t.id} className="rounded-xl border border-border bg-card p-6">
-                <p className="text-body">“{t.quote}”</p>
-                <p className="mt-4 text-sm font-semibold text-foreground">{t.customerName}</p>
-              </li>
+        <section aria-labelledby="reviews" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+          <div aria-hidden="true" className="ambient-glow -right-24 top-10 size-96 bg-primary/5" />
+          <FadeIn>
+            <h2 id="reviews" className="sr-only">What our customers say</h2>
+            <SplitTextReveal
+              text="What our customers say"
+              as="div"
+              className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
+            />
+            <p className="mt-3 max-w-xl text-body">
+              Straight from the people who&apos;ve hired from us — nothing staged, nothing invented.
+            </p>
+          </FadeIn>
+          <ul className="relative mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <FadeIn key={t.id} delay={i * 0.08} direction="up">
+                <li className="card-lift flex h-full flex-col rounded-2xl border border-border bg-card p-6">
+                  <Quote className="size-6 fill-primary/15 text-primary/40" aria-hidden="true" />
+                  <p className="mt-3 flex-1 text-body">{t.quote}</p>
+                  <p className="mt-5 border-t border-border pt-4 text-sm font-semibold text-foreground">
+                    {t.customerName}
+                  </p>
+                </li>
+              </FadeIn>
             ))}
           </ul>
         </section>
@@ -241,13 +275,19 @@ export default async function HomePage() {
 
       {/* FAQ — the six starred questions, each linking through to /faq. */}
       <section aria-labelledby="faq" className="border-t border-border">
-        <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-20">
-          <h2
-            id="faq"
-            className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-          >
-            Common questions
-          </h2>
+        <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6 sm:py-32">
+          <FadeIn>
+            <div className="flex items-center gap-3">
+              <div className="h-px w-8 bg-primary" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">FAQ</span>
+            </div>
+            <h2 id="faq" className="sr-only">Common questions</h2>
+            <SplitTextReveal
+              text="Common questions"
+              as="div"
+              className="mt-4 font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
+            />
+          </FadeIn>
           <div className="mt-8">
             <FaqSummaryList faqs={FEATURED_FAQS} />
           </div>
@@ -255,18 +295,25 @@ export default async function HomePage() {
       </section>
 
       {/* Enquiry */}
-      <section aria-labelledby="enquire" className="border-t border-border bg-muted/30">
-        <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-20">
-          <h2
-            id="enquire"
-            className="font-heading text-3xl font-extrabold tracking-tight text-foreground"
-          >
-            Get a quote
-          </h2>
-          <p className="mt-2 text-body">
-            Tell us what you need and when. Fast approvals, transparent pricing, no obligation.
-          </p>
-          <div className="mt-8">
+      <section aria-labelledby="enquire" className="relative overflow-hidden border-t border-border bg-muted/30">
+        <div aria-hidden="true" className="ambient-glow left-1/2 top-0 size-[32rem] -translate-x-1/2 bg-primary/5" />
+        <div className="relative mx-auto max-w-3xl px-4 py-24 sm:px-6 sm:py-32">
+          <FadeIn>
+            <div className="flex items-center gap-3">
+              <div className="h-px w-8 bg-primary" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Get in touch</span>
+            </div>
+            <h2 id="enquire" className="sr-only">Get a quote</h2>
+            <SplitTextReveal
+              text="Get a quote"
+              as="div"
+              className="mt-4 font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
+            />
+            <p className="mt-3 text-body">
+              Tell us what you need and when. Fast approvals, transparent pricing, no obligation.
+            </p>
+          </FadeIn>
+          <div className="mt-10 rounded-3xl border border-border bg-card/60 p-6 shadow-md backdrop-blur-sm sm:p-9">
             <EnquiryForm phone={contact.phone} />
           </div>
         </div>

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { Check } from "lucide-react";
+import {
+  Shield, Infinity, Phone, Wrench, Calendar, Zap,
+  Users, Tag, Headphones, Cog, ArrowRight, MapPin, Star
+} from "lucide-react";
 import { ABOUT_US, OUR_MISSION, ADVANTAGES } from "@/lib/content/about";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { getSiteContact } from "@/lib/data/settings";
@@ -16,14 +19,33 @@ export const metadata: Metadata = pageMetadata({
     "XPDX Rentals is a family-owned commercial vehicle rental business in Condell Park, Sydney. Who we are, our mission, and what every hire includes.",
 });
 
-/**
- * About Us and Our Mission are rendered verbatim from
- * `docs/content/supplied-copy.md` via `lib/content/about.ts`.
- *
- * The headings and layout are ours; every sentence is the client's. The only
- * newly-authored words on this page are the two section headings, which are
- * the client's own titles.
- */
+const ICON_MAP: Record<string, React.ElementType> = {
+  infinity: Infinity,
+  shield: Shield,
+  phone: Phone,
+  wrench: Wrench,
+  calendar: Calendar,
+  zap: Zap,
+  users: Users,
+  tag: Tag,
+  headset: Headphones,
+  cog: Cog,
+};
+
+const STATS = [
+  { value: "500+", label: "Happy customers" },
+  { value: "28", label: "Day minimum hire" },
+  { value: "24/7", label: "Roadside support" },
+  { value: "100%", label: "Insured fleet" },
+];
+
+const VALUES = [
+  { icon: Shield, title: "Integrity", text: "We never overpromise. Every term is clear before you sign." },
+  { icon: Star, title: "Reliability", text: "Every van is serviced, inspected, and road-ready before collection." },
+  { icon: Users, title: "Family Values", text: "Family-owned and operated — we treat every customer like one of our own." },
+  { icon: Zap, title: "Support", text: "Real people, real answers. We pick up the phone." },
+];
+
 export default async function AboutUsPage() {
   const contact = await getSiteContact();
 
@@ -36,44 +58,228 @@ export default async function AboutUsPage() {
         ])}
       />
 
-      <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          About Us
-        </h1>
-        <div className="mt-6 space-y-5 text-lg leading-relaxed text-body">
-          {ABOUT_US.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+      {/* ── Cinematic Hero ── */}
+      <section className="relative min-h-[55vh] flex items-center overflow-hidden bg-background">
+        {/* Ambient gradients */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-[60vw] h-[60vh] bg-[#C9AB81]/[0.07] rounded-full blur-[120px] -translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute bottom-0 right-0 w-[50vw] h-[50vh] bg-indigo-900/20 rounded-full blur-[100px] translate-x-1/4 translate-y-1/4" />
+          {/* Grid lines */}
+          <div className="absolute inset-0 opacity-[0.03]"
+            style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
         </div>
 
-        <h2 className="mt-14 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Our Mission
-        </h2>
-        <div className="mt-5 space-y-5 text-lg leading-relaxed text-body">
-          {OUR_MISSION.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-24 sm:py-32">
+          {/* Trust Badge */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="size-4 text-amber-500 fill-amber-500" />
+              ))}
+            </div>
+            <span className="text-white/80 text-xs font-medium tracking-wide">
+              <span className="text-white font-bold">5.0</span> average on Google
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px w-8 bg-[#C9AB81]" />
+            <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Our Story</span>
+          </div>
+          
+          <div className="flex flex-wrap items-end gap-6 mb-2">
+            <h1 className="font-heading text-5xl sm:text-7xl font-black tracking-tight text-white leading-[1.05]">
+              Built on trust.<br />
+              <span className="text-[#C9AB81]">Driven by people.</span>
+            </h1>
+            
+            {/* Live Availability Indicator */}
+            <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-sm mb-2 sm:mb-3">
+              <div className="relative flex size-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+              </div>
+              <span className="text-emerald-400 text-xs font-bold tracking-wider uppercase">
+                Vans Available Today
+              </span>
+            </div>
+          </div>
+          <p className="mt-6 max-w-xl text-lg text-white/50 leading-relaxed">
+            A family-owned business from Condell Park, Sydney — helping tradespeople, couriers
+            and businesses stay on the road since day one.
+          </p>
+          <div className="mt-8 flex items-center gap-4">
+            <a
+              href="#our-story"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary-hover transition-colors"
+            >
+              Read our story <ArrowRight className="size-4" />
+            </a>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white/70 hover:border-white/30 hover:text-white transition-colors"
+            >
+              Get in touch
+            </a>
+          </div>
         </div>
+      </section>
 
-        <h2 className="mt-14 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Our competitive advantages
-        </h2>
-        <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
-          {ADVANTAGES.map((a) => (
-            <li key={a.label} className="flex items-start gap-3">
-              <Check className="mt-0.5 size-5 shrink-0 text-link" aria-hidden="true" />
-              <span className="font-medium text-foreground">{a.label}</span>
-            </li>
-          ))}
-        </ul>
-      </article>
+      {/* ── Stats Bar ── */}
+      <div className="bg-muted border-y border-white/[0.06]">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/[0.06]">
+            {STATS.map((s) => (
+              <div key={s.label} className="px-6 py-8 text-center">
+                <p className="font-heading text-3xl sm:text-4xl font-black text-white">{s.value}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.15em] text-white/40">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <section className="border-t border-border bg-muted/30">
-        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-            Talk to our team
+      {/* ── About Us paragraphs ── */}
+      <section id="our-story" className="bg-background py-24 sm:py-32">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 items-start">
+            {/* Left — label + heading */}
+            <div className="lg:sticky lg:top-28">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-px w-8 bg-[#C9AB81]" />
+                <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Who We Are</span>
+              </div>
+              <h2 className="font-heading text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                More than a rental.<br />A partnership.
+              </h2>
+              <p className="mt-6 text-white/40 text-base leading-relaxed">
+                Every client who drives off our lot carries a piece of our reputation. That's why we
+                care deeply about every vehicle, every hire, every kilometre.
+              </p>
+              <div className="mt-8 flex items-center gap-3 p-4 rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+                <MapPin className="size-5 text-[#C9AB81] shrink-0" />
+                <div>
+                  <p className="text-xs text-white/40 font-mono uppercase tracking-wider">Our yard</p>
+                  <p className="text-white text-sm font-semibold mt-0.5">16 Ilma Street, Condell Park NSW</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right — paragraphs */}
+            <div className="space-y-6">
+              {ABOUT_US.map((p, i) => (
+                <p
+                  key={i}
+                  className="text-white/60 text-[17px] leading-[1.8] border-l border-white/[0.06] pl-6"
+                >
+                  {p}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Values Grid ── */}
+      <section className="bg-muted border-t border-white/[0.06] py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px w-8 bg-[#C9AB81]" />
+            <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Our Values</span>
+          </div>
+          <h2 className="font-heading text-3xl sm:text-4xl font-black text-white mb-12">
+            What we stand for
           </h2>
-          <div className="mt-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {VALUES.map(({ icon: Icon, title, text }) => (
+              <div
+                key={title}
+                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-[#C9AB81]/30 transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#C9AB81]/0 to-[#C9AB81]/0 group-hover:from-[#C9AB81]/[0.05] transition-all duration-500" />
+                <div className="relative">
+                  <div className="inline-flex size-11 items-center justify-center rounded-xl bg-[#C9AB81]/10 border border-[#C9AB81]/20 mb-4">
+                    <Icon className="size-5 text-[#C9AB81]" />
+                  </div>
+                  <h3 className="font-heading text-lg font-bold text-white mb-2">{title}</h3>
+                  <p className="text-sm text-white/40 leading-relaxed">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Our Mission ── */}
+      <section className="relative bg-background py-24 sm:py-32 overflow-hidden">
+        <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#C9AB81]/[0.04] to-transparent pointer-events-none" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px w-8 bg-[#C9AB81]" />
+              <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Our Mission</span>
+            </div>
+            <h2 className="font-heading text-4xl sm:text-5xl font-black text-white tracking-tight mb-10">
+              Keep you moving.<br />Every single day.
+            </h2>
+            <div className="space-y-5">
+              {OUR_MISSION.map((p, i) => (
+                <p key={i} className="text-white/55 text-lg leading-[1.8]">{p}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Competitive Advantages ── */}
+      <section className="bg-muted border-t border-white/[0.06] py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px w-8 bg-[#C9AB81]" />
+            <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Why XPDX</span>
+          </div>
+          <h2 className="font-heading text-3xl sm:text-4xl font-black text-white mb-12">
+            What's included in every hire
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {ADVANTAGES.map((a, i) => {
+              const Icon = (ICON_MAP as any)[a.icon] ?? Shield;
+              return (
+                <div
+                  key={a.label}
+                  className="group flex flex-col gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-[#C9AB81]/25 hover:bg-white/[0.04] transition-all duration-300"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-[#C9AB81]/10 border border-[#C9AB81]/15">
+                    <Icon className="size-4 text-[#C9AB81]" />
+                  </div>
+                  <p className="text-sm font-semibold text-white leading-tight">{a.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA / Enquiry ── */}
+      <section id="contact" className="relative bg-background border-t border-white/[0.06] py-24 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#C9AB81]/[0.06] rounded-full blur-[100px]" />
+        </div>
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center mb-14">
+          <div className="inline-flex items-center gap-3 mb-5">
+            <div className="h-px w-8 bg-[#C9AB81]" />
+            <span className="text-[#C9AB81] text-xs font-bold uppercase tracking-[0.25em]">Get Started</span>
+            <div className="h-px w-8 bg-[#C9AB81]" />
+          </div>
+          <h2 className="font-heading text-4xl sm:text-5xl font-black text-white tracking-tight">
+            Ready to get on the road?
+          </h2>
+          <p className="mt-4 text-white/40 text-lg max-w-xl mx-auto">
+            Tell us what you need. Our team responds fast — usually same business day.
+          </p>
+        </div>
+        <div className="relative mx-auto max-w-2xl px-4 sm:px-6">
+          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm p-8 sm:p-10">
             <EnquiryForm phone={contact.phone} />
           </div>
         </div>

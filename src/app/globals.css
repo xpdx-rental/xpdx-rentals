@@ -5,73 +5,49 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* ── XPDX brand palette — REBRAND.md §5 ────────────────────────────────────
-     The raw brand tokens. Everything else in this file is expressed in terms of
-     these, so the palette has exactly one place to change.
+  /* ── Ultra Premium Palette ──────────────────────────────────── */
+  --charcoal: #141516;     /* Primary Background */
+  --surface: #1B1C1F;      /* Secondary Surface */
+  --surface-raised: #222327; /* Cards */
+  --text-primary: #F5F4F2;
+  --text-secondary: #B6B8BC;
+  --text-muted: #7A7D84;
+  --champagne: #C9AB81;    /* Premium Accent */
+  --champagne-dk: #B69A73; /* Hover Accent */
+  --border-subtle: rgba(255, 255, 255, 0.08);
 
-     ⚠ --orange is unresolved between two authoritative documents:
-       CLAUDE.md §3  says #F0531E
-       REBRAND.md §5 says #F05A22, and adds that it is taken from the XPDX logo
-                     wordmark and "is the one colour that must not drift".
-     REBRAND.md wins on visuals per file precedence, and its provenance claim is
-     the stronger one, so #F05A22 is used. This is a ONE LINE change if the
-     client's vector says otherwise — see docs/conversion/01-plan.md Q7. */
-  --ink: #14161a;        /* body text, dark sections, the workhorse */
-  --ink-2: #22262d;
-  --steel: #6d7681;      /* labels, captions, mono utility text */
-  --steel-2: #9aa3ad;    /* on dark only */
-  --concrete: #e9eae8;   /* page background — workshop floor, not cream */
-  --concrete-2: #f4f5f3;
-  --white: #ffffff;
-  --orange: #f05a22;     /* XPDX brand. Primary CTA, accents */
-  --orange-dk: #c93f10;  /* hover / pressed */
-  --plate: #f3d71e;      /* NSW number-plate yellow. Sparingly */
+  /* ── Semantic mapping ────────────────────────────────────────────────────── */
+  --primary: var(--champagne);
+  --primary-hover: var(--champagne-dk);
+  --primary-foreground: var(--charcoal);
 
-  /* ── Semantic mapping ──────────────────────────────────────────────────────
-     Components reference these, not the raw palette above. */
-  --primary: var(--orange);
-  --primary-hover: var(--orange-dk);
-  /* Ink on --orange, NOT white. Measured, not assumed:
-       white on #F05A22 = 3.39:1  → fails WCAG AA (4.5:1) for button text
-       ink   on #F05A22 = 5.34:1  → passes
-     MOTION.md §11 flagged this contrast as marginal and it is worse than
-     marginal for white. This keeps --orange exactly as REBRAND.md §5 requires
-     ("the one colour that must not drift") and changes only the text on it. */
-  --primary-foreground: var(--ink);
+  --link: var(--champagne);
+  --accent-dark: var(--champagne);
 
-  /* Inline text links. --orange is 3.39:1 on white, which is fine for a UI
-     boundary (3:1) and for large text, but fails for body-size link text.
-     --orange-dk is 5.0:1 on white and 4.14:1 on --concrete, so links use it
-     while fills, icons and focus rings keep the brand orange. */
-  --link: var(--orange-dk);
-  --accent-dark: var(--orange);
+  --success: #34D399; /* Muted Emerald */
+  --warning: #FBBF24;
+  --danger: #F87171;
+  --error: #F87171;
+  --info: var(--surface);
 
-  /* Semantic status. Kept off the brand orange so a warning never reads as a
-     call to action. */
-  --success: #12b76a;
-  --warning: #b45309;
-  --danger: #c0272d;
-  --error: #c0272d;
-  --info: var(--ink-2);
-
-  /* Light theme — the public site. */
-  --background: var(--white);
-  --foreground: var(--ink);
-  --body: #4a5057;       /* darkened from --steel: body copy needs 4.5:1 */
-  --card: var(--white);
-  --card-foreground: var(--ink);
-  --popover: var(--white);
-  --popover-foreground: var(--ink);
-  --secondary: var(--concrete-2);
-  --secondary-foreground: var(--ink);
-  --muted: var(--concrete);
-  --muted-foreground: #5c646d;  /* darkened from --steel for the same reason */
-  --accent: var(--concrete-2);
-  --accent-foreground: var(--ink);
+  /* The site is now universally dark/moody */
+  --background: var(--charcoal);
+  --foreground: var(--text-primary);
+  --body: var(--text-secondary);
+  --card: var(--surface-raised);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface);
+  --popover-foreground: var(--text-primary);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--surface-raised);
+  --accent-foreground: var(--text-primary);
   --destructive: var(--danger);
-  --border: #d6d8d4;
-  --input: #d6d8d4;
-  --ring: var(--orange);
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--champagne);
 
   /* ── Type — REBRAND.md §5 ──────────────────────────────────────────────────
      Display: Archivo. Body: IBM Plex Sans. Utility/data: IBM Plex Mono.
@@ -98,32 +74,32 @@ h1, h2, h3, h4 {
 }
 
 .dark {
-  /* Surfaces - Sleek Black for Premium Public UI */
-  --background: var(--ink);
-  --foreground: var(--white);
-  --body: var(--steel-2);
-  --card: var(--ink-2);
-  --card-foreground: var(--white);
-  --popover: var(--ink-2);
-  --popover-foreground: var(--white);
-  --secondary: var(--ink-2);
-  --secondary-foreground: var(--white);
-  --muted: var(--ink-2);
-  --muted-foreground: var(--steel-2);
-  --accent: var(--orange);
-  --accent-foreground: var(--white);
-  --destructive: #ef6a6f;
-  --border: #2f343c;
-  --input: #2f343c;
-  --ring: var(--orange);
+  /* Surfaces - The entire site is now universally dark/moody */
+  --background: var(--charcoal);
+  --foreground: var(--text-primary);
+  --body: var(--text-secondary);
+  --card: var(--surface-raised);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface);
+  --popover-foreground: var(--text-primary);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--surface-raised);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--danger);
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--champagne);
 }
 :root {
   /* Premium Shadow Elevation Scale (Softer, deeper) */
-  --shadow-sm: 0 2px 4px 0 rgb(0 0 0 / 0.02), 0 1px 2px -1px rgb(0 0 0 / 0.04);
-  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.05), 0 2px 6px -2px rgb(0 0 0 / 0.03);
-  --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.06), 0 8px 12px -6px rgb(0 0 0 / 0.04);
-  --shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.08), 0 12px 24px -8px rgb(0 0 0 / 0.04);
-  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-sm: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 24px 48px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -8px rgba(0, 0, 0, 0.2);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 
   --tracking-heading-sm: -0.01em;
   --tracking-heading-md: -0.02em;
@@ -328,8 +304,43 @@ h4, h5, h6 {
   body {
     @apply bg-background text-foreground;
   }
-  body.dark {
+  /*
+   * The theme class lives on <html> (layout.tsx), not <body> — `body.dark`
+   * never matched, so this texture has been dead since it was written.
+   * noise.svg already bakes in a 10% opacity fractal-noise fill, which is
+   * exactly the "minimal, barely-there" texture flat dark surfaces need to
+   * not read as synthetically flat.
+   */
+  html.dark body {
     @apply bg-noise;
+  }
+}
+
+/* ── Ambient section glow ─────────────────────────────────────────────────
+   A large, very soft blurred light source anchored to a corner of a section —
+   "illuminated, not colorful" per the brand brief. Never sized or positioned
+   to draw the eye on its own; it should only be noticed as an absence if
+   removed. Opacity kept low enough to still pass as "barely there" against
+   both the light and dark surface tokens. */
+@utility ambient-glow {
+  pointer-events: none;
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.5;
+}
+
+/* ── Soft card lift ────────────────────────────────────────────────────────
+   The one hover treatment every card-like surface should share: a small rise,
+   a softening shadow, a barely-there border tint toward the brand accent.
+   Codified once so "every component feels custom but shares one language"
+   doesn't mean five slightly different hover timings scattered across files. */
+@utility card-lift {
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1), border-color 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(201, 171, 129, 0.3); /* Champagne Gold tint */
   }
 }
 
@@ -440,7 +451,7 @@ p {
 }
 /* Focus ring on the silhouette itself (§4.1), not on an invisible wrapper. */
 .fleet-line__van:focus-visible .van-body {
-  stroke: var(--color-primary, #f05a22);
+  stroke: var(--color-primary, #C9AB81);
   stroke-width: 2.5;
 }
 
@@ -506,7 +517,7 @@ p {
 }
 .fleet-line__van:hover + .fleet-line__caption,
 .fleet-line__caption[data-selected="true"] {
-  border-top-color: var(--color-primary, #f05a22);
+  border-top-color: var(--color-primary, #C9AB81);
 }
 .fleet-line__caption-name {
   display: block;
@@ -560,11 +571,11 @@ p {
   transition: border-color 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .load-matcher__option[data-active="true"] {
-  border-color: var(--color-primary, #f05a22);
+  border-color: var(--color-primary, #C9AB81);
   border-width: 2px;
 }
 .load-matcher__option:focus-visible {
-  outline: 2px solid var(--color-primary, #f05a22);
+  outline: 2px solid var(--color-primary, #C9AB81);
   outline-offset: 2px;
 }
 .load-matcher__option-label { display: block; font-weight: 600; font-size: 0.875rem; }
@@ -589,8 +600,8 @@ p {
   background: var(--color-card, #fff);
 }
 .load-matcher__van--recommended {
-  border-color: var(--color-primary, #f05a22);
-  background: color-mix(in srgb, var(--color-primary, #f05a22) 5%, var(--color-card, #fff));
+  border-color: var(--color-primary, #C9AB81);
+  background: color-mix(in srgb, var(--color-primary, #C9AB81) 5%, var(--color-card, #fff));
 }
 /* Overflow: the van desaturates to 40% so the mistake is unmistakable. The
    verdict is also stated in text — colour is never the sole signal (§11). */
@@ -611,8 +622,8 @@ p {
 }
 .load-matcher__ground { stroke: var(--color-border, #e5e7eb); stroke-width: 1; }
 .load-matcher__carton {
-  fill: color-mix(in srgb, var(--color-primary, #f05a22) 55%, transparent);
-  stroke: color-mix(in srgb, var(--color-primary, #f05a22) 80%, transparent);
+  fill: color-mix(in srgb, var(--color-primary, #C9AB81) 55%, transparent);
+  stroke: color-mix(in srgb, var(--color-primary, #C9AB81) 80%, transparent);
   stroke-width: 0.5;
 }
 .load-matcher__carton--over {
@@ -621,7 +632,7 @@ p {
 
 .load-matcher__meta { margin-top: 0.5rem; }
 .load-matcher__name { font-weight: 600; font-size: 0.875rem; }
-.load-matcher__name a:hover { color: var(--color-primary, #f05a22); }
+.load-matcher__name a:hover { color: var(--color-primary, #C9AB81); }
 .load-matcher__verdict {
   font-family: var(--font-mono, ui-monospace), monospace;
   font-size: 0.75rem;
@@ -629,7 +640,7 @@ p {
   letter-spacing: 0.04em;
   margin-top: 0.15rem;
 }
-.load-matcher__van--recommended .load-matcher__verdict { color: var(--color-primary, #f05a22); }
+.load-matcher__van--recommended .load-matcher__verdict { color: var(--color-primary, #C9AB81); }
 .load-matcher__price { font-size: 0.75rem; color: var(--color-muted-foreground, #6d7681); }
 .load-matcher__note {
   margin-top: 1rem;

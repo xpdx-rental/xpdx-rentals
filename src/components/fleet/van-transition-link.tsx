@@ -60,13 +60,4 @@ export function VanTransitionLink({
   );
 }
 
-/**
- * Names a shared element so the browser can pair it across the navigation.
- *
- * `view-transition-name` must be unique within a document at any one time. Card
- * and detail use the same name deliberately — they never coexist, because the
- * navigation replaces one with the other, and that pairing is the whole point.
- */
-export function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {
-  return { viewTransitionName: `van-${kind}-${slug}` } as React.CSSProperties;
-}
+

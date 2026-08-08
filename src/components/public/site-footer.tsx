@@ -45,7 +45,8 @@ export async function SiteFooter() {
   const hasHours = Object.keys(hours).length > 0;
 
   return (
-    <footer className="border-t border-border bg-muted/30">
+    <footer className="relative overflow-hidden border-t border-border bg-muted/30">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>

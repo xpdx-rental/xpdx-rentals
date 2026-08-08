@@ -4,6 +4,8 @@ import { useState, useRef, useId, useEffect } from "react";
 import { CheckCircle2, Loader2, Phone } from "lucide-react";
 import { DURATIONS } from "@/lib/enquiry-options";
 import { telHref } from "@/lib/lead";
+import { MagneticButton } from "@/components/ui/magnetic-button";
+import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Enquiry form — the site's only conversion action.
@@ -150,7 +152,7 @@ export function EnquiryForm({
   }
 
   const inputCls =
-    "mt-1 min-h-11 w-full rounded-lg border border-border bg-background px-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+    "mt-1 min-h-12 w-full rounded-xl border border-white/5 bg-black/20 shadow-inner px-4 text-base text-white placeholder:text-white/30 transition-all duration-300 hover:bg-black/30 hover:border-white/10 focus:bg-black/40 focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none";
   const err = (f: string) => fieldErrors[f];
 
   return (
@@ -232,7 +234,7 @@ export function EnquiryForm({
         <textarea
           name="message"
           rows={4}
-          className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="mt-1 w-full rounded-xl border border-white/5 bg-black/20 shadow-inner px-4 py-3 text-base text-white placeholder:text-white/30 transition-all duration-300 hover:bg-black/30 hover:border-white/10 focus:bg-black/40 focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none resize-y"
           placeholder="What you'll be carrying, or anything we should know."
         />
       </label>
@@ -264,14 +266,38 @@ export function EnquiryForm({
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={status === "submitting"}
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 sm:w-auto"
-      >
-        {status === "submitting" ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : null}
-        {status === "submitting" ? "Sending…" : "Get a quote"}
-      </button>
+      <div className="pt-2">
+        <MagneticButton
+          type="submit"
+          disabled={status === "submitting"}
+          className="group relative inline-flex min-h-14 w-full sm:w-auto items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 font-bold text-primary-foreground text-[15px] tracking-tight shadow-[0_8px_32px_rgba(201, 171, 129,0.35)] transition-shadow hover:shadow-[0_12px_48px_rgba(201, 171, 129,0.5)] disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          <span className="absolute inset-0 [transform:skew(-20deg)_translateX(-120%)] group-hover:[transform:skew(-20deg)_translateX(200%)] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <span className="relative flex items-center gap-2">
+            {status === "submitting" ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : null}
+            {status === "submitting" ? "Sending…" : "Get a quote"}
+          </span>
+        </MagneticButton>
+      </div>
+
+      {/*
+        Risk-reversal, right where the commitment-anxiety is highest. Every
+        clause here is already true elsewhere in the product (no deposit is
+        taken on submit, no card field exists on this form, and support
+        response time is stated site-wide as "usually same business day" —
+        kept un-absolute here for the same reason).
+      */}
+      <p className="flex flex-wrap gap-x-4 gap-y-1.5 pt-1 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <CheckCircle2 className="size-3.5 text-primary" aria-hidden="true" /> No obligation
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <CheckCircle2 className="size-3.5 text-primary" aria-hidden="true" /> No credit card required
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <CheckCircle2 className="size-3.5 text-primary" aria-hidden="true" /> Usually same-day response
+        </span>
+      </p>
     </form>
   );
 }

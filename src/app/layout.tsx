@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { siteBaseUrl } from "@/lib/seo/site";
+import { LenisProvider } from "@/components/animations/lenis-provider";
+import { NoiseOverlay } from "@/components/animations/noise-overlay";
 
 // REBRAND.md §5 type stack. Inter and Plus Jakarta Sans — the previous faces —
 // are gone from next/font, the CSS and the preconnects.
@@ -19,33 +21,25 @@ import { siteBaseUrl } from "@/lib/seo/site";
 // the loader runs at build time and cannot resolve a shared constant, so the
 // fallback arrays are repeated rather than extracted.
 
-// Variable on the wght axis; `axes` adds wdth, which the heading rule in
-// globals.css drives via font-variation-settings.
-const archivo = Archivo({
+const interDisplay = Inter({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   preload: true,
-  axes: ["wdth"],
-  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
 });
 
-const plexSans = IBM_Plex_Sans({
+const interSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
   preload: true,
-  weight: ["400", "500", "600", "700"],
-  fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
 });
 
-const plexMono = IBM_Plex_Mono({
+const interMono = Inter({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
   preload: false,
-  weight: ["400", "500"],
-  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
 });
 
 export const viewport: Viewport = {
@@ -55,7 +49,7 @@ export const viewport: Viewport = {
   // REBRAND.md §5 specifies the brand orange for the manifest theme colour, so
   // the browser chrome matches rather than contradicting it. See
   // docs/conversion/01-plan.md Q7 on the exact orange.
-  themeColor: "#F05A22",
+  themeColor: "#C9AB81",
 };
 
 export const metadata: Metadata = {
@@ -131,10 +125,12 @@ export default function RootLayout({
   return (
     <html
       lang="en-AU"
-      className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased dark`}
+      className={`dark ${interDisplay.variable} ${interSans.variable} ${interMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground font-sans tracking-tight">
+        <NoiseOverlay />
+        <LenisProvider>
         {/*
           Google Tag Manager. CLAUDE.md §10: "Preserve the existing GTM container
           (GTM-M7BWGFK5) unless told otherwise" — that container is the client's
@@ -188,6 +184,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           the admin layout, which is the only place anything calls toast().
         */}
         {children}
+        </LenisProvider>
         {/*
           @vercel/analytics and @vercel/speed-insights were removed here. They
           inject script tags pointing at /_vercel/insights and
