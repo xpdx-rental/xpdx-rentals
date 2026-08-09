@@ -64,7 +64,7 @@ export function AnalyticsCharts({ stats }: { stats: DailyStat[] }) {
               if (active && payload && payload.length) {
                 return (
                   <div className="rounded-xl border border-white/10 bg-black/80 backdrop-blur-md p-3 shadow-xl">
-                    <p className="text-sm font-semibold text-white/90 mb-2">{format(parseISO(label), "MMM d, yyyy")}</p>
+                    <p className="text-sm font-semibold text-white/90 mb-2">{label ? format(parseISO(String(label)), "MMM d, yyyy") : ""}</p>
                     {payload.map((p, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm font-medium">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
