@@ -627,29 +627,11 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
         </motion.div>
       ) : (
         <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6 pb-16">
-          <motion.div
-            layout
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            <AnimatePresence mode="popLayout">
-              {filtered.map((v, i) => (
-                <motion.div
-                  key={v.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  transition={{
-                    duration: 0.22,
-                    delay: Math.min(i * 0.035, 0.25),
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                >
-                  <VanCard van={v} priority={i < 3} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((v, i) => (
+              <VanCard key={v.id} van={v} priority={i < 3} />
+            ))}
+          </div>
         </div>
       )}
     </div>
