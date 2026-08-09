@@ -82,6 +82,19 @@ export function VanForm({
     <form action={formAction} className="space-y-6">
       {van ? <input type="hidden" name="id" value={van.id} /> : null}
 
+      {mode === "create" ? (
+        <Group title="Main Photo" description="Upload the primary photo of this van. You can add more photos later.">
+          <Field label="Image file" error={err("primaryImage")}>
+            <input 
+              type="file" 
+              name="primaryImage" 
+              accept="image/jpeg, image/png, image/webp, image/avif" 
+              className="mt-1 block w-full text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-primary/20 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/30 transition-colors"
+            />
+          </Field>
+        </Group>
+      ) : null}
+
       <Group title="Identity" description="What this van is and where it lives on the site.">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Name" error={err("name")}>

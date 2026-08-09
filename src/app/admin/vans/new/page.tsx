@@ -18,7 +18,7 @@ export default function NewVanPage() {
       <div>
         <h1 className="font-heading text-2xl font-bold text-foreground">Add a van</h1>
         <p className="text-sm text-muted-foreground">
-          Saves as a draft unless you set it available. Photos are added after saving.
+          Saves as a draft unless you set it available.
         </p>
       </div>
       <VanForm action={createVan} mode="create" />
