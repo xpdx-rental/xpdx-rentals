@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isSafeRedirectPath } from "@/lib/routing";
-import { sendWelcomeEmail } from "@/lib/email/ses";
 import { deriveProfileFromUser } from "@/lib/auth/profile";
 
 export async function GET(request: NextRequest) {
@@ -29,27 +28,18 @@ export async function GET(request: NextRequest) {
     }
 
     if (data.user) {
-      const admin = createAdminClient();
+      const { userHasAdminAccess } = await import("@/lib/security/auth");
+      const hasAccess = await userHasAdminAccess(data.user);
 
-      // Upsert profile and send welcome email for brand-new users
-      const { data: existingProfile } = await admin
-        .from("profiles")
-        .select("id")
-        .eq("id", data.user.id)
-        .maybeSingle();
-
-      const isNewUser = !existingProfile;
-      await admin.from("profiles").upsert(deriveProfileFromUser(data.user));
-
-      if (isNewUser && data.user.email) {
-        const name =
-          data.user.user_metadata?.full_name ??
-          data.user.user_metadata?.name ??
-          data.user.email.split("@")[0];
-        sendWelcomeEmail({ to: data.user.email, name }).catch((err) =>
-          console.error("[Auth Callback] Welcome email failed:", err),
-        );
+      if (!hasAccess) {
+        // Not authorized. Sign them out so they don't have an active session,
+        // but their Supabase Auth user is created so the owner can assign them a role later.
+        await supabase.auth.signOut();
+        return NextResponse.redirect(new URL("/admin-login?error=unauthorized", requestUrl.origin));
       }
+
+      const admin = createAdminClient();
+      await admin.from("profiles").upsert(deriveProfileFromUser(data.user));
     }
   }
 

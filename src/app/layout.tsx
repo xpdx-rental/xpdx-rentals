@@ -134,7 +134,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-AU"
-      className={`dark ${inter.variable} antialiased`}
+      className={`${inter.variable} antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background text-foreground font-sans tracking-tight">

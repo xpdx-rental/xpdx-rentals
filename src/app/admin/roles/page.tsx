@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function AdminRolesPage() {
-  await requireAdminRole(["owner", "admin", "super_admin"]);
+  await requireAdminRole(["owner"]);
 
   const roles = await getAdminRoles();
   const activeCount = roles.filter((r) => r.active).length;

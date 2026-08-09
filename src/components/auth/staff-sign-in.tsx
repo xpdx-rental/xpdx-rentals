@@ -10,10 +10,15 @@ import { BrandLogo } from "@/components/brand-logo";
 export function StaffSignIn() {
   const params = useSearchParams();
   const redirectedFrom = params.get("redirectedFrom");
+  const urlError = params.get("error");
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    urlError === "unauthorized" ? "Unauthorized access. Your account does not have admin permissions." :
+    urlError === "auth_failed" ? "Authentication failed. Please try again." : null
+  );
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,31 +44,31 @@ export function StaffSignIn() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-3xl border border-white/10 bg-black/40 p-8 sm:p-12 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5">
+    <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 sm:p-12 shadow-xl ring-1 ring-border/50">
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-6 flex justify-center drop-shadow-md">
+        <div className="mx-auto mb-6 flex justify-center">
           <BrandLogo imageClassName="h-14 w-auto" />
         </div>
-        <h1 className="font-heading text-3xl font-bold text-white tracking-tight drop-shadow-md">Staff Login</h1>
-        <p className="mt-2 text-sm font-medium text-white/60 uppercase tracking-widest">Authorized Access Only</p>
+        <h1 className="font-heading text-3xl font-bold text-foreground tracking-tight">Staff Login</h1>
+        <p className="mt-2 text-sm font-medium text-muted-foreground uppercase tracking-widest">Authorized Access Only</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-5">
         <label className="block group">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/70 group-focus-within:text-primary transition-colors">Email</span>
+          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground group-focus-within:text-primary transition-colors">Email</span>
           <input
             type="email" required autoComplete="email" value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/20 backdrop-blur-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50"
+            className="w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground placeholder-muted-foreground/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50"
             placeholder="admin@xpdx.com"
           />
         </label>
         <label className="block group">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-white/70 group-focus-within:text-primary transition-colors">Password</span>
+          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground group-focus-within:text-primary transition-colors">Password</span>
           <input
             type="password" required autoComplete="current-password" value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/20 backdrop-blur-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50"
+            className="w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground placeholder-muted-foreground/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50"
             placeholder="••••••••"
           />
         </label>
@@ -83,10 +88,10 @@ export function StaffSignIn() {
 
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-white/10"></span>
+          <span className="w-full border-t border-border"></span>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-black/20 px-2 text-white/40">Or continue with</span>
+          <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
 
@@ -115,7 +120,7 @@ export function StaffSignIn() {
           }
         }}
         disabled={loading}
-        className="mt-4 inline-flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 font-bold text-white hover:bg-white/10 disabled:opacity-60 transition-all backdrop-blur-sm shadow-md"
+        className="mt-4 inline-flex w-full items-center justify-center gap-3 rounded-xl border border-input bg-background px-4 py-3.5 font-bold text-foreground hover:bg-accent disabled:opacity-60 transition-all shadow-sm"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

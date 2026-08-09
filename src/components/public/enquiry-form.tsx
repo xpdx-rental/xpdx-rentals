@@ -164,7 +164,7 @@ export function EnquiryForm({
   }
 
   const inputCls =
-    "mt-1 min-h-12 w-full rounded-xl border border-white/5 bg-black/20 shadow-inner px-4 text-base text-white placeholder:text-white/30 transition-all duration-300 hover:bg-black/30 hover:border-white/10 focus:bg-black/40 focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none";
+    "mt-1 min-h-12 w-full rounded-xl border border-border bg-background shadow-inner px-4 text-base text-foreground placeholder:text-muted-foreground transition-all duration-300 hover:bg-accent/50 hover:border-primary/30 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none";
   const err = (f: string) => fieldErrors[f];
 
   return (
@@ -246,7 +246,7 @@ export function EnquiryForm({
         <textarea
           name="message"
           rows={4}
-          className="mt-1 w-full rounded-xl border border-white/5 bg-black/20 shadow-inner px-4 py-3 text-base text-white placeholder:text-white/30 transition-all duration-300 hover:bg-black/30 hover:border-white/10 focus:bg-black/40 focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none resize-y"
+          className="mt-1 w-full rounded-xl border border-border bg-background shadow-inner px-4 py-3 text-base text-foreground placeholder:text-muted-foreground transition-all duration-300 hover:bg-accent/50 hover:border-primary/30 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none resize-y"
           placeholder="What you'll be carrying, or anything we should know."
         />
       </label>
@@ -311,7 +311,7 @@ export function EnquiryForm({
             // way and is honest about what happened.
             onExpire={() => setToken("")}
             onError={() => setToken("")}
-            options={{ theme: "dark", size: "flexible" }}
+            options={{ theme: "light", size: "flexible" }}
           />
           <input type="hidden" name="cf-turnstile-response" value={token} />
         </div>

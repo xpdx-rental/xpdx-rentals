@@ -39,6 +39,7 @@ const CSP_DIRECTIVES: Record<string, string[]> = {
     "https://challenges.cloudflare.com", // Turnstile
     "https://www.gstatic.com", // Draco decoders
     "https://www.googletagmanager.com",
+    "https://maps.googleapis.com", // Google Maps JS API
   ],
   "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
   "img-src": [
@@ -49,6 +50,8 @@ const CSP_DIRECTIVES: Record<string, string[]> = {
     "https://www.googletagmanager.com",
     "https://*.google-analytics.com",
     "https://*.basemaps.cartocdn.com", // Leaflet tiles
+    "https://maps.googleapis.com", // Google Maps
+    "https://maps.gstatic.com", // Google Maps controls/markers
   ],
   "media-src": ["'self'"],
   "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
@@ -62,6 +65,7 @@ const CSP_DIRECTIVES: Record<string, string[]> = {
     "https://*.google-analytics.com",
     "https://*.analytics.google.com",
     "https://challenges.cloudflare.com", // Turnstile challenge exchange
+    "https://maps.googleapis.com", // Google Maps API
   ],
   "worker-src": ["'self'", "blob:"],
   "child-src": ["'self'", "blob:"],

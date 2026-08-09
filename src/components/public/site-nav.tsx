@@ -34,13 +34,33 @@ export async function SiteNav() {
 
         <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">
           {NAV_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="relative text-[13px] uppercase tracking-widest font-bold text-white/60 transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-300 hover:text-white hover:after:w-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-            >
-              {l.label}
-            </Link>
+            <div key={l.label} className="relative group">
+              <Link
+                href={l.href}
+                className="flex items-center gap-1 relative text-[13px] uppercase tracking-widest font-bold text-foreground/70 transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-300 hover:text-foreground hover:after:w-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary py-2"
+              >
+                {l.label}
+                {l.subLinks && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down opacity-50 group-hover:rotate-180 transition-transform"><path d="m6 9 6 6 6-6"/></svg>
+                )}
+              </Link>
+              
+              {l.subLinks && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="w-56 rounded-xl border border-border bg-background shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden py-1">
+                    {l.subLinks.map((sub) => (
+                      <Link
+                        key={sub.label}
+                        href={sub.href}
+                        className="block px-4 py-3 text-sm font-semibold text-foreground/70 hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </nav>
 
@@ -49,7 +69,7 @@ export async function SiteNav() {
             <ContactLink
               href={telHref(contact.phone)}
               channel="call"
-              className="hidden min-h-11 items-center gap-2 rounded-full px-4 text-[13px] font-bold text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:inline-flex"
+              className="hidden min-h-11 items-center gap-2 rounded-full px-4 text-[13px] font-bold text-foreground transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:inline-flex"
             >
               <Phone className="size-4 text-primary" aria-hidden="true" />
               {contact.phone}

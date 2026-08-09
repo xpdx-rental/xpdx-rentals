@@ -6,7 +6,7 @@ import { getSiteContact } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { BackgroundVideo } from "@/components/public/background-video";
 import { JsonLd } from "@/components/json-ld";
-import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
+import { IframeMap } from "@/components/public/iframe-map";
 import { breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { corePage } from "@/lib/seo/entities/core-pages";
@@ -157,7 +157,7 @@ export default async function ServiceAreaPage() {
             </p>
           </div>
           {/* Condell Park coordinates: -33.916, 151.011 */}
-          <DynamicServiceMap center={[-33.916, 151.011]} address={contact.address} />
+          <IframeMap address={contact.address} />
         </section>
 
         <section aria-labelledby="nearby" className="mt-12">

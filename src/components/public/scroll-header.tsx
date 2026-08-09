@@ -14,17 +14,17 @@ export function ScrollHeader({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  // Smoothly blend the background from transparent to the dark glassmorphic state
+  // Smoothly blend the background from transparent to the creamish state
   const backgroundColor = useTransform(
     scrollY,
     [0, 100],
-    ["rgba(17, 17, 21, 0)", "rgba(17, 17, 21, 0.75)"]
+    ["rgba(253, 247, 230, 0)", "rgba(232, 215, 184, 0.9)"] // A cooler, darker cream shade
   );
   
   const borderColor = useTransform(
     scrollY,
     [0, 100],
-    ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]
+    ["rgba(0, 0, 0, 0)", "rgba(219, 195, 158, 0.4)"] // Matches --border-subtle
   );
 
   return (
