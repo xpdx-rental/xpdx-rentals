@@ -59,8 +59,11 @@ export const dynamicParams = true;
 
 type Props = { params: Promise<{ serviceSlug: string }> };
 
+import { generatedSlugs } from "@/lib/seo/registry";
+
 export async function generateStaticParams() {
-  return []; // Skip SSG at build time to dramatically speed up Vercel deployments
+  const slugs = await generatedSlugs("service");
+  return slugs.map((slug) => ({ serviceSlug: slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
