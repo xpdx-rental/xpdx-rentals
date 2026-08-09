@@ -5,7 +5,7 @@ import { CheckCircle2, Loader2, Phone } from "lucide-react";
 import { DURATIONS } from "@/lib/enquiry-options";
 import { telHref } from "@/lib/lead";
 import { MagneticButton } from "@/components/ui/magnetic-button";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 /**
  * Read once at module scope. `NEXT_PUBLIC_*` values are inlined at build time,
@@ -49,6 +49,22 @@ export function EnquiryForm({
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [token, setToken] = useState<string>("");
+  const turnstileRef = useRef<TurnstileInstance | undefined>(undefined);
+
+  /**
+   * Turnstile tokens are single-use — Cloudflare redeems one exactly once at
+   * siteverify. If the server answers with an inline error the form stays
+   * mounted holding the token it already spent, so a retry would post it again
+   * and siteverify would answer `timeout-or-duplicate`. That reads as a
+   * definitive negative, which quarantines the lead (see spam-check.ts) — the
+   * customer would be silently filed as spam purely for pressing the button
+   * twice. So every path that leaves the form retryable discards the spent
+   * token and asks the widget for a fresh one.
+   */
+  function resetChallenge() {
+    setToken("");
+    turnstileRef.current?.reset();
+  }
   // Set in an effect, not during render: `Date.now()` is impure and calling it
   // in the render body is a React purity violation. Measuring from when the
   // form actually became interactive is also the more honest timing baseline
@@ -132,11 +148,13 @@ export function EnquiryForm({
         json?.error?.message ??
           "We could not send your enquiry just now. Please call us and we'll take the details over the phone.",
       );
+      resetChallenge();
     } catch {
       setStatus("error");
       setError(
         "Your enquiry did not reach us — you may be offline. Please try again, or call us and we'll take the details over the phone.",
       );
+      resetChallenge();
     }
   }
 
@@ -304,14 +322,26 @@ export function EnquiryForm({
       {TURNSTILE_SITE_KEY ? (
         <div className="pt-2">
           <Turnstile
+            ref={turnstileRef}
             siteKey={TURNSTILE_SITE_KEY}
+            // Lands on the widget's container div. `options.action` below is
+            // what Cloudflare actually receives; this mirrors it onto the
+            // markup so the integration is greppable from the rendered DOM.
+            data-action="turnstile-spin-v2"
             onSuccess={setToken}
             // Clear the stale token on expiry/error so we never post a token
             // that Cloudflare will reject when an empty one is treated the same
             // way and is honest about what happened.
             onExpire={() => setToken("")}
             onError={() => setToken("")}
-            options={{ theme: "light", size: "flexible" }}
+            options={{
+              theme: "light",
+              size: "flexible",
+              // Rendered onto the widget's own container as
+              // `data-action="turnstile-spin-v2"`. Account-level analytics
+              // attribution only — the integration works without it.
+              action: "turnstile-spin-v2",
+            }}
           />
           <input type="hidden" name="cf-turnstile-response" value={token} />
         </div>

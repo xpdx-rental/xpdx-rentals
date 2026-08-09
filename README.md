@@ -84,7 +84,7 @@ The project deploys to Vercel with zero configuration beyond setting environment
 | `REDIS_URL` | Recommended | Distributed rate limiting and read cache |
 | `CRON_SECRET` | Recommended | Authenticates `/api/cron/reminders` |
 | `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | Optional | Transactional email |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` | Optional | Cloudflare Turnstile bot protection |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET` | Optional | Cloudflare Turnstile bot protection |
 
 ## Documentation
 
