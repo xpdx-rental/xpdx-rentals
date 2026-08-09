@@ -134,10 +134,10 @@ export default function RootLayout({
   return (
     <html
       lang="en-AU"
-      className={`dark ${inter.variable} h-full antialiased`}
+      className={`dark ${inter.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-background text-foreground font-sans tracking-tight">
+      <body className="min-h-screen bg-background text-foreground font-sans tracking-tight">
         <AnalyticsTracker />
         <NoiseOverlay />
         <LenisProvider>
