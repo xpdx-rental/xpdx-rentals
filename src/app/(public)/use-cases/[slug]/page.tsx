@@ -47,7 +47,6 @@ export const dynamicParams = true;
 
 type Props = { params: Promise<{ slug: string }> };
 
-import { generatedSlugs } from "@/lib/seo/registry";
 
 export async function generateStaticParams() {
   const slugs = await generatedSlugs("use-case");

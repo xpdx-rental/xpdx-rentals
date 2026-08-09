@@ -66,7 +66,6 @@ export const dynamicParams = true;
 
 type Props = { params: Promise<{ suburb: string }> };
 
-import { generatedSlugs } from "@/lib/seo/registry";
 
 export async function generateStaticParams() {
   const slugs = await generatedSlugs("location");
