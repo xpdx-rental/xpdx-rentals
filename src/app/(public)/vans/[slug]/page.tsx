@@ -19,11 +19,8 @@ import { HIRE_TERMS, INCLUSIONS } from "@/lib/business";
 export const revalidate = 300;
 export const dynamicParams = true;
 
-import { generatedSlugs } from "@/lib/seo/registry";
-
 export async function generateStaticParams() {
-  const slugs = await generatedSlugs("vehicle");
-  return slugs.map((slug) => ({ slug }));
+  return [];
 }
 
 function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {

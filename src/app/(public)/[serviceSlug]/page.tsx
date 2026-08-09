@@ -59,11 +59,8 @@ export const dynamicParams = true;
 
 type Props = { params: Promise<{ serviceSlug: string }> };
 
-import { generatedSlugs } from "@/lib/seo/registry";
-
 export async function generateStaticParams() {
-  const slugs = await generatedSlugs("service");
-  return slugs.map((slug) => ({ serviceSlug: slug }));
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

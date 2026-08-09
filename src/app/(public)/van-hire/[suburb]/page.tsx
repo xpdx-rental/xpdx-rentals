@@ -68,8 +68,7 @@ type Props = { params: Promise<{ suburb: string }> };
 
 
 export async function generateStaticParams() {
-  const slugs = await generatedSlugs("location");
-  return slugs.map((slug) => ({ suburb: slug }));
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

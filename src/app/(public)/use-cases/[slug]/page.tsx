@@ -49,8 +49,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 
 export async function generateStaticParams() {
-  const slugs = await generatedSlugs("use-case");
-  return slugs.map((slug) => ({ slug }));
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
