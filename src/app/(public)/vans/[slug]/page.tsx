@@ -8,6 +8,7 @@ import { getSiteContact } from "@/lib/data/settings";
 import { VanPhoto } from "@/components/public/van-photo";
 import { ContactLink } from "@/components/public/contact-link";
 import { EnquiryForm } from "@/components/public/enquiry-form";
+import { Van360Button } from "@/components/public/van-360-button";
 import { JsonLd } from "@/components/json-ld";
 import { vanSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { registryMetadata, suppressedMetadata } from "@/lib/seo/metadata";
@@ -113,6 +114,7 @@ export default async function VanDetailPage({ params }: { params: Promise<{ slug
                   sizes="(max-width: 1024px) 100vw, 60vw"
                 />
               </span>
+              <Van360Button />
             </div>
 
             {van.images.length > 1 ? (
