@@ -295,6 +295,9 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
 
   // Sync state changes to URL for the 'q' parameter
   useEffect(() => {
+    const currentQ = searchParams.get("q") ?? "";
+    if (filters.q === currentQ) return; // Prevent infinite refresh loop
+
     const params = new URLSearchParams(searchParams.toString());
     if (filters.q) {
       params.set("q", filters.q);
