@@ -1,4 +1,4 @@
-import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
+import { LeafletMap } from "@/components/public/leaflet-map";
 import { GEO, ADDRESS } from "@/lib/business";
 
 /**
@@ -28,7 +28,7 @@ import { GEO, ADDRESS } from "@/lib/business";
  */
 export function ServiceAreaMap() {
   return (
-    <DynamicServiceMap
+    <LeafletMap
       center={[GEO.latitude, GEO.longitude]}
       address={ADDRESS.full}
       radiusMiles={30}

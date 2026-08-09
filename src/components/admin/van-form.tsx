@@ -65,10 +65,53 @@ export function VanForm({
   van?: Van;
   mode: "create" | "edit";
 }) {
-  const [state, formAction, pending] = useActionState(action, null);
   const [name, setName] = useState(van?.name ?? "");
   const [slug, setSlug] = useState(van?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(van?.slug));
+  const [selectedImages, setSelectedImages] = useState<{ file: File; preview: string }[]>([]);
+  const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
+
+  const wrappedAction = async (prev: Result | null, formData: FormData) => {
+    if (mode === "create") {
+      formData.delete("images");
+      selectedImages.forEach(img => {
+        formData.append("images", img.file);
+      });
+      formData.set("primaryImageIndex", primaryImageIndex.toString());
+    }
+    return action(prev, formData);
+  };
+
+  const [state, formAction, pending] = useActionState(wrappedAction, null);
+
+  useEffect(() => {
+    return () => selectedImages.forEach((img) => URL.revokeObjectURL(img.preview));
+  }, [selectedImages]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files).map(file => ({
+        file,
+        preview: URL.createObjectURL(file)
+      }));
+      setSelectedImages(prev => [...prev, ...newFiles]);
+    }
+    e.target.value = ""; // Reset input so same file can be selected again
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => {
+      const newImages = [...prev];
+      URL.revokeObjectURL(newImages[index].preview);
+      newImages.splice(index, 1);
+      return newImages;
+    });
+    if (primaryImageIndex === index) {
+      setPrimaryImageIndex(0);
+    } else if (primaryImageIndex > index) {
+      setPrimaryImageIndex(prev => prev - 1);
+    }
+  };
 
   useEffect(() => {
     if (state?.ok) toast.success("Van saved");
@@ -83,15 +126,50 @@ export function VanForm({
       {van ? <input type="hidden" name="id" value={van.id} /> : null}
 
       {mode === "create" ? (
-        <Group title="Main Photo" description="Upload the primary photo of this van. You can add more photos later.">
-          <Field label="Image file" error={err("primaryImage")}>
+        <Group title="Photos" description="Upload photos of this van. You can click an image to set it as the cover photo.">
+          <Field label="Image files" error={err("images")}>
             <input 
               type="file" 
-              name="primaryImage" 
+              multiple
               accept="image/jpeg, image/png, image/webp, image/avif" 
+              onChange={handleImageChange}
               className="mt-1 block w-full text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-primary/20 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/30 transition-colors"
             />
           </Field>
+          
+          {selectedImages.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {selectedImages.map((img, i) => (
+                <div 
+                  key={img.preview} 
+                  className={`relative aspect-video cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                    i === primaryImageIndex ? "border-primary shadow-[0_0_0_2px_rgba(234,88,12,0.5)]" : "border-border hover:border-primary/50"
+                  }`}
+                  onClick={() => setPrimaryImageIndex(i)}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.preview} alt={`Preview ${i}`} className="size-full object-cover" />
+                  
+                  {i === primaryImageIndex && (
+                    <div className="absolute top-2 left-2 rounded-md bg-primary px-2 py-1 text-[10px] font-bold uppercase text-white shadow-sm">
+                      Cover
+                    </div>
+                  )}
+                  
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeImage(i);
+                    }}
+                    className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground backdrop-blur-sm hover:bg-danger hover:text-white transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </Group>
       ) : null}
 

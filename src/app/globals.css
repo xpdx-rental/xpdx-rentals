@@ -5,16 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* ── Ultra Premium Palette ──────────────────────────────────── */
-  --charcoal: #141516;     /* Primary Background */
-  --surface: #1B1C1F;      /* Secondary Surface */
-  --surface-raised: #222327; /* Cards */
-  --text-primary: #F5F4F2;
-  --text-secondary: #B6B8BC;
-  --text-muted: #7A7D84;
+  /* ── Premium Cream Palette (Creamish Yellow & Orange) ────────────────────── */
+  --base-bg: #FDF7E6;         /* Lighter Creamish Yellow Background */
+  --surface: #F3E8CE;         /* Secondary Surface (Warm Muted Cream) */
+  --surface-raised: #E8D7B8;  /* Cards (Darker Shade of Cream) */
+  --text-primary: #3F3320;    /* Dark Warm Brown/Stone */
+  --text-secondary: #6B5B45;  /* Muted Warm Brown */
+  --text-muted: #A89B85;      /* Warm Stone */
   --brand-orange: #EA580C;    /* Premium Accent */
   --brand-orange-dk: #C2410C; /* Hover Accent */
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-subtle: #DBC39E;   /* Deeper Cream Border */
 
   /* ── Semantic mapping ────────────────────────────────────────────────────── */
   --primary: var(--brand-orange);
@@ -22,27 +22,27 @@
   --primary-foreground: #FFFFFF;
 
   --link: var(--brand-orange);
-  --accent-dark: var(--brand-orange);
+  --accent-dark: var(--brand-orange-dk);
 
-  --success: #34D399; /* Muted Emerald */
-  --warning: #FBBF24;
-  --danger: #F87171;
-  --error: #F87171;
-  --info: var(--surface);
+  --success: #10B981; /* Emerald 500 */
+  --warning: #F59E0B; /* Amber 500 */
+  --danger: #EF4444;  /* Red 500 */
+  --error: #EF4444;
+  --info: #3B82F6;    /* Blue 500 */
 
-  /* The site is now universally dark/moody */
-  --background: var(--charcoal);
+  /* Light Theme Mapping */
+  --background: var(--base-bg);
   --foreground: var(--text-primary);
   --body: var(--text-secondary);
   --card: var(--surface-raised);
   --card-foreground: var(--text-primary);
-  --popover: var(--surface);
+  --popover: var(--surface-raised);
   --popover-foreground: var(--text-primary);
   --secondary: var(--surface);
   --secondary-foreground: var(--text-primary);
   --muted: var(--surface);
   --muted-foreground: var(--text-muted);
-  --accent: var(--surface-raised);
+  --accent: var(--surface);
   --accent-foreground: var(--text-primary);
   --destructive: var(--danger);
   --border: var(--border-subtle);
@@ -82,26 +82,7 @@ h1, h2, h3, h4 {
   letter-spacing: -0.015em;
 }
 
-.dark {
-  /* Surfaces - The entire site is now universally dark/moody */
-  --background: var(--charcoal);
-  --foreground: var(--text-primary);
-  --body: var(--text-secondary);
-  --card: var(--surface-raised);
-  --card-foreground: var(--text-primary);
-  --popover: var(--surface);
-  --popover-foreground: var(--text-primary);
-  --secondary: var(--surface);
-  --secondary-foreground: var(--text-primary);
-  --muted: var(--surface);
-  --muted-foreground: var(--text-muted);
-  --accent: var(--surface-raised);
-  --accent-foreground: var(--text-primary);
-  --destructive: var(--danger);
-  --border: var(--border-subtle);
-  --input: var(--border-subtle);
-  --ring: var(--brand-orange);
-}
+
 :root {
   /* Premium Shadow Elevation Scale (Softer, deeper) */
   --shadow-sm: 0 4px 12px 0 rgba(0, 0, 0, 0.05);

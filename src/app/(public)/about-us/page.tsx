@@ -251,7 +251,7 @@ export default async function AboutUsPage() {
       </section>
 
       {/* ── Our Mission ── */}
-      <section className="relative bg-background py-24 sm:py-32 overflow-hidden">
+      <section id="our-mission" className="relative bg-background py-24 sm:py-32 overflow-hidden">
         <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#EA580C]/[0.04] to-transparent pointer-events-none" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -283,7 +283,7 @@ export default async function AboutUsPage() {
       </section>
 
       {/* ── Competitive Advantages ── */}
-      <section className="bg-muted border-t border-white/[0.06] py-24">
+      <section id="why-choose-us" className="bg-muted border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px w-8 bg-[#EA580C]" />

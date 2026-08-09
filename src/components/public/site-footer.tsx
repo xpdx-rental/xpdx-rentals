@@ -4,7 +4,7 @@ import { getSiteContact, getOpeningHours } from "@/lib/data/settings";
 import { telHref } from "@/lib/lead";
 import { BRAND, SOCIALS, HIRE_TERMS } from "@/lib/business";
 import { allLocationLinks } from "@/lib/seo/links";
-import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
+import { IframeMap } from "@/components/public/iframe-map";
 
 const FLEET_LINKS = [
   { href: "/van-hire", label: "Van hire" },
@@ -202,7 +202,7 @@ export async function SiteFooter() {
               Our Location
             </h2>
             <div className="flex-grow rounded-xl overflow-hidden border border-border shadow-sm relative">
-              <DynamicServiceMap center={[-33.916, 151.011]} address={contact.address} className="w-full h-full min-h-[200px]" />
+              <IframeMap address={contact.address} className="w-full h-full min-h-[200px]" />
             </div>
             <a 
               href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`}

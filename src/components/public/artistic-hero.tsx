@@ -20,6 +20,7 @@ import {
   Users,
   Mail,
   PackageSearch,
+  ChevronDown,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import type { PublicVan } from "@/lib/data/public-vans";
@@ -55,16 +56,14 @@ function CursorSpotlight() {
 // Shared between the desktop floating pill and the mobile inline card so the
 // two layouts can never drift out of sync with each other.
 function QuickSearchForm({
-  vehicle,
-  onVehicleChange,
+  query,
+  onQueryChange,
   onSubmit,
-  vans,
   pill = true,
 }: {
-  vehicle: string;
-  onVehicleChange: (value: string) => void;
+  query: string;
+  onQueryChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
-  vans: PublicVan[];
   pill?: boolean;
 }) {
   return (
@@ -73,33 +72,31 @@ function QuickSearchForm({
       aria-label="Find a van"
       className={
         pill
-          ? "flex flex-col md:flex-row items-center gap-2 p-2 rounded-full bg-background/80 border border-white/[0.08] backdrop-blur-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
-          : "flex items-center gap-2 p-2 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md"
+          ? "flex flex-col md:flex-row items-center gap-2 p-2 rounded-full bg-background/90 border border-border backdrop-blur-2xl shadow-xl"
+          : "flex items-center gap-2 p-2 rounded-2xl bg-background/90 border border-border backdrop-blur-md"
       }
     >
       <div className="flex-1 flex items-center gap-3 px-4 py-2 min-w-0">
-        <Truck className="size-5 shrink-0 text-white/40" aria-hidden="true" />
+        <Search className="size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
         <div className="flex flex-col w-full min-w-0">
           <label
-            htmlFor={pill ? "vehicle" : "vehicle-mobile"}
-            className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-bold mb-0.5 cursor-pointer"
+            htmlFor={pill ? "search-desktop" : "search-mobile"}
+            className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-bold mb-0.5 cursor-pointer"
           >
             Find a van
           </label>
-          <select
-            id={pill ? "vehicle" : "vehicle-mobile"}
-            name="vehicle"
-            value={vehicle}
-            onChange={(e) => onVehicleChange(e.target.value)}
-            className="bg-transparent border-none p-0 text-sm text-white font-medium focus:ring-0 appearance-none cursor-pointer w-full outline-none truncate"
-          >
-            <option value="all" className="bg-[#111115]">Any vehicle — browse the fleet</option>
-            {vans.map((v) => (
-              <option key={v.id} value={v.slug} className="bg-[#111115]">
-                {v.name}
-              </option>
-            ))}
-          </select>
+          <div className="relative flex items-center w-full">
+            <input
+              id={pill ? "search-desktop" : "search-mobile"}
+              name="q"
+              type="search"
+              value={query}
+              onChange={(e) => onQueryChange(e.target.value)}
+              placeholder="Search by model, feature..."
+              className="bg-transparent border-none p-0 pr-6 text-sm text-foreground placeholder:text-muted-foreground font-medium focus:ring-0 appearance-none w-full outline-none truncate"
+              autoComplete="off"
+            />
+          </div>
         </div>
       </div>
 
@@ -107,7 +104,7 @@ function QuickSearchForm({
         <button
           type="submit"
           className="flex items-center justify-center size-14 shrink-0 rounded-full bg-primary hover:bg-primary-hover transition-colors text-primary-foreground shadow-lg"
-          aria-label={vehicle === "all" ? "Browse the fleet" : "View this van"}
+          aria-label="Search"
         >
           <Search className="size-5" aria-hidden="true" />
         </button>
@@ -150,12 +147,12 @@ export function ArtisticHero({
   vans: PublicVan[];
 }) {
   const containerRef = useRef<HTMLElement>(null);
-  const [vehicle, setVehicle] = useState("all");
+  const [query, setQuery] = useState("");
   const router = useRouter();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(vehicle === "all" ? "/vans" : `/vans/${vehicle}`);
+    router.push(query.trim() ? `/vans?q=${encodeURIComponent(query)}` : "/vans");
   };
 
   // The reduced-motion / Save-Data / slow-connection gating for the background
@@ -226,7 +223,7 @@ export function ArtisticHero({
       </div>
 
       {/* ── Main content ─────────────────────────────────────────────── */}
-      <div className="relative z-20 mx-auto w-full max-w-[1400px] px-6 lg:px-12 pt-32 pb-32">
+      <div className="relative z-20 mx-auto w-full max-w-[1400px] px-6 lg:px-12 pt-16 pb-24">
         <motion.div style={{ y: contentY, opacity }} className="flex flex-col justify-center max-w-2xl">
 
           {/* Eyebrow */}
@@ -260,8 +257,8 @@ export function ArtisticHero({
                 <span
                   className={
                     i === 1
-                      ? "text-transparent bg-clip-text bg-gradient-to-r from-[#EA580C] to-[#E5C07B] text-[clamp(3rem,7vw,6.5rem)]"
-                      : "text-white text-[clamp(3rem,7vw,6.5rem)]"
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-[#EA580C] to-[#E5C07B] text-[clamp(2.5rem,6vw,5rem)]"
+                      : "text-white text-[clamp(2.5rem,6vw,5rem)]"
                   }
                 >
                   {word}
@@ -275,56 +272,19 @@ export function ArtisticHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 text-[#9aa3ad] text-lg leading-relaxed max-w-md"
+            className="mt-8 text-white/90 font-medium text-lg leading-relaxed max-w-md drop-shadow-sm"
           >
             Powering Sydney&apos;s trades, couriers, and businesses. Tap into our massive fleet of 100+ commercial vans with unlimited kilometres and comprehensive insurance included.
           </motion.p>
 
-          {/* Stat chips */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.65 }}
-            className="flex flex-wrap gap-2 mt-6"
-          >
-            <StatChip icon={<MapPin className="size-3" />} label="Condell Park, Sydney" delay={0.7} />
-            <StatChip icon={<Shield className="size-3" />} label="Comprehensive insurance" delay={0.8} />
-            <StatChip icon={<Clock className="size-3" />} label="24/7 roadside assistance" delay={0.9} />
-            <StatChip icon={<Users className="size-3" />} label="Family-owned business" delay={1.0} />
-            {vans.length > 0 && (
-              <StatChip
-                icon={<Truck className="size-3" />}
-                label={`${vans.length} van${vans.length === 1 ? "" : "s"} in the fleet`}
-                delay={1.1}
-              />
-            )}
-          </motion.div>
 
-          {/* Load matcher cross-link — the site's other differentiator (an
-              actual size-fit tool, not a claim), surfaced right where someone
-              hesitating over "which van do I need" is standing. */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.15 }}
-            className="mt-4"
-          >
-            <Link
-              href="/vans#load-matcher"
-              className="group inline-flex items-center gap-1.5 text-xs font-medium text-white/50 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              <PackageSearch className="size-3.5 text-primary" aria-hidden="true" />
-              Not sure which size fits your load? Try our load matcher
-              <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-            </Link>
-          </motion.div>
 
           {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.75, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-wrap items-center gap-4 mt-10"
+            className="flex flex-wrap items-center gap-4 mt-8"
           >
             <MagneticButton
               href="/vans"
@@ -368,7 +328,7 @@ export function ArtisticHero({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
-            className="mt-10 pt-8 border-t border-white/[0.06] flex flex-wrap items-center gap-6"
+            className="mt-8 pt-6 border-t border-white/[0.06] flex flex-wrap items-center gap-6"
           >
             {cheapest && Number.isFinite(cheapest) && (
               <div className="flex items-center gap-4">
@@ -404,10 +364,9 @@ export function ArtisticHero({
             className="mt-8 md:hidden"
           >
             <QuickSearchForm
-              vehicle={vehicle}
-              onVehicleChange={setVehicle}
+              query={query}
+              onQueryChange={setQuery}
               onSubmit={handleSearch}
-              vans={vans}
               pill={false}
             />
           </motion.div>
@@ -440,10 +399,9 @@ export function ArtisticHero({
         className="absolute bottom-0 left-1/2 w-full max-w-4xl px-4 z-50 hidden md:block"
       >
         <QuickSearchForm
-          vehicle={vehicle}
-          onVehicleChange={setVehicle}
+          query={query}
+          onQueryChange={setQuery}
           onSubmit={handleSearch}
-          vans={vans}
           pill
         />
       </motion.div>

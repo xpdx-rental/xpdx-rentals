@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Fuse from "fuse.js";
 import { VanCard } from "@/components/public/van-card";
 import type { PublicVan } from "@/lib/data/public-vans";
 import { formatWeekly } from "@/lib/van";
@@ -74,24 +75,25 @@ function applyFilters(
   f: Filters,
   sort: SortKey
 ): PublicVan[] {
-  const q = f.q.trim().toLowerCase();
+  let searchResults = vans;
 
-  const filtered = vans.filter((v) => {
-    // Full-text search across all useful fields
-    if (q) {
-      const haystack = [
-        v.name,
-        v.bodyType,
-        v.wheelbaseLabel,
-        v.summary ?? "",
-        v.description ?? "",
-        ...v.features,
-      ]
-        .join(" ")
-        .toLowerCase();
-      if (!haystack.includes(q)) return false;
-    }
+  // Fuzzy Search with Fuse.js
+  if (f.q.trim()) {
+    const fuse = new Fuse(vans, {
+      keys: [
+        { name: "name", weight: 3 },
+        { name: "bodyType", weight: 2 },
+        { name: "wheelbaseLabel", weight: 2 },
+        { name: "features", weight: 1 },
+        { name: "summary", weight: 0.5 },
+      ],
+      threshold: 0.4,
+      ignoreLocation: true,
+    });
+    searchResults = fuse.search(f.q.trim()).map(res => res.item);
+  }
 
+  const filtered = searchResults.filter((v) => {
     if (f.bodyTypes.length && !f.bodyTypes.includes(v.bodyType)) return false;
     if (f.roofHeights.length && !f.roofHeights.includes(v.roof)) return false;
     if (f.maxPrice !== null && v.priceWeeklyFrom > f.maxPrice) return false;
@@ -152,8 +154,8 @@ function FilterChip({
       aria-pressed={active}
       className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
         active
-          ? "bg-primary border-primary text-primary-foreground shadow-[0_0_14px_rgba(201,171,129,0.35)]"
-          : "bg-black/20 border-white/5 text-white/60 hover:border-white/10 hover:text-white hover:bg-black/40 shadow-inner"
+          ? "bg-primary border-primary text-primary-foreground shadow-[0_0_14px_rgba(234,88,12,0.35)]"
+          : "bg-background border-border text-foreground/80 hover:border-primary/40 hover:text-foreground hover:bg-muted shadow-sm"
       }`}
     >
       {active && <Check className="size-4 shrink-0" aria-hidden="true" />}
@@ -204,7 +206,7 @@ function SortDropdown({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="inline-flex items-center gap-2 rounded-xl border border-white/5 bg-black/20 px-4 py-3 text-sm font-semibold text-white/80 shadow-inner transition-colors hover:border-white/10 hover:text-white"
+        className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground/80 shadow-sm transition-colors hover:border-primary/40 hover:text-foreground"
       >
         {label}
         <ChevronDown
@@ -221,7 +223,7 @@ function SortDropdown({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 z-50 min-w-[210px] rounded-2xl border border-white/10 bg-popover backdrop-blur-xl shadow-2xl overflow-hidden"
+            className="absolute right-0 top-full mt-2 z-50 min-w-[210px] rounded-2xl border border-border bg-popover backdrop-blur-xl shadow-2xl overflow-hidden"
           >
             {SORT_OPTIONS.map((o) => (
               <li key={o.value} role="option" aria-selected={value === o.value}>
@@ -231,15 +233,15 @@ function SortDropdown({
                     onChange(o.value);
                     setOpen(false);
                   }}
-                  className={`flex items-center gap-3 w-full px-5 py-4 sm:px-4 sm:py-3 text-sm text-left transition-colors hover:bg-white/[0.07] ${
+                  className={`flex items-center gap-3 w-full px-5 py-4 sm:px-4 sm:py-3 text-sm text-left transition-colors hover:bg-muted/80 ${
                     value === o.value
-                      ? "text-[#EA580C] font-semibold bg-[#EA580C]/[0.06]"
-                      : "text-white/70"
+                      ? "text-primary font-semibold bg-primary/10"
+                      : "text-foreground/80"
                   }`}
                 >
                   <span className="size-3.5 shrink-0 flex items-center justify-center">
                     {value === o.value && (
-                      <Check className="size-3.5 text-[#EA580C]" />
+                      <Check className="size-3.5 text-primary" />
                     )}
                   </span>
                   {o.label}
@@ -263,13 +265,13 @@ function ActivePill({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-[#EA580C]/10 border border-[#EA580C]/25 pl-3 pr-2 py-1 text-[11px] text-[#EA580C] font-medium">
+    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/25 pl-3 pr-2 py-1 text-[11px] text-primary font-medium">
       {label}
       <button
         type="button"
         onClick={onRemove}
         aria-label={`Remove filter: ${label}`}
-        className="ml-0.5 rounded-full p-0.5 hover:bg-[#EA580C]/20 transition-colors"
+        className="ml-0.5 rounded-full p-0.5 hover:bg-primary/20 transition-colors"
       >
         <X className="size-3" />
       </button>
@@ -284,28 +286,42 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const [filters, setFilters] = useState<Filters>(() => ({
-    ...DEFAULT_FILTERS,
-    q: searchParams.get("q") ?? "",
-  }));
+  const [filters, setFilters] = useState<Filters>(() => {
+    const bt = searchParams.getAll("bodyType");
+    const rh = searchParams.getAll("roof");
+    const mp = searchParams.get("maxPrice");
+    const mpay = searchParams.get("minPayload");
+    const ms = searchParams.get("minSeats");
+    
+    return {
+      q: searchParams.get("q") ?? "",
+      bodyTypes: bt,
+      roofHeights: rh,
+      maxPrice: mp ? parseInt(mp, 10) : null,
+      minPayload: mpay ? parseInt(mpay, 10) : null,
+      minSeats: ms ? parseInt(ms, 10) : null,
+    };
+  });
   const [sort, setSort] = useState<SortKey>("recommended");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [, startTransition] = useTransition();
   const searchId = useId();
 
-  // Sync state changes to URL for the 'q' parameter
+  // Sync state changes to URL for all filters
   useEffect(() => {
-    const currentQ = searchParams.get("q") ?? "";
-    if (filters.q === currentQ) return; // Prevent infinite refresh loop
+    const params = new URLSearchParams();
+    if (filters.q) params.set("q", filters.q);
+    filters.bodyTypes.forEach(bt => params.append("bodyType", bt));
+    filters.roofHeights.forEach(rh => params.append("roof", rh));
+    if (filters.maxPrice) params.set("maxPrice", filters.maxPrice.toString());
+    if (filters.minPayload) params.set("minPayload", filters.minPayload.toString());
+    if (filters.minSeats) params.set("minSeats", filters.minSeats.toString());
 
-    const params = new URLSearchParams(searchParams.toString());
-    if (filters.q) {
-      params.set("q", filters.q);
-    } else {
-      params.delete("q");
+    // Only update if URL actually differs from current state
+    if (params.toString() !== searchParams.toString()) {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [filters.q, pathname, router, searchParams]);
+  }, [filters, pathname, router, searchParams]);
 
   // Derived option lists computed once from the dataset
   const bodyTypes = useMemo(
@@ -345,7 +361,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
   return (
     <div>
       {/* ── Sticky search bar ── */}
-      <div className="sticky top-20 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 bg-background/90 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-20 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 bg-background/90 backdrop-blur-xl border-b border-border">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row gap-3">
           {/* Text search */}
           <label htmlFor={searchId} className="sr-only">
@@ -353,7 +369,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
           </label>
           <div className="relative flex-1">
             <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-white/30 pointer-events-none"
+              className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
               aria-hidden="true"
             />
             <input
@@ -364,14 +380,14 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               placeholder="Search by model, body type, feature…"
               autoComplete="off"
               spellCheck={false}
-              className="w-full rounded-xl border border-white/5 bg-black/20 shadow-inner pl-11 pr-10 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors"
+              className="w-full rounded-xl border border-border bg-background shadow-sm pl-11 pr-10 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors"
             />
             {filters.q && (
               <button
                 type="button"
                 onClick={() => patch({ q: "" })}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-white/30 hover:text-white hover:bg-white/10 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 <X className="size-4" />
               </button>
@@ -387,8 +403,8 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               aria-controls="filter-panel"
               className={`relative inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all backdrop-blur-sm ${
                   filtersOpen || activeCount > 0
-                    ? "border-primary/50 bg-primary/10 text-primary shadow-[0_0_15px_rgba(201,171,129,0.2)]"
-                    : "border-white/5 bg-black/20 shadow-inner text-white/70 hover:border-white/10 hover:text-white hover:bg-black/40"
+                    ? "border-primary/50 bg-primary/10 text-primary shadow-sm"
+                    : "border-border bg-background shadow-sm text-foreground/80 hover:border-primary/40 hover:text-foreground hover:bg-muted"
               }`}
             >
               <SlidersHorizontal className="size-4" />
@@ -396,7 +412,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               {activeCount > 0 && (
                 <span
                   aria-live="polite"
-                  className="flex size-5 items-center justify-center rounded-full bg-[#EA580C] text-[10px] font-bold text-white"
+                  className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
                 >
                   {activeCount}
                 </span>
@@ -417,7 +433,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
                   type="button"
                   onClick={clearAll}
                   aria-label="Clear all filters"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-3 text-sm text-white/50 hover:text-white hover:border-white/25 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-muted transition-colors"
                 >
                   <X className="size-3.5" />
                   <span className="hidden sm:inline">Clear</span>
@@ -439,12 +455,12 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="border-b border-white/[0.06] bg-muted px-4 sm:px-6 py-8">
+            <div className="border-b border-border bg-muted/40 px-4 sm:px-6 py-8">
               <div className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
 
                 {/* Body Type */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-3 font-bold">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3 font-bold">
                     Body Type
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -461,7 +477,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
 
                 {/* Roof Height */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-3 font-bold">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3 font-bold">
                     Roof Height
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -478,7 +494,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
 
                 {/* Max Weekly Price */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-3 font-bold">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3 font-bold">
                     Max Weekly Rate
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -497,7 +513,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
 
                 {/* Min Payload */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-3 font-bold">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3 font-bold">
                     Min Payload
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -518,7 +534,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
 
                 {/* Min Seats */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-3 font-bold">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3 font-bold">
                     Min Seats
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -543,11 +559,11 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
       </AnimatePresence>
 
       {/* ── Results bar ── */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/[0.04]">
-        <p className="text-sm text-white/40 font-mono shrink-0" aria-live="polite">
-          <span className="text-white font-bold text-base">{filtered.length}</span>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border">
+        <p className="text-sm text-muted-foreground font-mono shrink-0" aria-live="polite">
+          <span className="text-foreground font-bold text-base">{filtered.length}</span>
           {" of "}
-          <span className="text-white/60">{vans.length}</span>
+          <span className="text-foreground/80">{vans.length}</span>
           {" vehicles"}
         </p>
 
@@ -602,17 +618,17 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
           animate={{ opacity: 1 }}
           className="mx-auto max-w-6xl px-4 sm:px-6 py-16"
         >
-          <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl border border-white/[0.06] bg-white/[0.02]">
-            <Search className="size-10 text-white/20 mb-4" aria-hidden="true" />
-            <p className="font-heading text-xl font-bold text-white/80">
+          <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl border border-border bg-muted/20">
+            <Search className="size-10 text-muted-foreground mb-4" aria-hidden="true" />
+            <p className="font-heading text-xl font-bold text-foreground">
               No vehicles match your criteria
             </p>
-            <p className="mt-2 text-sm text-white/40 max-w-xs leading-relaxed">
+            <p className="mt-2 text-sm text-muted-foreground max-w-xs leading-relaxed">
               Try broadening your search, removing some filters, or{" "}
               <button
                 type="button"
                 onClick={clearAll}
-                className="text-[#EA580C] underline underline-offset-2 hover:no-underline"
+                className="text-primary underline underline-offset-2 hover:no-underline"
               >
                 clearing all
               </button>
@@ -621,7 +637,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
             <button
               type="button"
               onClick={clearAll}
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#EA580C]/10 border border-[#EA580C]/30 px-6 py-3 text-sm font-semibold text-[#EA580C] hover:bg-[#EA580C]/20 transition-colors"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-6 py-3 text-sm font-semibold text-primary hover:bg-primary/20 transition-colors"
             >
               <X className="size-4" />
               Clear all filters
