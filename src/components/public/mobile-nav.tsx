@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronRight, Phone, MessageCircle } from "lucide-react";
+import { Menu, X, ChevronRight, Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { NAV_LINKS } from "@/components/public/nav-links";
 import { telHref, waHref } from "@/lib/lead";
 
@@ -145,7 +146,7 @@ export function MobileNav({ phone, whatsapp }: { phone: string | null; whatsapp:
                     rel="noopener noreferrer"
                     className="flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border px-4 font-semibold text-foreground"
                   >
-                    <MessageCircle className="size-5" aria-hidden="true" /> WhatsApp
+                    <WhatsAppIcon className="size-5" aria-hidden="true" /> WhatsApp
                   </a>
                 ) : null}
               </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Globe2, Mail, MessageCircle } from "lucide-react";
+import { Globe2, Mail } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
@@ -114,7 +115,7 @@ export default function GeoBlockedPage() {
               rel="noopener noreferrer"
               className={cn(buttonVariants({ variant: "outline", size: "cta" }), "gap-2")}
             >
-              <MessageCircle className="size-4" />
+              <WhatsAppIcon className="size-4" />
               Chat on WhatsApp
             </a>
           ) : null}

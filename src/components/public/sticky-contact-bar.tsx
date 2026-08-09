@@ -1,4 +1,5 @@
-import { Phone, MessageCircle } from "lucide-react";
+import { Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { ContactLink } from "@/components/public/contact-link";
 import { getSiteContact } from "@/lib/data/settings";
 import { telHref, waHref } from "@/lib/lead";
@@ -42,7 +43,7 @@ export async function StickyContactBar() {
             rel="noopener noreferrer"
             className="flex min-h-14 items-center justify-center gap-2 font-bold text-foreground"
           >
-            <MessageCircle className="size-5" aria-hidden="true" />
+            <WhatsAppIcon className="size-5" aria-hidden="true" />
             WhatsApp
           </ContactLink>
         ) : null}

@@ -1,4 +1,5 @@
-import { Phone, MessageCircle } from "lucide-react";
+import { Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { ContactLink } from "@/components/public/contact-link";
 import { telHref, waHref } from "@/lib/lead";
@@ -71,7 +72,7 @@ export function ConversionBlock({
                 rel="noopener noreferrer"
                 className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border px-5 font-bold text-foreground hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
-                <MessageCircle className="size-5" aria-hidden="true" /> WhatsApp
+                <WhatsAppIcon className="size-5" aria-hidden="true" /> WhatsApp
               </ContactLink>
             ) : null}
           </div>

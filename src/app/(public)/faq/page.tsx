@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { FAQ_GROUPS, ALL_FAQS, FAQ_CLOSING } from "@/lib/content/faqs";
 import { JsonLd } from "@/components/json-ld";
 import { faqPageSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
@@ -200,7 +201,7 @@ export default function FaqPage() {
         </div>
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-[#EA580C]/10 border border-[#EA580C]/20 mb-6">
-            <MessageCircle className="size-7 text-[#EA580C]" />
+            <WhatsAppIcon className="size-7 text-[#EA580C]" />
           </div>
           <h2 className="font-heading text-3xl sm:text-4xl font-black text-white tracking-tight">
             Still have a question?

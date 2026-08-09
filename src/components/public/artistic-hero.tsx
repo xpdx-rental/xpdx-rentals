@@ -18,9 +18,10 @@ import {
   Search,
   Truck,
   Users,
-  MessageCircle,
+  Mail,
   PackageSearch,
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import type { PublicVan } from "@/lib/data/public-vans";
 import { formatWeekly } from "@/lib/van";
 import { telHref, waHref } from "@/lib/lead";
@@ -357,7 +358,7 @@ export function ArtisticHero({
                 aria-label="Message us on WhatsApp"
                 className="group inline-flex size-14 items-center justify-center rounded-full border border-white/10 bg-transparent text-white/70 transition-all hover:border-emerald-400/40 hover:text-emerald-400"
               >
-                <MessageCircle className="size-5 transition-transform group-hover:scale-110" />
+                <WhatsAppIcon className="size-5 transition-transform group-hover:scale-110" />
               </MagneticButton>
             )}
           </motion.div>

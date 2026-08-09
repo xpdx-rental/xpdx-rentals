@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Phone, Mail, MapPin, MessageCircle, Clock, ArrowRight, Zap } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ArrowRight, Zap } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { getSiteContact, getOpeningHours } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
@@ -116,7 +117,7 @@ export default async function ContactUsPage() {
                       className="flex items-center gap-4 px-5 py-4 group hover:bg-white/[0.04] transition-colors"
                     >
                       <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 shrink-0 group-hover:bg-emerald-500/15 transition-colors">
-                        <MessageCircle className="size-4 text-emerald-400" />
+                        <WhatsAppIcon className="size-4 text-emerald-400" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">WhatsApp</p>

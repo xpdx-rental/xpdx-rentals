@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Phone, MessageCircle, Check } from "lucide-react";
+import { Phone, Check } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { getPublicVanBySlug, getPublicVanSlugs } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
 import { VanPhoto } from "@/components/public/van-photo";
@@ -182,7 +183,7 @@ export default async function VanDetailPage({ params }: { params: Promise<{ slug
                   rel="noopener noreferrer"
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border px-5 font-bold text-foreground hover:border-primary hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  <MessageCircle className="size-5" aria-hidden="true" /> WhatsApp
+                  <WhatsAppIcon className="size-5" aria-hidden="true" /> WhatsApp
                 </ContactLink>
               ) : null}
             </div>
