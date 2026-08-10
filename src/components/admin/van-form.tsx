@@ -220,13 +220,12 @@ export function VanForm({
           </Field>
 
           <Field label="Body type" hint="HiAce or Sprinter" error={err("bodyType")}>
-            <input name="bodyType" required defaultValue={van?.bodyType ?? ""} className={input} />
+            <input name="bodyType" defaultValue={van?.bodyType ?? ""} className={input} />
           </Field>
 
           <Field label="Wheelbase" hint="LWB, SWLB, SWB or MWB" error={err("wheelbaseLabel")}>
             <input
               name="wheelbaseLabel"
-              required
               defaultValue={van?.wheelbaseLabel ?? ""}
               className={input}
             />
@@ -247,7 +246,6 @@ export function VanForm({
               name="tonnage"
               type="number"
               step="0.1"
-              required
               defaultValue={van?.tonnage ?? ""}
               className={input}
             />
@@ -256,14 +254,13 @@ export function VanForm({
           <Field label="Transmission" error={err("transmission")}>
             <input
               name="transmission"
-              required
               defaultValue={van?.transmission ?? "Automatic"}
               className={input}
             />
           </Field>
 
           <Field label="Fuel" error={err("fuel")}>
-            <input name="fuel" required defaultValue={van?.fuel ?? "Diesel"} className={input} />
+            <input name="fuel" defaultValue={van?.fuel ?? "Diesel"} className={input} />
           </Field>
 
           <Field label="Seats" hint="Leave blank if unconfirmed" error={err("seats")}>
@@ -291,7 +288,7 @@ export function VanForm({
             <input
               name="priceWeeklyFrom"
               type="number"
-              required
+              step="1"
               defaultValue={van?.priceWeeklyFrom ?? ""}
               className={input}
             />

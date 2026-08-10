@@ -69,23 +69,16 @@ export const vanSchema = z.object({
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       "Slug must be lowercase letters, numbers and single hyphens",
     ),
-  bodyType: requiredText("Body type", 60),
-  wheelbaseLabel: requiredText("Wheelbase", 20),
+  bodyType: z.string().trim().default("Not specified"),
+  wheelbaseLabel: z.string().trim().default("Not specified"),
   roof: z.enum(ROOF_HEIGHTS as [string, ...string[]]),
-  tonnage: z.coerce
-    .number({ message: "Tonnage is required" })
-    .positive("Tonnage must be greater than zero")
-    .max(99.9, "Tonnage looks wrong"),
-  transmission: requiredText("Transmission", 40),
-  fuel: requiredText("Fuel", 40),
+  tonnage: z.coerce.number().default(0),
+  transmission: z.string().trim().default("Not specified"),
+  fuel: z.string().trim().default("Not specified"),
   seats: optionalInt(20),
 
   // ── Pricing ──
-  priceWeeklyFrom: z.coerce
-    .number({ message: "Weekly rate is required" })
-    .int("Weekly rate must be a whole number of dollars")
-    .positive("Weekly rate must be greater than zero")
-    .max(100000, "Weekly rate looks wrong"),
+  priceWeeklyFrom: z.coerce.number().default(0),
   priceMonthlyFrom: optionalInt(1000000),
   depositAmount: optionalInt(10000),
   // 28 days is the contractual minimum everywhere on the site. No page may
