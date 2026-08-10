@@ -72,7 +72,7 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
           
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Post Content</label>
-            <div className="prose prose-invert max-w-none ck-editor-container bg-background text-foreground rounded-lg overflow-hidden border border-border">
+            <div className="prose max-w-none ck-editor-container bg-background text-foreground rounded-lg overflow-hidden border border-border">
               <CKEditor
                 // The classic build ships its own `Editor` class whose type
                 // does not structurally match the one `@ckeditor/ckeditor5-react`
