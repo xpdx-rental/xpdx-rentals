@@ -19,7 +19,7 @@
   /* ── Semantic mapping ────────────────────────────────────────────────────── */
   --primary: var(--brand-orange);
   --primary-hover: var(--brand-orange-dk);
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #000000;
 
   --link: var(--brand-orange);
   --accent-dark: var(--brand-orange-dk);

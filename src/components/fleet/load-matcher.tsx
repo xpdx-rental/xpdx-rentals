@@ -255,7 +255,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
                 whileTap={{ scale: 0.98 }}
                 className={`relative flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 text-center transition-all duration-300 ${
                   isActive
-                    ? "border-primary/50 bg-primary/10 shadow-[0_0_30px_rgba(201,171,129,0.15)]"
+                    ? "border-primary/50 bg-primary/10 shadow-[0_0_30px_rgba(255,95,0,0.15)]"
                     : "border-border bg-card hover:border-primary/30 hover:bg-accent/50 shadow-sm"
                 }`}
               >

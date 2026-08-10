@@ -78,7 +78,7 @@ export async function SiteNav() {
           <MagneticButton
             href="/contact-us"
             strength={0.25}
-            className="hidden min-h-11 items-center rounded-full bg-primary px-6 text-[13px] font-bold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_28px_rgba(201,171,129,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:inline-flex shadow-[0_0_20px_rgba(201,171,129,0.3)]"
+            className="hidden min-h-11 items-center rounded-full bg-primary px-6 text-[13px] font-bold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_28px_rgba(255,95,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:inline-flex shadow-[0_0_20px_rgba(255,95,0,0.3)]"
           >
             Get a quote
           </MagneticButton>

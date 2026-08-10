@@ -36,7 +36,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
     mouseY.set(e.clientY - rect.top);
   };
   
-  const spotlightBackground = useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(201,171,129,0.1) 0%, transparent 80%)`;
+  const spotlightBackground = useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(255,95,0,0.1) 0%, transparent 80%)`;
 
   return (
     <motion.article
@@ -46,7 +46,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       id={`van-card-${van.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-card/50 backdrop-blur-md shadow-lg transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(201,171,129,0.15)] hover:border-[#EA580C]/40 hover:-translate-y-1.5"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-card/50 backdrop-blur-md shadow-lg transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(255,95,0,0.15)] hover:border-[#EA580C]/40 hover:-translate-y-1.5"
     >
       <motion.div
         className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -128,7 +128,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
           </p>
           <VanTransitionLink
             href={`/vans/${van.slug}`}
-            className="relative z-20 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,171,129,0.3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="relative z-20 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(255,95,0,0.3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             View van
             <ArrowRight className="size-4" aria-hidden="true" />

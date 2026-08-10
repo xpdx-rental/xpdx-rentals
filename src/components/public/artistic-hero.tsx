@@ -35,7 +35,7 @@ import type { SiteContact } from "@/lib/data/settings";
 function CursorSpotlight() {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const background = useMotionTemplate`radial-gradient(600px circle at ${x}px ${y}px, rgba(201,171,129,0.06) 0%, transparent 60%)`;
+  const background = useMotionTemplate`radial-gradient(600px circle at ${x}px ${y}px, rgba(255,95,0,0.06) 0%, transparent 60%)`;
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -257,7 +257,7 @@ export function ArtisticHero({
                 <span
                   className={
                     i === 1
-                      ? "text-transparent bg-clip-text bg-gradient-to-r from-[#EA580C] to-[#E5C07B] text-[clamp(2.5rem,6vw,5rem)]"
+                      ? "text-primary text-[clamp(2.5rem,6vw,5rem)]"
                       : "text-white text-[clamp(2.5rem,6vw,5rem)]"
                   }
                 >
@@ -288,7 +288,7 @@ export function ArtisticHero({
           >
             <MagneticButton
               href="/vans"
-              className="group relative inline-flex h-14 items-center gap-3 overflow-hidden rounded-full bg-primary pl-8 pr-6 font-bold text-primary-foreground text-[15px] tracking-tight shadow-[0_8px_32px_rgba(201,171,129,0.35)] transition-shadow hover:shadow-[0_12px_48px_rgba(201,171,129,0.5)]"
+              className="group relative inline-flex h-14 items-center gap-3 overflow-hidden rounded-full bg-primary pl-8 pr-6 font-bold text-primary-foreground text-[15px] tracking-tight shadow-[0_8px_32px_rgba(255,95,0,0.35)] transition-shadow hover:shadow-[0_12px_48px_rgba(255,95,0,0.5)]"
             >
               {/* shimmer sweep */}
               <span className="absolute inset-0 [transform:skew(-20deg)_translateX(-120%)] group-hover:[transform:skew(-20deg)_translateX(200%)] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />

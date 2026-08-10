@@ -144,8 +144,8 @@ export default async function ContactUsPage() {
                   )}
 
                   <div className="flex items-start gap-4 px-5 py-4">
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 shrink-0">
-                      <MapPin className="size-4 text-purple-400" />
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 shrink-0">
+                      <MapPin className="size-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Our yard</p>
@@ -156,7 +156,7 @@ export default async function ContactUsPage() {
                         href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-purple-400 hover:underline"
+                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
                       >
                         Get directions <ArrowRight className="size-3" />
                       </a>
