@@ -354,6 +354,18 @@ export function ArtisticHero({
             </div>
           </motion.div>
 
+          {/* Slogan */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.1 }}
+            className="mt-6"
+          >
+            <p className="text-primary font-heading font-black text-xl md:text-2xl tracking-[0.2em] uppercase drop-shadow-sm">
+              Rent. Drive. Thrive.
+            </p>
+          </motion.div>
+
           {/* Quick search — inline, mobile only. The desktop version is the
               floating pill below; mobile gets it in normal flow instead of
               zero search capability at all below md. */}
