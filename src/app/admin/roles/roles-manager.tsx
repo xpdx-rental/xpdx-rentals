@@ -223,17 +223,10 @@ function RoleRow({ entry }: { entry: AdminRoleEntry }) {
 }
 
 export function RolesManager({ roles, currentUserRole }: { roles: AdminRoleEntry[], currentUserRole?: string }) {
-  // Always hide super_admin and the specific stealth accounts from EVERYONE
-  const baseVisibleRoles = roles.filter(r => 
-    r.role !== "super_admin" && 
-    r.email?.toLowerCase() !== "pankaj@techtonika-autolink.com" && 
-    r.email?.toLowerCase() !== "ybikash919@gmail.com"
-  );
-
-  // If the current user is an admin, also hide 'owner' role from the list
+  // If the current user is an admin, hide 'owner' and 'super_admin' roles from the list
   const visibleRoles = currentUserRole === "admin" 
-    ? baseVisibleRoles.filter(r => r.role !== "owner")
-    : baseVisibleRoles;
+    ? roles.filter(r => r.role !== "owner" && r.role !== "super_admin")
+    : roles;
 
   const activeRoles = visibleRoles.filter((r) => r.active);
   const revokedRoles = visibleRoles.filter((r) => !r.active);
