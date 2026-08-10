@@ -243,7 +243,7 @@ function buildUseCasePage(uc: UseCase, vans: PublicVan[], hasContact: boolean): 
   const decision = decide(path, {
     entityValid: true,
     matchedVans: matched.length,
-    minVans: 1,
+    minVans: 0,
     differentiatingModules: differentiating,
     dataFieldsPresent: dataPresent,
     dataFieldsPossible: 4,
