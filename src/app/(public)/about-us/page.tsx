@@ -99,18 +99,18 @@ export default async function AboutUsPage() {
                 <Star key={i} className="size-4 text-amber-500 fill-amber-500" />
               ))}
             </div>
-            <span className="text-muted-foreground text-xs font-medium tracking-wide">
+            <span className="text-foreground/90 text-xs font-medium tracking-wide drop-shadow-sm">
               <span className="text-foreground font-bold">5.0</span> average on Google
             </span>
           </div>
 
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px w-8 bg-[#EA580C]" />
-            <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Our Story</span>
+            <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em] drop-shadow-sm">Our Story</span>
           </div>
           
           <div className="flex flex-wrap items-end gap-6 mb-2">
-            <h1 className="font-heading text-5xl sm:text-7xl font-black tracking-tight text-foreground leading-[1.05]">
+            <h1 className="font-heading text-5xl sm:text-7xl font-black tracking-tight text-foreground leading-[1.05] drop-shadow-md">
               Built on trust.<br />
               <span className="text-[#EA580C]">Driven by people.</span>
             </h1>
@@ -126,7 +126,7 @@ export default async function AboutUsPage() {
               </span>
             </div>
           </div>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-6 max-w-xl text-lg text-foreground/90 font-medium leading-relaxed drop-shadow-sm">
             A family-owned business from Condell Park, Sydney — helping tradespeople, couriers
             and businesses stay on the road since day one.
           </p>
@@ -139,7 +139,7 @@ export default async function AboutUsPage() {
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-muted-foreground hover:border-border hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground/90 hover:border-foreground hover:text-foreground transition-colors bg-background/50 backdrop-blur-sm"
             >
               Get in touch
             </a>
