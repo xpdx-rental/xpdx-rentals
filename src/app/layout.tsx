@@ -66,6 +66,9 @@ export const metadata: Metadata = {
     default: "XPDX Rentals — van hire in Sydney",
     template: "%s | XPDX Rentals",
   },
+  verification: {
+    google: "1_k8pvVl2rvJULkNXMUoYK2xo7s0yGZcpNkndN_qKIk",
+  },
   description:
     "Long-term cargo van hire from Condell Park, Sydney. Unlimited kilometres, comprehensive insurance and 24/7 roadside assistance included. 28 day minimum hire.",
   metadataBase: new URL(siteBaseUrl()),
