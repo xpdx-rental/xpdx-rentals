@@ -100,7 +100,7 @@ export async function bulkUploadVans(formData: FormData) {
           revalidatePath("/vans");
           resolve({ success: true, count: rowsToInsert.length });
         },
-        error: (error) => {
+        error: (error: any) => {
           resolve({ success: false, error: `CSV Error: ${error.message}` });
         },
       });
