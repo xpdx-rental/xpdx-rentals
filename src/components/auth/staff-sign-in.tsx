@@ -103,10 +103,11 @@ export function StaffSignIn() {
           try {
             const supabase = createClient();
             const next = redirectedFrom || "/admin";
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
             const { error } = await supabase.auth.signInWithOAuth({
               provider: "google",
               options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+                redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`,
                 queryParams: { prompt: "select_account" }
               },
             });

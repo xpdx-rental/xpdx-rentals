@@ -6,7 +6,7 @@ import { getSiteContact } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { BackgroundVideo } from "@/components/public/background-video";
 import { JsonLd } from "@/components/json-ld";
-import { IframeMap } from "@/components/public/iframe-map";
+import { ServiceAreaMap } from "@/components/public/service-area-map";
 import { breadcrumbSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { corePage } from "@/lib/seo/entities/core-pages";
@@ -122,7 +122,7 @@ export default async function ServiceAreaPage() {
               </h2>
               <address className="mt-6 not-italic text-lg text-foreground font-semibold">{contact.address}</address>
               <p className="mt-4 text-muted-foreground text-lg leading-relaxed">
-                Situated in the heart of south-west Sydney, our depot offers rapid, hassle-free access to our entire fleet. Our standard operating zone guarantees exceptional service within a 20-mile radius, perfectly catering to both local residents and dynamic businesses.
+                Situated in the heart of south-west Sydney, our depot offers rapid, hassle-free access to our entire fleet. Our standard operating zone guarantees exceptional service within a 20-kilometer radius, perfectly catering to both local residents and dynamic businesses.
               </p>
               <div className="mt-8">
                 <a
@@ -153,11 +153,11 @@ export default async function ServiceAreaPage() {
               Our Primary Service Zone
             </h2>
             <p className="mt-2 text-body max-w-2xl mx-auto">
-              While our vans are fully approved for use across all of New South Wales, the map below highlights our primary 20-mile service radius—where we support hundreds of local businesses and residents every single week.
+              While our vans are fully approved for use across all of New South Wales, the map below highlights our primary 20-kilometer service radius—where we support hundreds of local businesses and residents every single week.
             </p>
           </div>
           {/* Condell Park coordinates: -33.916, 151.011 */}
-          <IframeMap address={contact.address} />
+          <ServiceAreaMap />
         </section>
 
         <section aria-labelledby="nearby" className="mt-12">

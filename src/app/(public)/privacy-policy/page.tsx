@@ -23,7 +23,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
       >
         {title}
       </h2>
-      <div className="text-body text-[15px] leading-loose space-y-5 text-white/70">{children}</div>
+      <div className="text-body text-[15px] leading-loose space-y-5 text-muted-foreground">{children}</div>
     </section>
   );
 }
@@ -41,13 +41,13 @@ export default function PrivacyPolicyPage() {
       />
 
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-white/[0.06] bg-black/20">
+      <div className="relative overflow-hidden border-b border-border bg-muted/50">
         <div aria-hidden="true" className="ambient-glow -left-40 top-0 size-[32rem] bg-primary/5" />
         <div className="relative mx-auto max-w-3xl px-4 py-24 sm:px-6 sm:py-32">
           <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl">
             Privacy Policy
           </h1>
-          <p className="mt-6 text-lg text-white/60 leading-relaxed max-w-2xl">
+          <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl">
             {BRAND.name} is committed to protecting your personal information in accordance with the{" "}
             <em>Privacy Act 1988</em> (Cth) and the Australian Privacy Principles (APPs). This
             Policy explains what personal information we collect, how we use it, and your rights.
@@ -264,7 +264,7 @@ export default function PrivacyPolicyPage() {
           <p>
             For access requests, corrections, complaints or any privacy-related enquiry, please contact us:
           </p>
-          <address className="not-italic mt-6 p-8 rounded-2xl bg-black/20 border border-white/[0.05] shadow-inner text-[15px] leading-loose text-white/70">
+          <address className="not-italic mt-6 p-8 rounded-2xl bg-muted/50 border border-border shadow-inner text-[15px] leading-loose text-muted-foreground">
             <strong className="text-foreground text-lg">Privacy Officer</strong><br />
             {BRAND.name}<br />
             {ADDRESS.full}<br />
@@ -288,8 +288,8 @@ export default function PrivacyPolicyPage() {
         </Section>
 
         {/* Legal disclaimer */}
-        <div className="rounded-2xl border border-white/[0.05] bg-black/20 shadow-inner p-8 text-[15px] leading-loose text-white/50">
-          <p className="font-semibold text-white/80 mb-2 uppercase tracking-widest text-xs">⚠️ Notice</p>
+        <div className="rounded-2xl border border-border bg-muted/50 shadow-inner p-8 text-[15px] leading-loose text-muted-foreground">
+          <p className="font-semibold text-muted-foreground mb-2 uppercase tracking-widest text-xs">⚠️ Notice</p>
           <p>
             This Privacy Policy is designed to comply with the <em>Privacy Act 1988</em> (Cth) and the Australian Privacy Principles. If you have questions about how we handle your personal information, please contact us before providing it. You can also obtain information about privacy rights from the Office of the Australian Information Commissioner at{" "}
             <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">

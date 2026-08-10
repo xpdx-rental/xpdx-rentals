@@ -31,7 +31,7 @@ export function ServiceAreaMap() {
     <LeafletMap
       center={[GEO.latitude, GEO.longitude]}
       address={ADDRESS.full}
-      radiusMiles={30}
+      radiusKm={20}
       zoom={9}
       className="relative h-[500px] w-full overflow-hidden rounded-3xl border border-border bg-muted/20 shadow-2xl sm:h-[600px]"
     />

@@ -1,5 +1,5 @@
 import { Shield, ShieldAlert } from "lucide-react";
-import { requireAdminRole } from "@/lib/security/auth";
+import { requireAdminRole, getUserAdminRole } from "@/lib/security/auth";
 import { getAdminRoles } from "./actions";
 import { RolesManager } from "./roles-manager";
 
@@ -8,7 +8,8 @@ export const metadata = {
 };
 
 export default async function AdminRolesPage() {
-  await requireAdminRole(["owner"]);
+  const user = await requireAdminRole(["owner", "admin"]);
+  const currentUserRole = await getUserAdminRole(user);
 
   const roles = await getAdminRoles();
   const activeCount = roles.filter((r) => r.active).length;
@@ -70,7 +71,7 @@ export default async function AdminRolesPage() {
       </div>
 
       {/* Role manager UI */}
-      <RolesManager roles={roles} />
+      <RolesManager roles={roles} currentUserRole={currentUserRole} />
     </div>
   );
 }

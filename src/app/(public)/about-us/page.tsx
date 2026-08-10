@@ -99,8 +99,8 @@ export default async function AboutUsPage() {
                 <Star key={i} className="size-4 text-amber-500 fill-amber-500" />
               ))}
             </div>
-            <span className="text-white/80 text-xs font-medium tracking-wide">
-              <span className="text-white font-bold">5.0</span> average on Google
+            <span className="text-muted-foreground text-xs font-medium tracking-wide">
+              <span className="text-foreground font-bold">5.0</span> average on Google
             </span>
           </div>
 
@@ -110,7 +110,7 @@ export default async function AboutUsPage() {
           </div>
           
           <div className="flex flex-wrap items-end gap-6 mb-2">
-            <h1 className="font-heading text-5xl sm:text-7xl font-black tracking-tight text-white leading-[1.05]">
+            <h1 className="font-heading text-5xl sm:text-7xl font-black tracking-tight text-foreground leading-[1.05]">
               Built on trust.<br />
               <span className="text-[#EA580C]">Driven by people.</span>
             </h1>
@@ -126,7 +126,7 @@ export default async function AboutUsPage() {
               </span>
             </div>
           </div>
-          <p className="mt-6 max-w-xl text-lg text-white/50 leading-relaxed">
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
             A family-owned business from Condell Park, Sydney — helping tradespeople, couriers
             and businesses stay on the road since day one.
           </p>
@@ -139,7 +139,7 @@ export default async function AboutUsPage() {
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white/70 hover:border-white/30 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-muted-foreground hover:border-border hover:text-foreground transition-colors"
             >
               Get in touch
             </a>
@@ -148,13 +148,13 @@ export default async function AboutUsPage() {
       </section>
 
       {/* ── Stats Bar ── */}
-      <div className="bg-muted border-y border-white/[0.06]">
+      <div className="bg-muted border-y border-border">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/[0.06]">
             {STATS.map((s) => (
               <div key={s.label} className="px-6 py-8 text-center">
-                <p className="font-heading text-3xl sm:text-4xl font-black text-white">{s.value}</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.15em] text-white/40">{s.label}</p>
+                <p className="font-heading text-3xl sm:text-4xl font-black text-foreground">{s.value}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">{s.label}</p>
               </div>
             ))}
           </div>
@@ -171,21 +171,21 @@ export default async function AboutUsPage() {
                 <div className="h-px w-8 bg-[#EA580C]" />
                 <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Who We Are</span>
               </div>
-              <h2 className="font-heading text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+              <h2 className="font-heading text-4xl sm:text-5xl font-black text-foreground tracking-tight leading-tight">
                 More than a rental.<br />A partnership.
               </h2>
-              <p className="mt-6 text-white/40 text-base leading-relaxed">
+              <p className="mt-6 text-muted-foreground text-base leading-relaxed">
                 Every client who drives off our lot carries a piece of our reputation. That&apos;s why we
                 care deeply about every vehicle, every hire, every kilometre.
               </p>
-              <div className="mt-8 flex items-center gap-3 p-4 rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+              <div className="mt-8 flex items-center gap-3 p-4 rounded-2xl border border-border bg-muted">
                 <MapPin className="size-5 text-[#EA580C] shrink-0" />
                 <div>
-                  <p className="text-xs text-white/40 font-mono uppercase tracking-wider">Our yard</p>
-                  <p className="text-white text-sm font-semibold mt-0.5">16 Ilma Street, Condell Park NSW</p>
+                  <p className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Our yard</p>
+                  <p className="text-foreground text-sm font-semibold mt-0.5">16 Ilma Street, Condell Park NSW</p>
                 </div>
               </div>
-              <div className="mt-8 relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-2xl border border-white/[0.06]">
+              <div className="mt-8 relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-2xl border border-border">
                 <Image 
                   src="/images/xpdx-real-yard-pro.webp" 
                   alt="XPDX Rentals yard at 16 Ilma Street, Condell Park" 
@@ -201,7 +201,7 @@ export default async function AboutUsPage() {
               {ABOUT_US.map((p, i) => (
                 <p
                   key={i}
-                  className="text-white/60 text-[17px] leading-[1.8] border-l border-white/[0.06] pl-6"
+                  className="text-muted-foreground text-[17px] leading-[1.8] border-l border-border pl-6"
                 >
                   {p}
                 </p>
@@ -221,28 +221,28 @@ export default async function AboutUsPage() {
       </section>
 
       {/* ── Values Grid ── */}
-      <section className="bg-muted border-t border-white/[0.06] py-24">
+      <section className="bg-muted border-t border-border py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px w-8 bg-[#EA580C]" />
             <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Our Values</span>
           </div>
-          <h2 className="font-heading text-3xl sm:text-4xl font-black text-white mb-12">
+          <h2 className="font-heading text-3xl sm:text-4xl font-black text-foreground mb-12">
             What we stand for
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {VALUES.map(({ icon: Icon, title, text }) => (
               <div
                 key={title}
-                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-[#EA580C]/30 transition-all duration-300"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-muted p-6 hover:border-[#EA580C]/30 transition-all duration-300"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#EA580C]/0 to-[#EA580C]/0 group-hover:from-[#EA580C]/[0.05] transition-all duration-500" />
                 <div className="relative">
                   <div className="inline-flex size-11 items-center justify-center rounded-xl bg-[#EA580C]/10 border border-[#EA580C]/20 mb-4">
                     <Icon className="size-5 text-[#EA580C]" />
                   </div>
-                  <h3 className="font-heading text-lg font-bold text-white mb-2">{title}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed">{text}</p>
+                  <h3 className="font-heading text-lg font-bold text-foreground mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{text}</p>
                 </div>
               </div>
             ))}
@@ -260,12 +260,12 @@ export default async function AboutUsPage() {
                 <div className="h-px w-8 bg-[#EA580C]" />
                 <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Our Mission</span>
             </div>
-            <h2 className="font-heading text-4xl sm:text-5xl font-black text-white tracking-tight mb-10">
+            <h2 className="font-heading text-4xl sm:text-5xl font-black text-foreground tracking-tight mb-10">
               Keep you moving.<br />Every single day.
             </h2>
             <div className="space-y-5">
               {OUR_MISSION.map((p, i) => (
-                <p key={i} className="text-white/55 text-lg leading-[1.8]">{p}</p>
+                <p key={i} className="text-muted-foreground text-lg leading-[1.8]">{p}</p>
               ))}
             </div>
           </div>
@@ -283,13 +283,13 @@ export default async function AboutUsPage() {
       </section>
 
       {/* ── Competitive Advantages ── */}
-      <section id="why-choose-us" className="bg-muted border-t border-white/[0.06] py-24">
+      <section id="why-choose-us" className="bg-muted border-t border-border py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px w-8 bg-[#EA580C]" />
             <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Why XPDX</span>
           </div>
-          <h2 className="font-heading text-3xl sm:text-4xl font-black text-white mb-12">
+          <h2 className="font-heading text-3xl sm:text-4xl font-black text-foreground mb-12">
             What&apos;s included in every hire
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -301,12 +301,12 @@ export default async function AboutUsPage() {
               return (
                 <div
                   key={a.label}
-                  className="group flex flex-col gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-[#EA580C]/25 hover:bg-white/[0.04] transition-all duration-300"
+                  className="group flex flex-col gap-3 rounded-2xl border border-border bg-muted p-5 hover:border-[#EA580C]/25 hover:bg-muted transition-all duration-300"
                 >
                   <div className="flex size-10 items-center justify-center rounded-xl bg-[#EA580C]/10 border border-[#EA580C]/15">
                     <Icon className="size-4 text-[#EA580C]" />
                   </div>
-                  <p className="text-sm font-semibold text-white leading-tight">{a.label}</p>
+                  <p className="text-sm font-semibold text-foreground leading-tight">{a.label}</p>
                 </div>
               );
             })}
@@ -315,7 +315,7 @@ export default async function AboutUsPage() {
       </section>
 
       {/* ── CTA / Enquiry ── */}
-      <section id="contact" className="relative bg-background border-t border-white/[0.06] py-24 overflow-hidden">
+      <section id="contact" className="relative bg-background border-t border-border py-24 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#EA580C]/[0.06] rounded-full blur-[100px]" />
         </div>
@@ -325,15 +325,15 @@ export default async function AboutUsPage() {
             <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Get Started</span>
             <div className="h-px w-8 bg-[#EA580C]" />
           </div>
-          <h2 className="font-heading text-4xl sm:text-5xl font-black text-white tracking-tight">
+          <h2 className="font-heading text-4xl sm:text-5xl font-black text-foreground tracking-tight">
             Ready to get on the road?
           </h2>
-          <p className="mt-4 text-white/40 text-lg max-w-xl mx-auto">
+          <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
             Tell us what you need. Our team responds fast — usually same business day.
           </p>
         </div>
         <div className="relative mx-auto max-w-2xl px-4 sm:px-6">
-          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm p-8 sm:p-10">
+          <div className="rounded-3xl border border-border bg-muted backdrop-blur-sm p-8 sm:p-10">
             <EnquiryForm phone={contact.phone} />
           </div>
         </div>

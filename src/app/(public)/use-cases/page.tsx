@@ -78,7 +78,7 @@ export default async function UseCasesPage() {
 
         <div className="relative z-10 mx-auto w-full max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
           <FadeIn direction="none">
-            <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/[0.04] px-4 py-1.5 backdrop-blur-sm">
+            <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full border border-border bg-muted px-4 py-1.5 backdrop-blur-sm">
               <span className="h-px w-6 bg-primary" />
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Vehicle Use Cases</span>
             </div>
@@ -87,11 +87,11 @@ export default async function UseCasesPage() {
           <SplitTextReveal
             text="Find the right van for your job."
             as="h1"
-            className="font-heading text-4xl font-black tracking-tight text-white sm:text-6xl"
+            className="font-heading text-4xl font-black tracking-tight text-foreground sm:text-6xl"
           />
 
           <FadeIn delay={0.3}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
               Select what you need to do, and we&apos;ll show you the vans that are best suited for the task.
               All our vans come with unlimited kilometres, comprehensive insurance, and automatic transmissions.
             </p>
@@ -106,10 +106,10 @@ export default async function UseCasesPage() {
               ].map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 backdrop-blur-sm"
+                  className="flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-2 backdrop-blur-sm"
                 >
                   <Icon className="size-3.5 text-primary" aria-hidden="true" />
-                  <span className="text-xs font-medium tracking-wide text-white/70">{label}</span>
+                  <span className="text-xs font-medium tracking-wide text-muted-foreground">{label}</span>
                 </div>
               ))}
             </div>

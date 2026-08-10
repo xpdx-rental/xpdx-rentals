@@ -87,8 +87,9 @@ function applyFilters(
         { name: "features", weight: 1 },
         { name: "summary", weight: 0.5 },
       ],
-      threshold: 0.4,
+      threshold: 0.2,
       ignoreLocation: true,
+      useExtendedSearch: true,
     });
     searchResults = fuse.search(f.q.trim()).map(res => res.item);
   }

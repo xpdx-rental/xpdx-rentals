@@ -16,8 +16,7 @@ import type { NextConfig } from "next";
  *     application fetches from GitHub; it was inherited.
  *   • `tile.openstreetmap.org` removed — the map now uses CARTO's basemap (see
  *     components/public/service-map.tsx for why).
- *   • `maps.google.com` / `www.google.com` removed from `frame-src`. The Google
- *     Maps embed they existed for has been replaced by the Leaflet map.
+ *   • Google Maps is permitted again in `frame-src` for the footer iframe map.
  *   • `media-src 'self'` added explicitly. The hero clips are same-origin so
  *     they were already covered by `default-src`, but stating it means a future
  *     change to `default-src` cannot silently break every background video.
@@ -69,7 +68,12 @@ const CSP_DIRECTIVES: Record<string, string[]> = {
   ],
   "worker-src": ["'self'", "blob:"],
   "child-src": ["'self'", "blob:"],
-  "frame-src": ["https://challenges.cloudflare.com", "https://www.googletagmanager.com"],
+  "frame-src": [
+    "https://challenges.cloudflare.com",
+    "https://www.googletagmanager.com",
+    "https://maps.google.com",
+    "https://www.google.com"
+  ],
   "frame-ancestors": ["'none'"],
   "base-uri": ["'self'"],
   "form-action": ["'self'"],

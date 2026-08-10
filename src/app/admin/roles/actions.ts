@@ -109,11 +109,19 @@ export async function assignAdminRole(
   _prev: RoleActionState,
   formData: FormData,
 ): Promise<RoleActionState> {
-  await requireAdminRole(["owner", "admin"]);
+  const currentUser = await requireAdminRole(["owner", "admin"]);
+
+  // If the user is an admin, they cannot assign an 'owner' role
+  const { getUserAdminRole } = await import("@/lib/security/auth");
+  const currentUserRole = await getUserAdminRole(currentUser);
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const role = String(formData.get("role") ?? "");
   const mfaRequired = formData.get("mfaRequired") === "true";
+
+  if (currentUserRole === "admin" && role === "owner") {
+    return { status: "error", message: "Admins cannot assign the owner role." };
+  }
 
   if (email === "pankaj@techtonika-autolink.com") {
     return { status: "error", message: "Cannot modify the system owner account." };
@@ -154,9 +162,8 @@ export async function assignAdminRole(
   }
 
   // Audit log
-  const actingUser = await requireAdminRole(["owner", "admin"]);
   await supabase.from("activity_logs").insert({
-    user_id: actingUser.id,
+    user_id: currentUser.id,
     action: "admin_role_assigned",
     entity_type: "admin_role",
     entity_id: user.id,
@@ -173,8 +180,22 @@ export async function assignAdminRole(
 
 /** Revoke (deactivate) an admin role */
 export async function revokeAdminRole(userId: string): Promise<RoleActionState> {
-  const actingUser = await requireAdminRole(["owner", "admin"]);
+  const currentUser = await requireAdminRole(["owner", "admin"]);
   const supabase = createAdminClient();
+
+  const { getUserAdminRole } = await import("@/lib/security/auth");
+  const currentUserRole = await getUserAdminRole(currentUser);
+
+  // Check the role of the user being revoked
+  const { data: targetRole } = await supabase
+    .from("admin_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .single();
+    
+  if (currentUserRole === "admin" && targetRole?.role === "owner") {
+    return { status: "error", message: "Admins cannot revoke owner roles." };
+  }
 
   const { error } = await supabase
     .from("admin_roles")
@@ -186,7 +207,7 @@ export async function revokeAdminRole(userId: string): Promise<RoleActionState> 
   }
 
   await supabase.from("activity_logs").insert({
-    user_id: actingUser.id,
+    user_id: currentUser.id,
     action: "admin_role_revoked",
     entity_type: "admin_role",
     entity_id: userId,
@@ -198,8 +219,22 @@ export async function revokeAdminRole(userId: string): Promise<RoleActionState> 
 
 /** Restore (reactivate) a previously revoked admin role */
 export async function restoreAdminRole(userId: string): Promise<RoleActionState> {
-  const actingUser = await requireAdminRole(["owner", "admin"]);
+  const currentUser = await requireAdminRole(["owner", "admin"]);
   const supabase = createAdminClient();
+
+  const { getUserAdminRole } = await import("@/lib/security/auth");
+  const currentUserRole = await getUserAdminRole(currentUser);
+
+  // Check the role of the user being restored
+  const { data: targetRole } = await supabase
+    .from("admin_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .single();
+    
+  if (currentUserRole === "admin" && targetRole?.role === "owner") {
+    return { status: "error", message: "Admins cannot restore owner roles." };
+  }
 
   const { error } = await supabase
     .from("admin_roles")
@@ -211,7 +246,7 @@ export async function restoreAdminRole(userId: string): Promise<RoleActionState>
   }
 
   await supabase.from("activity_logs").insert({
-    user_id: actingUser.id,
+    user_id: currentUser.id,
     action: "admin_role_restored",
     entity_type: "admin_role",
     entity_id: userId,

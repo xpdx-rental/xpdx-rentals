@@ -29,8 +29,13 @@ const ROLE_BADGE_COLORS: Record<string, string> = {
 
 const initialAssignState: RoleActionState = { status: "idle", message: "" };
 
-function AssignRoleForm() {
+function AssignRoleForm({ currentUserRole }: { currentUserRole?: string }) {
   const [state, action, isPending] = useActionState(assignAdminRole, initialAssignState);
+
+  // Filter out owner role if the current user is an admin
+  const availableRoles = currentUserRole === "admin" 
+    ? ROLE_OPTIONS.filter(opt => opt.value !== "owner") 
+    : ROLE_OPTIONS;
 
   useEffect(() => {
     if (state.status === "success") {
@@ -66,7 +71,7 @@ function AssignRoleForm() {
           <div className="grid gap-3">
             <Label>Role <span className="text-red-500">*</span></Label>
             <div className="grid gap-2">
-              {ROLE_OPTIONS.map((opt) => (
+              {availableRoles.map((opt) => (
                 <label
                   key={opt.value}
                   className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card/70 hover:bg-card hover:border-primary/30 cursor-pointer transition-all group"
@@ -217,15 +222,20 @@ function RoleRow({ entry }: { entry: AdminRoleEntry }) {
   );
 }
 
-export function RolesManager({ roles }: { roles: AdminRoleEntry[] }) {
-  const activeRoles = roles.filter((r) => r.active);
-  const revokedRoles = roles.filter((r) => !r.active);
+export function RolesManager({ roles, currentUserRole }: { roles: AdminRoleEntry[], currentUserRole?: string }) {
+  // If the current user is an admin, hide 'owner' and 'super_admin' roles from the list
+  const visibleRoles = currentUserRole === "admin" 
+    ? roles.filter(r => r.role !== "owner" && r.role !== "super_admin")
+    : roles;
+
+  const activeRoles = visibleRoles.filter((r) => r.active);
+  const revokedRoles = visibleRoles.filter((r) => !r.active);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
       {/* Left: Assign form */}
       <div>
-        <AssignRoleForm />
+        <AssignRoleForm currentUserRole={currentUserRole} />
       </div>
 
       {/* Right: Current roles list */}

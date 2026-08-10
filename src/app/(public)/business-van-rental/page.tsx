@@ -61,7 +61,7 @@ export default async function BusinessVanRentalPage() {
         <div className="absolute inset-0 z-0">
           <BusinessHeroVideo />
           {/* Million dollar cinematic lighting */}
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-muted/50" />
           <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/20 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/90" />
           <div className="absolute left-0 top-0 h-[60vh] w-[60vw] bg-primary/20 blur-[160px] mix-blend-screen opacity-50" />
@@ -71,14 +71,14 @@ export default async function BusinessVanRentalPage() {
           <div className="flex flex-col items-start max-w-3xl">
             {/* Trust Badge */}
             <FadeIn direction="up" delay={0.1}>
-              <div className="flex items-center gap-3 mb-8 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 backdrop-blur-xl shadow-2xl ring-1 ring-white/10 transition-all hover:bg-white/10">
+              <div className="flex items-center gap-3 mb-8 rounded-full border border-border bg-muted px-5 py-2.5 backdrop-blur-xl shadow-2xl ring-1 ring-white/10 transition-all hover:bg-muted">
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="size-4 text-[#EA580C] fill-[#EA580C] drop-shadow-md" />
                   ))}
                 </div>
-                <div className="h-4 w-[1px] bg-white/20 mx-1" />
-                <span className="text-[12px] font-bold tracking-[0.2em] text-white uppercase">
+                <div className="h-4 w-[1px] bg-muted mx-1" />
+                <span className="text-[12px] font-bold tracking-[0.2em] text-foreground uppercase">
                   5.0 Google Average
                 </span>
               </div>
@@ -87,11 +87,11 @@ export default async function BusinessVanRentalPage() {
             <SplitTextReveal
               text="Business Van Rental"
               as="h1"
-              className="font-heading text-6xl font-black tracking-tighter text-white sm:text-7xl lg:text-[7rem] leading-[0.9] drop-shadow-2xl"
+              className="font-heading text-6xl font-black tracking-tighter text-foreground sm:text-7xl lg:text-[7rem] leading-[0.9] drop-shadow-2xl"
             />
 
             <FadeIn delay={0.4} direction="up" className="mt-8">
-              <p className="text-xl sm:text-2xl font-light leading-relaxed text-white/90 drop-shadow-lg">
+              <p className="text-xl sm:text-2xl font-light leading-relaxed text-muted-foreground drop-shadow-lg">
                 One van or a whole fleet, on terms that flex with the work. Maintenance, insurance
                 and support are part of the hire, not extras you manage separately.
               </p>
@@ -99,12 +99,12 @@ export default async function BusinessVanRentalPage() {
             
             {/* Live Availability Indicator */}
             <FadeIn delay={0.5} direction="up" className="mt-10">
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-6 py-3 backdrop-blur-md transition-colors hover:bg-white/10">
+              <div className="inline-flex items-center gap-3 rounded-full border border-border bg-muted px-6 py-3 backdrop-blur-md transition-colors hover:bg-muted">
                 <div className="relative flex size-3 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex size-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.9)]"></span>
                 </div>
-                <span className="text-sm font-bold uppercase tracking-widest text-white">
+                <span className="text-sm font-bold uppercase tracking-widest text-foreground">
                   Vans Available Today
                 </span>
               </div>

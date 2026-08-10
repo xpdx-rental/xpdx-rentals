@@ -55,11 +55,11 @@ export default async function ContactUsPage() {
             <div className="h-px w-8 bg-[#EA580C]" />
             <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Contact</span>
           </div>
-          <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tight text-white leading-tight">
+          <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tight text-foreground leading-tight">
             Let&apos;s talk.<br />
             <span className="text-[#EA580C]">We&apos;re ready.</span>
           </h1>
-          <p className="mt-5 max-w-lg text-lg text-white/50 leading-relaxed">
+          <p className="mt-5 max-w-lg text-lg text-muted-foreground leading-relaxed">
             The quickest way to get an answer is to call. If we&apos;re with a customer,
             leave a message and we&apos;ll come back to you fast.
           </p>
@@ -67,11 +67,11 @@ export default async function ContactUsPage() {
           {/* Quick facts row */}
           <div className="mt-10 flex flex-wrap gap-4">
             {QUICK_FACTS.map(({ icon: Icon, label, text }) => (
-              <div key={label} className="flex items-center gap-3 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 backdrop-blur-sm">
+              <div key={label} className="flex items-center gap-3 rounded-full border border-border bg-muted px-4 py-2.5 backdrop-blur-sm">
                 <Icon className="size-4 text-[#EA580C] shrink-0" />
                 <div className="text-sm">
-                  <span className="text-white/40">{label}: </span>
-                  <span className="text-white font-semibold">{text}</span>
+                  <span className="text-muted-foreground">{label}: </span>
+                  <span className="text-foreground font-semibold">{text}</span>
                 </div>
               </div>
             ))}
@@ -88,24 +88,24 @@ export default async function ContactUsPage() {
             <div className="space-y-5 lg:sticky lg:top-28">
 
               {/* Direct contact cards */}
-              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
-                <div className="px-5 py-4 border-b border-white/[0.06]">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Get in touch</p>
+              <div className="rounded-2xl border border-border bg-muted overflow-hidden">
+                <div className="px-5 py-4 border-b border-border">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Get in touch</p>
                 </div>
                 <div className="divide-y divide-white/[0.05]">
                   {contact.phone && (
                     <a
                       href={telHref(contact.phone)}
-                      className="flex items-center gap-4 px-5 py-4 group hover:bg-white/[0.04] transition-colors"
+                      className="flex items-center gap-4 px-5 py-4 group hover:bg-muted transition-colors"
                     >
                       <div className="flex size-10 items-center justify-center rounded-xl bg-[#EA580C]/10 border border-[#EA580C]/20 shrink-0 group-hover:bg-[#EA580C]/15 transition-colors">
                         <Phone className="size-4 text-[#EA580C]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">Call us</p>
-                        <p className="font-semibold text-white text-sm">{contact.phone}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Call us</p>
+                        <p className="font-semibold text-foreground text-sm">{contact.phone}</p>
                       </div>
-                      <ArrowRight className="size-4 text-white/20 group-hover:text-[#EA580C] group-hover:translate-x-0.5 transition-all" />
+                      <ArrowRight className="size-4 text-muted-foreground group-hover:text-[#EA580C] group-hover:translate-x-0.5 transition-all" />
                     </a>
                   )}
 
@@ -114,32 +114,32 @@ export default async function ContactUsPage() {
                       href={waHref(contact.whatsapp)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-4 px-5 py-4 group hover:bg-white/[0.04] transition-colors"
+                      className="flex items-center gap-4 px-5 py-4 group hover:bg-muted transition-colors"
                     >
                       <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 shrink-0 group-hover:bg-emerald-500/15 transition-colors">
                         <WhatsAppIcon className="size-4 text-emerald-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">WhatsApp</p>
-                        <p className="font-semibold text-white text-sm">Message us</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-0.5">WhatsApp</p>
+                        <p className="font-semibold text-foreground text-sm">Message us</p>
                       </div>
-                      <ArrowRight className="size-4 text-white/20 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                      <ArrowRight className="size-4 text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
                     </a>
                   )}
 
                   {contact.email && (
                     <a
                       href={`mailto:${contact.email}`}
-                      className="flex items-center gap-4 px-5 py-4 group hover:bg-white/[0.04] transition-colors"
+                      className="flex items-center gap-4 px-5 py-4 group hover:bg-muted transition-colors"
                     >
                       <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 shrink-0 group-hover:bg-blue-500/15 transition-colors">
                         <Mail className="size-4 text-blue-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">Email</p>
-                        <p className="font-semibold text-white text-sm truncate">{contact.email}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Email</p>
+                        <p className="font-semibold text-foreground text-sm truncate">{contact.email}</p>
                       </div>
-                      <ArrowRight className="size-4 text-white/20 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
+                      <ArrowRight className="size-4 text-muted-foreground group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
                     </a>
                   )}
 
@@ -148,8 +148,8 @@ export default async function ContactUsPage() {
                       <MapPin className="size-4 text-purple-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">Our yard</p>
-                      <address className="not-italic font-semibold text-white text-sm leading-snug">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Our yard</p>
+                      <address className="not-italic font-semibold text-foreground text-sm leading-snug">
                         {contact.address}
                       </address>
                       <a
@@ -166,23 +166,23 @@ export default async function ContactUsPage() {
               </div>
 
               {/* Opening hours */}
-              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+              <div className="rounded-2xl border border-border bg-muted overflow-hidden">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
                   <Clock className="size-4 text-[#EA580C]" />
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Opening hours</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Opening hours</p>
                 </div>
                 <div className="px-5 py-4">
                   {hasHours ? (
                     <dl className="space-y-2">
                       {DAY_ORDER.filter((d) => hours[d]).map((d) => (
                         <div key={d} className="flex justify-between gap-4 text-sm">
-                          <dt className="text-white/40 font-mono">{DAY_LABELS[d]}</dt>
-                          <dd className="text-white font-semibold">{hours[d]}</dd>
+                          <dt className="text-muted-foreground font-mono">{DAY_LABELS[d]}</dt>
+                          <dd className="text-foreground font-semibold">{hours[d]}</dd>
                         </div>
                       ))}
                     </dl>
                   ) : (
-                    <p className="text-sm text-white/40 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Please call to confirm our opening hours before visiting the yard.
                     </p>
                   )}
@@ -205,7 +205,7 @@ export default async function ContactUsPage() {
                 The address is hardcoded here no longer either — `ADDRESS`/`GEO`
                 in lib/business are the single source for where the yard is.
               */}
-              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden aspect-[4/3] relative">
+              <div className="rounded-2xl border border-border bg-muted overflow-hidden aspect-[4/3] relative">
                 <IframeMap
                   address={contact.address}
                   className="size-full"
@@ -229,15 +229,15 @@ export default async function ContactUsPage() {
                   <div className="h-px w-8 bg-[#EA580C]" />
                   <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Enquiry</span>
                 </div>
-                <h2 className="font-heading text-3xl sm:text-4xl font-black tracking-tight text-white">
+                <h2 className="font-heading text-3xl sm:text-4xl font-black tracking-tight text-foreground">
                   Send us a message
                 </h2>
-                <p className="mt-3 text-white/40 leading-relaxed">
+                <p className="mt-3 text-muted-foreground leading-relaxed">
                   Tell us what you need and when. We&apos;ll get back to you — usually same business day.
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-sm p-7 sm:p-9">
+              <div className="rounded-3xl border border-border bg-muted backdrop-blur-sm p-7 sm:p-9">
                 <EnquiryForm phone={contact.phone} />
               </div>
             </div>

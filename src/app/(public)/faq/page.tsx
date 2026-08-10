@@ -44,11 +44,11 @@ export default function FaqPage() {
             <div className="h-px w-8 bg-[#EA580C]" />
             <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">FAQ</span>
           </div>
-          <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tight text-white leading-tight">
+          <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tight text-foreground leading-tight">
             Got questions?<br />
             <span className="text-[#EA580C]">We&apos;ve got answers.</span>
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-white/50 leading-relaxed">
+          <p className="mt-5 max-w-2xl text-lg text-muted-foreground leading-relaxed">
             Bond, insurance, eligibility and what happens on the road — everything you need to know
             before hiring a van.
           </p>
@@ -59,7 +59,7 @@ export default function FaqPage() {
               <a
                 key={g.id}
                 href={`#${g.id}`}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/60 hover:border-[#EA580C]/40 hover:text-white transition-all duration-200 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground hover:border-[#EA580C]/40 hover:text-foreground transition-all duration-200 backdrop-blur-sm"
               >
                 <span aria-hidden="true">{GROUP_ICONS[g.id]}</span>
                 {g.title}
@@ -79,14 +79,14 @@ export default function FaqPage() {
               aria-label="FAQ category navigation"
               className="hidden lg:block sticky top-28 space-y-1"
             >
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4 px-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-4 px-3">
                 Categories
               </p>
               {FAQ_GROUPS.map((g) => (
                 <a
                   key={g.id}
                   href={`#${g.id}`}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/50 hover:bg-white/[0.05] hover:text-white transition-all duration-150 group"
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-150 group"
                 >
                   <span className="text-base" aria-hidden="true">{GROUP_ICONS[g.id]}</span>
                   <span>{g.title}</span>
@@ -98,7 +98,7 @@ export default function FaqPage() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#EA580C] mb-2">
                   Still unsure?
                 </p>
-                <p className="text-xs text-white/50 leading-relaxed mb-3">
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                   Our team responds same-day.
                 </p>
                 <Link
@@ -127,7 +127,7 @@ export default function FaqPage() {
                       </p>
                       <h2
                         id={`${group.id}-heading`}
-                        className="font-heading text-2xl font-black text-white tracking-tight"
+                        className="font-heading text-2xl font-black text-foreground tracking-tight"
                       >
                         {group.title}
                       </h2>
@@ -135,27 +135,27 @@ export default function FaqPage() {
                   </div>
 
                   {/* Restyled FAQ list wrapper */}
-                  <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden divide-y divide-white/[0.06]">
+                  <div className="rounded-2xl border border-border bg-muted overflow-hidden divide-y divide-white/[0.06]">
                     {group.faqs.map((faq, i) => (
                       <details
                         key={faq.id}
                         id={faq.id}
                         className="group"
                       >
-                        <summary className="flex cursor-pointer select-none items-center justify-between gap-4 px-6 py-5 text-left font-semibold text-white/80 hover:text-white hover:bg-white/[0.03] transition-colors [&::-webkit-details-marker]:hidden">
+                        <summary className="flex cursor-pointer select-none items-center justify-between gap-4 px-6 py-5 text-left font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors [&::-webkit-details-marker]:hidden">
                           <span className="flex items-center gap-3">
                             <span className="flex size-7 items-center justify-center rounded-lg bg-[#EA580C]/10 border border-[#EA580C]/15 text-[#EA580C] text-xs font-bold font-mono shrink-0">
                               {String(i + 1).padStart(2, "0")}
                             </span>
                             {faq.question}
                           </span>
-                          <span className="size-6 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-open:bg-[#EA580C]/10 group-open:border-[#EA580C]/30 transition-colors">
-                            <svg className="size-3 text-white/40 group-open:text-[#EA580C] group-open:rotate-180 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <span className="size-6 rounded-full border border-border flex items-center justify-center shrink-0 group-open:bg-[#EA580C]/10 group-open:border-[#EA580C]/30 transition-colors">
+                            <svg className="size-3 text-muted-foreground group-open:text-[#EA580C] group-open:rotate-180 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                           </span>
                         </summary>
-                        <div className="px-6 pb-5 pt-1 text-white/50 text-sm leading-relaxed space-y-3 border-t border-white/[0.04]">
+                        <div className="px-6 pb-5 pt-1 text-muted-foreground text-sm leading-relaxed space-y-3 border-t border-border">
                           {faq.answer.map((block, bi) => {
                             if (block.kind === "p")
                               return <p key={bi}>{block.text}</p>;
@@ -195,7 +195,7 @@ export default function FaqPage() {
       </div>
 
       {/* ── CTA ── */}
-      <section className="relative bg-muted border-t border-white/[0.06] py-20 overflow-hidden">
+      <section className="relative bg-muted border-t border-border py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[#EA580C]/[0.07] blur-[80px] rounded-full" />
         </div>
@@ -203,10 +203,10 @@ export default function FaqPage() {
           <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-[#EA580C]/10 border border-[#EA580C]/20 mb-6">
             <WhatsAppIcon className="size-7 text-[#EA580C]" />
           </div>
-          <h2 className="font-heading text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h2 className="font-heading text-3xl sm:text-4xl font-black text-foreground tracking-tight">
             Still have a question?
           </h2>
-          <p className="mt-4 text-white/40 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto leading-relaxed">
             {FAQ_CLOSING}
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -218,7 +218,7 @@ export default function FaqPage() {
             </Link>
             <Link
               href="/vans"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-8 py-3.5 text-sm font-semibold text-white/60 hover:border-white/25 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 text-sm font-semibold text-muted-foreground hover:border-border hover:text-foreground transition-colors"
             >
               Browse the fleet
             </Link>

@@ -32,9 +32,9 @@ export default async function VansPage() {
       />
 
       {/* ── Fleet Hero Header ── */}
-      <section className="relative border-b border-white/[0.06] bg-background overflow-hidden">
+      <section className="relative border-b border-border bg-background overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[40vw] h-full bg-[#EA580C]/[0.04] blur-[100px]" />
+          <div className="absolute top-0 right-0 w-[40vw] h-full bg-primary/5 blur-[100px]" />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
           {/* Trust Badge */}
@@ -44,8 +44,8 @@ export default async function VansPage() {
                 <Star key={i} className="size-4 text-amber-400 fill-amber-400" />
               ))}
             </div>
-            <span className="text-white/80 text-xs font-medium tracking-wide">
-              <span className="text-white font-bold">5.0</span> average on Google
+            <span className="text-muted-foreground text-xs font-medium tracking-wide">
+              <span className="text-foreground font-bold">5.0</span> average on Google
             </span>
           </div>
 
@@ -55,7 +55,7 @@ export default async function VansPage() {
           </div>
           
           <div className="flex flex-wrap items-end gap-6">
-            <h1 className="font-heading text-4xl font-black tracking-tight text-white sm:text-5xl">
+            <h1 className="font-heading text-4xl font-black tracking-tight text-foreground sm:text-5xl">
               100+ Commercial Vehicles Available
             </h1>
             
@@ -71,13 +71,13 @@ export default async function VansPage() {
             </div>
           </div>
           
-          <p className="mt-6 max-w-2xl text-lg text-white/50 leading-relaxed">
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
             Our 100+ strong fleet is professionally maintained and ready for the road. Every van is automatic, diesel, and fitted out for cargo — bulkhead, reverse camera and GPS
             tracking standard. {HIRE_TERMS.minHireDays}-day minimum hire.
           </p>
           <ul className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-sm">
             {INCLUSIONS.map((item) => (
-              <li key={item} className="flex items-center gap-2 text-white/50">
+              <li key={item} className="flex items-center gap-2 text-muted-foreground">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-[#EA580C] shrink-0" />
                 {item}
               </li>
@@ -105,11 +105,11 @@ export default async function VansPage() {
           Browse the fleet
         </h2>
         {vans.length === 0 ? (
-          <p className="mx-auto max-w-6xl px-4 sm:px-6 py-16 text-center text-white/40">
+          <p className="mx-auto max-w-6xl px-4 sm:px-6 py-16 text-center text-muted-foreground">
             Our fleet is not available to browse right now. Please call us.
           </p>
         ) : (
-          <Suspense fallback={<div className="py-16 text-center text-white/50">Loading fleet...</div>}>
+          <Suspense fallback={<div className="py-16 text-center text-muted-foreground">Loading fleet...</div>}>
             <FleetSearchFilter vans={vans} />
           </Suspense>
         )}
@@ -117,7 +117,7 @@ export default async function VansPage() {
 
 
       {vans.length > 0 ? (
-        <section aria-labelledby="load-matcher" className="border-t border-white/[0.06] bg-muted py-16 sm:py-20">
+        <section aria-labelledby="load-matcher" className="border-t border-border bg-muted py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-px w-8 bg-[#EA580C]" />
@@ -125,11 +125,11 @@ export default async function VansPage() {
             </div>
             <h2
               id="load-matcher"
-              className="font-heading text-3xl sm:text-4xl font-black tracking-tight text-white mb-2"
+              className="font-heading text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-2"
             >
               Will it fit?
             </h2>
-            <p className="text-white/40 text-lg max-w-2xl mb-10">
+            <p className="text-muted-foreground text-lg max-w-2xl mb-10">
               Pick what you are moving and see which vans are recommended, tight, or too small.
             </p>
             <LoadMatcherLazy
@@ -148,7 +148,7 @@ export default async function VansPage() {
         </section>
       ) : null}
 
-      <section className="relative border-t border-white/[0.06] bg-background py-16 sm:py-20 overflow-hidden">
+      <section className="relative border-t border-border bg-background py-16 sm:py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[#EA580C]/[0.06] blur-[80px] rounded-full" />
         </div>
@@ -159,14 +159,14 @@ export default async function VansPage() {
               <span className="text-[#EA580C] text-xs font-bold uppercase tracking-[0.25em]">Get a Quote</span>
               <div className="h-px w-8 bg-[#EA580C]" />
             </div>
-            <h2 className="font-heading text-3xl font-black tracking-tight text-white">
+            <h2 className="font-heading text-3xl font-black tracking-tight text-foreground">
               Not sure which van you need?
             </h2>
-            <p className="mt-3 text-white/40 leading-relaxed">
+            <p className="mt-3 text-muted-foreground leading-relaxed">
               Tell us what you&apos;re carrying and we&apos;ll point you at the right one.
             </p>
           </div>
-          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-sm p-7 sm:p-9">
+          <div className="rounded-3xl border border-border bg-card/50 backdrop-blur-sm p-7 sm:p-9">
             <EnquiryForm phone={contact.phone} />
           </div>
         </div>

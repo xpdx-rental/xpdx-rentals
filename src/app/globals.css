@@ -5,16 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* ── Premium Cream Palette (Creamish Yellow & Orange) ────────────────────── */
-  --base-bg: #FDF7E6;         /* Lighter Creamish Yellow Background */
-  --surface: #F3E8CE;         /* Secondary Surface (Warm Muted Cream) */
-  --surface-raised: #E8D7B8;  /* Cards (Darker Shade of Cream) */
-  --text-primary: #3F3320;    /* Dark Warm Brown/Stone */
-  --text-secondary: #6B5B45;  /* Muted Warm Brown */
-  --text-muted: #A89B85;      /* Warm Stone */
+  /* ── Premium Light Palette (Clean Off-White) ────────────────────── */
+  --base-bg: #FCFCFA;         /* Crisp Off-White Background */
+  --surface: #F4F4F2;         /* Secondary Surface (Light Gray-White) */
+  --surface-raised: #EBEBE8;  /* Cards (Slightly Darker Off-White) */
+  --text-primary: #1C1917;    /* Near Black / Stone */
+  --text-secondary: #44403C;  /* Muted Dark Stone */
+  --text-muted: #78716C;      /* Warm Gray */
   --brand-orange: #EA580C;    /* Premium Accent */
   --brand-orange-dk: #C2410C; /* Hover Accent */
-  --border-subtle: #DBC39E;   /* Deeper Cream Border */
+  --border-subtle: #E7E5E4;   /* Subtle Border */
 
   /* ── Semantic mapping ────────────────────────────────────────────────────── */
   --primary: var(--brand-orange);
