@@ -75,7 +75,7 @@ export default async function AboutUsPage() {
             70%-opaque scrim. Deferred behind its poster like every other
             background clip on the site.
           */}
-          <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 opacity-100">
             <BackgroundVideo
               src="/videos/hero-van.mp4"
               poster="/business-hero-poster.jpg"
@@ -83,7 +83,7 @@ export default async function AboutUsPage() {
               priority={false}
             />
           </div>
-          <div className="absolute inset-0 bg-background/70" />
+          <div className="absolute inset-0 bg-background/75" />
           <div className="absolute top-0 left-0 w-[60vw] h-[60vh] bg-[#EA580C]/[0.07] rounded-full blur-[120px] -translate-x-1/3 -translate-y-1/3" />
           <div className="absolute bottom-0 right-0 w-[50vw] h-[50vh] bg-indigo-900/20 rounded-full blur-[100px] translate-x-1/4 translate-y-1/4" />
           {/* Grid lines */}
