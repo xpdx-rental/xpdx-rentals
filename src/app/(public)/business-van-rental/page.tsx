@@ -61,9 +61,9 @@ export default async function BusinessVanRentalPage() {
         <div className="absolute inset-0 z-0">
           <BusinessHeroVideo />
           {/* Million dollar cinematic lighting */}
-          <div className="absolute inset-0 bg-muted/50" />
-          <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/20 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/90" />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/40 to-black/10" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
           <div className="absolute left-0 top-0 h-[60vh] w-[60vw] bg-primary/20 blur-[160px] mix-blend-screen opacity-50" />
         </div>
 
