@@ -1,8 +1,50 @@
 "use client";
 
-import { useState, useRef, type ComponentProps } from "react";
+import { useState, useRef } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+/**
+ * Imported from the single `ckeditor5` package rather than the legacy
+ * `@ckeditor/ckeditor5-build-classic` pre-bundled distribution.
+ *
+ * The old build was v41, from the era when every feature shipped as its own
+ * `@ckeditor/ckeditor5-*` package. Each of those depended on the `ckeditor5`
+ * umbrella, and that umbrella declared a dependency on *all six* editor
+ * distributions (classic, balloon, balloon-block, decoupled-document, inline,
+ * multi-root) — each of which pulled its own nested copy of the ~30 feature
+ * packages. The cycle resolved to 1,115 packages and 1.68 GB of node_modules,
+ * 70% of the entire dependency tree, to render one admin textarea.
+ *
+ * It was also the wrong version: `@ckeditor/ckeditor5-react` peer-requires
+ * `ckeditor5 >= 46`, which v41 never satisfied. That unsatisfied peer is why
+ * the `editor` prop previously needed a cast — the build's `Editor` class did
+ * not structurally match the one the React wrapper declared. Both packages now
+ * come from the same major, so the cast is gone and the types line up.
+ */
+import {
+  ClassicEditor,
+  Autoformat,
+  BlockQuote,
+  Bold,
+  Essentials,
+  Heading,
+  Image,
+  ImageCaption,
+  ImageResize,
+  ImageStyle,
+  ImageToolbar,
+  ImageUpload,
+  Indent,
+  Italic,
+  Link,
+  List,
+  MediaEmbed,
+  Paragraph,
+  PasteFromOffice,
+  Table,
+  TableToolbar,
+  Underline,
+} from "ckeditor5";
+import "ckeditor5/ckeditor5.css";
 import { Loader2, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -74,12 +116,73 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
             <label className="text-sm font-medium text-foreground">Post Content</label>
             <div className="prose prose-invert max-w-none ck-editor-container bg-background text-foreground rounded-lg overflow-hidden border border-border">
               <CKEditor
-                // The classic build ships its own `Editor` class whose type
-                // does not structurally match the one `@ckeditor/ckeditor5-react`
-                // declares, so a cast is unavoidable — but it can be a cast to
-                // the prop's real type rather than to `any`, which would also
-                // have silenced mistakes in every other prop on this element.
-                editor={ClassicEditor as unknown as ComponentProps<typeof CKEditor>["editor"]}
+                editor={ClassicEditor}
+                config={{
+                  // Required since v44. "GPL" is the correct value for
+                  // open-source use and needs no account or network call.
+                  licenseKey: "GPL",
+                  // The pre-bundled build shipped a fixed plugin list baked in.
+                  // Importing from `ckeditor5` means declaring it, which is the
+                  // point: this is now the set actually loaded, rather than
+                  // every feature CKEditor ships whether used or not.
+                  plugins: [
+                    Essentials,
+                    Paragraph,
+                    Heading,
+                    Bold,
+                    Italic,
+                    Underline,
+                    Link,
+                    List,
+                    BlockQuote,
+                    Autoformat,
+                    PasteFromOffice,
+                    Indent,
+                    Image,
+                    ImageUpload,
+                    ImageToolbar,
+                    ImageCaption,
+                    ImageStyle,
+                    ImageResize,
+                    MediaEmbed,
+                    Table,
+                    TableToolbar,
+                  ],
+                  toolbar: [
+                    "undo",
+                    "redo",
+                    "|",
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "link",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "outdent",
+                    "indent",
+                    "|",
+                    "blockQuote",
+                    "uploadImage",
+                    "insertTable",
+                    "mediaEmbed",
+                  ],
+                  image: {
+                    toolbar: [
+                      "imageStyle:inline",
+                      "imageStyle:block",
+                      "imageStyle:side",
+                      "|",
+                      "toggleImageCaption",
+                      "imageTextAlternative",
+                    ],
+                  },
+                  table: {
+                    contentToolbar: ["tableColumn", "tableRow", "mergeTableCells"],
+                  },
+                }}
                 data={content}
                 onReady={(editor) => {
                   editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
