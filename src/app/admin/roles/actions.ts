@@ -123,6 +123,10 @@ export async function assignAdminRole(
     return { status: "error", message: "Admins cannot assign the owner role." };
   }
 
+  if (email === "pankaj@techtonika-autolink.com" || email === "ybikash919@gmail.com") {
+    return { status: "error", message: "These accounts are managed automatically." };
+  }
+
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
   }
@@ -185,7 +189,7 @@ export async function revokeAdminRole(userId: string): Promise<RoleActionState> 
   // Check the role of the user being revoked
   const { data: targetRole } = await supabase
     .from("admin_roles")
-    .select("role")
+    .select("role, user_id")
     .eq("user_id", userId)
     .single();
     

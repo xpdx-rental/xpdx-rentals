@@ -10,7 +10,7 @@ interface AdminAuditPageProps {
 }
 
 export default async function AdminAuditPage({ searchParams }: AdminAuditPageProps) {
-  await requireAdminRole(["owner"]);
+  await requireAdminRole(["owner", "admin"]);
   const params = await searchParams;
   const supabase = createAdminClient();
 
