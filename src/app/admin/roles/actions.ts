@@ -123,10 +123,6 @@ export async function assignAdminRole(
     return { status: "error", message: "Admins cannot assign the owner role." };
   }
 
-  if (email === "pankaj@techtonika-autolink.com") {
-    return { status: "error", message: "Cannot modify the system owner account." };
-  }
-
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
   }
