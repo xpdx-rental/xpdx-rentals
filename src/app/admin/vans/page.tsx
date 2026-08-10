@@ -5,6 +5,8 @@ import { getVanList } from "@/lib/data/vans";
 import { VanRowActions } from "./van-row-actions";
 import { VAN_STATUS_LABELS, VAN_STATUS_STYLES, formatWeekly } from "@/lib/van";
 
+import { BulkUploadButton } from "./bulk-upload-button";
+
 export const metadata = { title: "Fleet" };
 export const dynamic = "force-dynamic";
 
@@ -30,12 +32,15 @@ export default async function AdminVansPage() {
             {unverified ? ` · ${unverified} with unconfirmed data` : ""}
           </p>
         </div>
-        <Link
-          href="/admin/vans/new"
-          className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
-        >
-          <Plus className="size-4" /> Add van
-        </Link>
+        <div className="flex items-center gap-2">
+          <BulkUploadButton />
+          <Link
+            href="/admin/vans/new"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+          >
+            <Plus className="size-4" /> Add van
+          </Link>
+        </div>
       </header>
 
       {vans.length === 0 ? (
