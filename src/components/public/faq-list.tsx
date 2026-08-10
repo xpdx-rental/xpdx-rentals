@@ -45,7 +45,7 @@ export function FaqItem({ faq, defaultOpen = false }: { faq: Faq; defaultOpen?: 
       <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-semibold text-foreground/80 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors [&::-webkit-details-marker]:hidden">
         <span>{faq.question}</span>
         <ChevronDown
-          className="size-5 shrink-0 text-white/20 transition-transform duration-300 group-open:rotate-180 group-open:text-primary"
+          className="size-5 shrink-0 text-muted-foreground/50 transition-transform duration-300 group-open:rotate-180 group-open:text-primary"
           aria-hidden="true"
         />
       </summary>
@@ -60,7 +60,7 @@ export function FaqItem({ faq, defaultOpen = false }: { faq: Faq; defaultOpen?: 
 
 export function FaqList({ faqs }: { faqs: Faq[] }) {
   return (
-    <div className="rounded-2xl border border-white/[0.05] bg-card/40 backdrop-blur-md shadow-lg px-6">
+    <div className="rounded-2xl border border-border bg-card shadow-lg px-6">
       {faqs.map((f) => (
         <FaqItem key={f.id} faq={f} />
       ))}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/security/auth";
+import { requireAdminRole } from "@/lib/security/auth";
 import { getSeoRegistry, registryStats, type SeoPage } from "@/lib/seo/registry";
 import { QUALITY_THRESHOLDS } from "@/lib/seo/quality";
 import { SEO_LOCATIONS } from "@/lib/seo/entities/locations";
@@ -50,7 +50,7 @@ function DecisionBadge({ page }: { page: SeoPage }) {
 }
 
 export default async function AdminSeoPage() {
-  await requireAdmin();
+  await requireAdminRole(["owner", "admin"]);
 
   const [registry, stats] = await Promise.all([getSeoRegistry(), registryStats()]);
   const base = siteBaseUrl();

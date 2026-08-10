@@ -49,7 +49,7 @@ export async function verifyTurnstile(
   token: string | undefined | null,
   remoteIp?: string,
 ): Promise<TurnstileVerdict> {
-  const secret = optionalEnv("TURNSTILE_SECRET_KEY");
+  const secret = optionalEnv("TURNSTILE_SECRET");
   if (!secret) return "skipped";
 
   // Configured but no token supplied: a real browser that rendered the widget

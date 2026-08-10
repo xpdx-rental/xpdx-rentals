@@ -42,6 +42,9 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
     <nav className="flex flex-col gap-1 p-3">
       {NAV.map((item) => {
         const active = isActive(item.href);
+        const isOwnerOnly = ["/admin/blog", "/admin/testimonials", "/admin/roles", "/admin/audit"].includes(item.href);
+        if (isOwnerOnly && role !== "owner" && role !== "super_admin") return null;
+
         return (
           <Link
             key={item.href}
@@ -49,7 +52,7 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
             onClick={() => setOpen(false)}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              active ? "bg-primary text-primary-foreground" : "text-slate-300 hover:bg-card/5 hover:text-white",
+              active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
           >
             <item.icon className="size-4" />
@@ -63,9 +66,9 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
   return (
     <>
       {/* Mobile top bar */}
-      <div className="flex items-center justify-between border-b border-white/10 bg-slate-950 p-3 lg:hidden">
-        <Link href="/admin/leads" className="font-heading text-lg font-extrabold text-white">XPDX <span className="text-link">Staff</span></Link>
-        <button onClick={() => setOpen(!open)} aria-label="Toggle menu" className="rounded-lg p-2 text-white hover:bg-card/10">
+      <div className="flex items-center justify-between border-b border-border bg-card p-3 lg:hidden">
+        <Link href="/admin/leads" className="font-heading text-lg font-extrabold text-foreground">XPDX <span className="text-link">Staff</span></Link>
+        <button onClick={() => setOpen(!open)} aria-label="Toggle menu" className="rounded-lg p-2 text-foreground hover:bg-accent/50">
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
@@ -73,18 +76,18 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
       {/* Sidebar (desktop) / drawer (mobile) */}
       <aside
         className={cn(
-          "flex w-64 flex-none flex-col bg-slate-950 lg:sticky lg:top-0 lg:h-screen",
+          "flex w-64 flex-none flex-col bg-card border-r border-border lg:sticky lg:top-0 lg:h-screen",
           open ? "block" : "hidden lg:flex",
         )}
       >
-        <div className="hidden items-center gap-2 border-b border-white/10 p-4 lg:flex">
-          <Link href="/admin/leads" className="font-heading text-lg font-extrabold text-white">XPDX <span className="text-link">Staff</span></Link>
+        <div className="hidden items-center gap-2 border-b border-border p-4 lg:flex">
+          <Link href="/admin/leads" className="font-heading text-lg font-extrabold text-foreground">XPDX <span className="text-link">Staff</span></Link>
         </div>
         {links}
-        <div className="mt-auto border-t border-white/10 p-4 text-xs text-slate-400">
-          <p className="truncate text-slate-300">{userEmail}</p>
+        <div className="mt-auto border-t border-border p-4 text-xs text-muted-foreground">
+          <p className="truncate text-foreground/80">{userEmail}</p>
           {role ? <p className="capitalize">{role.replace("_", " ")}</p> : null}
-          <Link href="/auth/sign-out" className="mt-2 inline-block text-slate-400 hover:text-white">Sign out</Link>
+          <Link href="/auth/sign-out" className="mt-2 inline-block text-muted-foreground hover:text-foreground">Sign out</Link>
         </div>
       </aside>
     </>

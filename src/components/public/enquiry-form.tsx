@@ -5,7 +5,7 @@ import { CheckCircle2, Loader2, Phone } from "lucide-react";
 import { DURATIONS } from "@/lib/enquiry-options";
 import { telHref } from "@/lib/lead";
 import { MagneticButton } from "@/components/ui/magnetic-button";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 /**
  * Read once at module scope. `NEXT_PUBLIC_*` values are inlined at build time,
@@ -49,6 +49,22 @@ export function EnquiryForm({
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [token, setToken] = useState<string>("");
+  const turnstileRef = useRef<TurnstileInstance | undefined>(undefined);
+
+  /**
+   * Turnstile tokens are single-use — Cloudflare redeems one exactly once at
+   * siteverify. If the server answers with an inline error the form stays
+   * mounted holding the token it already spent, so a retry would post it again
+   * and siteverify would answer `timeout-or-duplicate`. That reads as a
+   * definitive negative, which quarantines the lead (see spam-check.ts) — the
+   * customer would be silently filed as spam purely for pressing the button
+   * twice. So every path that leaves the form retryable discards the spent
+   * token and asks the widget for a fresh one.
+   */
+  function resetChallenge() {
+    setToken("");
+    turnstileRef.current?.reset();
+  }
   // Set in an effect, not during render: `Date.now()` is impure and calling it
   // in the render body is a React purity violation. Measuring from when the
   // form actually became interactive is also the more honest timing baseline
@@ -132,11 +148,13 @@ export function EnquiryForm({
         json?.error?.message ??
           "We could not send your enquiry just now. Please call us and we'll take the details over the phone.",
       );
+      resetChallenge();
     } catch {
       setStatus("error");
       setError(
         "Your enquiry did not reach us — you may be offline. Please try again, or call us and we'll take the details over the phone.",
       );
+      resetChallenge();
     }
   }
 
@@ -164,7 +182,7 @@ export function EnquiryForm({
   }
 
   const inputCls =
-    "mt-1 min-h-12 w-full rounded-xl border border-white/5 bg-black/20 shadow-inner px-4 text-base text-white placeholder:text-white/30 transition-all duration-300 hover:bg-black/30 hover:border-white/10 focus:bg-black/40 focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none";
+    "mt-1 min-h-12 w-full rounded-xl border border-border bg-background shadow-inner px-4 text-base text-foreground placeholder:text-muted-foreground transition-all duration-300 hover:bg-accent/50 hover:border-primary/30 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none";
   const err = (f: string) => fieldErrors[f];
 
   return (
@@ -246,7 +264,7 @@ export function EnquiryForm({
         <textarea
           name="message"
           rows={4}
-          className="mt-1 w-full rounded-xl border border-white/5 bg-black/20 shadow-inner px-4 py-3 text-base text-white placeholder:text-white/30 transition-all duration-300 hover:bg-black/30 hover:border-white/10 focus:bg-black/40 focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none resize-y"
+          className="mt-1 w-full rounded-xl border border-border bg-background shadow-inner px-4 py-3 text-base text-foreground placeholder:text-muted-foreground transition-all duration-300 hover:bg-accent/50 hover:border-primary/30 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/20 focus-visible:outline-none resize-y"
           placeholder="What you'll be carrying, or anything we should know."
         />
       </label>
@@ -304,14 +322,26 @@ export function EnquiryForm({
       {TURNSTILE_SITE_KEY ? (
         <div className="pt-2">
           <Turnstile
+            ref={turnstileRef}
             siteKey={TURNSTILE_SITE_KEY}
+            // Lands on the widget's container div. `options.action` below is
+            // what Cloudflare actually receives; this mirrors it onto the
+            // markup so the integration is greppable from the rendered DOM.
+            data-action="turnstile-spin-v2"
             onSuccess={setToken}
             // Clear the stale token on expiry/error so we never post a token
             // that Cloudflare will reject when an empty one is treated the same
             // way and is honest about what happened.
             onExpire={() => setToken("")}
             onError={() => setToken("")}
-            options={{ theme: "dark", size: "flexible" }}
+            options={{
+              theme: "light",
+              size: "flexible",
+              // Rendered onto the widget's own container as
+              // `data-action="turnstile-spin-v2"`. Account-level analytics
+              // attribution only — the integration works without it.
+              action: "turnstile-spin-v2",
+            }}
           />
           <input type="hidden" name="cf-turnstile-response" value={token} />
         </div>

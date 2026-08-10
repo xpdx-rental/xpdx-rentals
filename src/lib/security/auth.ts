@@ -100,8 +100,9 @@ export async function requireAdminRole(allowedRoles: string[]) {
   const user = await requireUser();
 
   // Check if they have an active admin role record for these specific roles
-  // or if they are an owner/admin (who can do everything)
-  const isGlobalAdmin = await userHasAdminRoleRecord(user.id, ["owner", "admin"]);
+  // or if they are an owner (who can do everything).
+  // Note: Admin no longer has global bypass. They must be explicitly granted access via allowedRoles.
+  const isGlobalAdmin = await userHasAdminRoleRecord(user.id, ["owner"]);
   if (isGlobalAdmin || isAllowlistedAdminEmail(user.email)) {
     return user;
   }

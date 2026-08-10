@@ -78,7 +78,7 @@ export default async function AdminIndexPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="group rounded-2xl border border-white/10 bg-black/20 p-6 backdrop-blur-xl shadow-lg ring-1 ring-white/5 transition-all hover:bg-black/30 hover:border-primary/30">
+        <div className="group rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:bg-accent/30 hover:border-primary/30">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors">Total Leads</h3>
             <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
@@ -89,7 +89,7 @@ export default async function AdminIndexPage() {
           <p className="mt-2 text-xs font-semibold text-emerald-400">Total lifetime enquiries</p>
         </div>
 
-        <div className="group rounded-2xl border border-white/10 bg-black/20 p-6 backdrop-blur-xl shadow-lg ring-1 ring-white/5 transition-all hover:bg-black/30 hover:border-blue-500/30">
+        <div className="group rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:bg-accent/30 hover:border-blue-500/30">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground group-hover:text-blue-400 transition-colors">Page Views (30d)</h3>
             <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
@@ -100,7 +100,7 @@ export default async function AdminIndexPage() {
           <p className="mt-2 text-xs font-semibold text-blue-400">{recentViews} in the last 7 days</p>
         </div>
 
-        <div className="group rounded-2xl border border-white/10 bg-black/20 p-6 backdrop-blur-xl shadow-lg ring-1 ring-white/5 transition-all hover:bg-black/30 hover:border-amber-500/30">
+        <div className="group rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:bg-accent/30 hover:border-amber-500/30">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground group-hover:text-amber-400 transition-colors">Active Fleet</h3>
             <div className="p-2 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-colors">
@@ -118,8 +118,8 @@ export default async function AdminIndexPage() {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-foreground">Traffic & Conversion</h3>
             <div className="flex items-center gap-4 text-xs font-semibold">
-              <span className="flex items-center gap-1.5 text-white/70"><div className="w-2 h-2 rounded-full bg-primary" /> Views</span>
-              <span className="flex items-center gap-1.5 text-white/70"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Leads</span>
+              <span className="flex items-center gap-1.5 text-muted-foreground"><div className="w-2 h-2 rounded-full bg-primary" /> Views</span>
+              <span className="flex items-center gap-1.5 text-muted-foreground"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Leads</span>
             </div>
           </div>
           <AnalyticsCharts stats={dailyStats} />
@@ -135,7 +135,7 @@ export default async function AdminIndexPage() {
           <div className="flex-1 space-y-4">
             {recentLeads?.length ? (
               recentLeads.map((lead) => (
-                <div key={lead.id} className="flex items-center justify-between group rounded-xl p-3 border border-white/5 bg-black/10 hover:bg-black/20 hover:border-primary/30 transition-colors">
+                <div key={lead.id} className="flex items-center justify-between group rounded-xl p-3 border border-border bg-card hover:bg-accent/50 hover:border-primary/30 transition-colors">
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-bold text-foreground truncate">{lead.name}</span>
                     <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
@@ -146,7 +146,7 @@ export default async function AdminIndexPage() {
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                       lead.status === 'unread' || lead.status === 'new' ? 'bg-primary/20 text-primary border-primary/30' : 
                       lead.status === 'won' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
-                      'bg-white/10 text-white/70 border-white/10'
+                      'bg-secondary text-secondary-foreground border-border'
                     }`}>
                       {lead.status}
                     </span>

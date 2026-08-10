@@ -11,7 +11,7 @@ import { verifyTurnstile } from "@/lib/security/turnstile";
  * may resolve to `"failed"`.
  */
 
-const originalSecret = process.env.TURNSTILE_SECRET_KEY;
+const originalSecret = process.env.TURNSTILE_SECRET;
 
 function mockFetch(impl: () => Promise<Response> | never) {
   vi.stubGlobal("fetch", vi.fn(impl));
@@ -25,18 +25,18 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 beforeEach(() => {
-  process.env.TURNSTILE_SECRET_KEY = "test-secret";
+  process.env.TURNSTILE_SECRET = "test-secret";
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  if (originalSecret === undefined) delete process.env.TURNSTILE_SECRET_KEY;
-  else process.env.TURNSTILE_SECRET_KEY = originalSecret;
+  if (originalSecret === undefined) delete process.env.TURNSTILE_SECRET;
+  else process.env.TURNSTILE_SECRET = originalSecret;
 });
 
 describe("verifyTurnstile", () => {
   it("skips entirely when no secret is configured", async () => {
-    delete process.env.TURNSTILE_SECRET_KEY;
+    delete process.env.TURNSTILE_SECRET;
     const fetchSpy = vi.fn();
     vi.stubGlobal("fetch", fetchSpy);
 

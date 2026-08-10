@@ -3,7 +3,7 @@ import { Phone, Mail, MapPin, Clock, ArrowRight, Zap } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { getSiteContact, getOpeningHours } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
-import { DynamicServiceMap } from "@/components/public/dynamic-service-map";
+import { IframeMap } from "@/components/public/iframe-map";
 import { GEO } from "@/lib/business";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbSchema, autoRentalSchema } from "@/lib/seo/jsonld";
@@ -206,11 +206,8 @@ export default async function ContactUsPage() {
                 in lib/business are the single source for where the yard is.
               */}
               <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden aspect-[4/3] relative">
-                <DynamicServiceMap
-                  center={[GEO.latitude, GEO.longitude]}
+                <IframeMap
                   address={contact.address}
-                  radiusMiles={20}
-                  zoom={12}
                   className="size-full"
                 />
                 <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/[0.07] rounded-2xl" />

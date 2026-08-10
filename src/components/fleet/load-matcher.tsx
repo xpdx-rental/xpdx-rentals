@@ -87,7 +87,7 @@ function FillBar({ fillRatio, verdict }: { fillRatio: number; verdict: Verdict }
           {overflowing ? "OVERFLOW" : `${Math.round(pct)}%`}
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-white/[0.07] overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
         <motion.div
           className={`h-full rounded-full ${barColor}`}
           initial={{ width: 0 }}
@@ -147,11 +147,11 @@ function VanCard({
           ? "border-emerald-400/10 hover:border-emerald-400/30 bg-emerald-400/[0.02]"
           : verdict === "tight"
           ? "border-amber-400/10 hover:border-amber-400/20 bg-white/[0.01]"
-          : "border-white/[0.02] hover:border-white/[0.08] bg-black/20 opacity-60 hover:opacity-100"
+          : "border-border hover:border-primary/30 bg-card opacity-60 hover:opacity-100"
       }`}
     >
       {/* Van image */}
-      <div className="relative aspect-[16/9] overflow-hidden bg-[#111115]">
+      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
         {imgSrc ? (
           <Image
             src={imgSrc}
@@ -180,7 +180,7 @@ function VanCard({
 
         {/* Price chip */}
         <div className="absolute bottom-3 right-3">
-          <span className="rounded-full bg-black/70 border border-white/10 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
+          <span className="rounded-full bg-background/80 border border-border px-2.5 py-1 text-xs font-bold text-foreground backdrop-blur-sm">
             From {formatWeekly(van.priceWeeklyFrom)}/wk
           </span>
         </div>
@@ -188,7 +188,7 @@ function VanCard({
 
       {/* Card body */}
       <div className="flex flex-col flex-1 p-4">
-        <h3 className="font-heading text-sm font-bold text-white leading-snug line-clamp-2">
+        <h3 className="font-heading text-sm font-bold text-foreground leading-snug line-clamp-2">
           {van.name}
         </h3>
 
@@ -238,7 +238,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
 
       {/* ── Cargo selector ── */}
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-4">
           What are you moving?
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" role="radiogroup" aria-label="Select cargo type">
@@ -256,16 +256,16 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
                 className={`relative flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 text-center transition-all duration-300 ${
                   isActive
                     ? "border-primary/50 bg-primary/10 shadow-[0_0_30px_rgba(201,171,129,0.15)]"
-                    : "border-white/[0.05] bg-black/20 hover:border-white/15 hover:bg-black/40 shadow-inner"
+                    : "border-border bg-card hover:border-primary/30 hover:bg-accent/50 shadow-sm"
                 }`}
               >
                 <span className="text-2xl" role="img" aria-label={p.label}>
                   {LOAD_ICONS[p.id]}
                 </span>
-                <span className={`text-xs font-bold leading-tight ${isActive ? "text-[#EA580C]" : "text-white/70"}`}>
+                <span className={`text-xs font-bold leading-tight ${isActive ? "text-primary" : "text-foreground/70"}`}>
                   {p.label}
                 </span>
-                <span className="text-[10px] text-white/30 leading-tight">
+                <span className="text-[10px] text-muted-foreground leading-tight">
                   {p.hint}
                 </span>
                 {isActive && (
@@ -289,12 +289,12 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.2 }}
-          className="flex flex-wrap items-center gap-4 py-4 border-t border-b border-white/[0.06]"
+          className="flex flex-wrap items-center gap-4 py-4 border-t border-b border-border"
         >
           <div className="flex items-center gap-2 text-sm">
             <span className="text-2xl">{LOAD_ICONS[load.id]}</span>
-            <span className="font-bold text-white">{load.label}</span>
-            <span className="text-white/40">→</span>
+            <span className="font-bold text-foreground">{load.label}</span>
+            <span className="text-muted-foreground">→</span>
           </div>
           <div className="flex flex-wrap gap-3">
             <span className="inline-flex items-center gap-1.5 text-sm text-emerald-400 font-semibold">
@@ -334,7 +334,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
       </motion.div>
 
       {/* ── Disclaimer ── */}
-      <p className="text-xs text-white/30 border-t border-white/[0.05] pt-4 leading-relaxed">
+      <p className="text-xs text-muted-foreground border-t border-border pt-4 leading-relaxed">
         ⚠️ This is a guide based on van size, not a measured capacity. Tell us what you are
         carrying and we will confirm the right van before you book.{" "}
         <Link href="/contact-us" className="text-[#EA580C] hover:underline font-semibold">

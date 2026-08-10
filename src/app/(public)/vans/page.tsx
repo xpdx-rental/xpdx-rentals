@@ -100,7 +100,7 @@ export default async function VansPage() {
         `aria-labelledby` on the section ties the region to that heading, so it
         is also announced when jumping between landmarks.
       */}
-      <section aria-labelledby="fleet-grid" className="bg-background min-h-screen">
+      <section aria-labelledby="fleet-grid" className="bg-gradient-to-b from-background via-background to-secondary/30 min-h-screen">
         <h2 id="fleet-grid" className="sr-only">
           Browse the fleet
         </h2>

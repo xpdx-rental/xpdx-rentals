@@ -1,12 +1,15 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SettingsForms } from "./settings-forms";
 
+import { requireAdminRole } from "@/lib/security/auth";
+
 export const metadata = { title: "Settings" };
 export const dynamic = "force-dynamic";
 
 type V = Record<string, unknown>;
 
 export default async function AdminSettingsPage() {
+  await requireAdminRole(["owner", "admin"]);
   const supabase = createAdminClient();
   const { data } = await supabase.from("settings").select("key, value");
   const byKey = Object.fromEntries(

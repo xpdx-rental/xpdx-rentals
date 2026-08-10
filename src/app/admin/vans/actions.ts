@@ -173,36 +173,47 @@ export async function createVan(_prev: Result | null, formData: FormData): Promi
   const { data, error } = await supabase.from("vans").insert(toRow(parsed.data)).select("id").single();
   if (error) return { error: error.message };
 
-  // Handle optional primary image upload during creation
-  const imageFile = formData.get("primaryImage") as File | null;
-  if (imageFile && imageFile.size > 0 && imageFile.size <= 20 * 1024 * 1024) { // 20MB limit
-    try {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const webpBuffer = await sharp(buffer)
-        .resize({ width: 1920, height: 1080, fit: "inside", withoutEnlargement: true })
-        .webp({ quality: 80, effort: 4 })
-        .toBuffer();
+  // Handle optional image uploads during creation
+  const imageFiles = formData.getAll("images") as File[];
+  const primaryIndex = parseInt(formData.get("primaryImageIndex") as string || "0", 10);
+  
+  if (imageFiles.length > 0) {
+    let sortOrder = 0;
+    
+    // Process sequentially to avoid memory spikes from sharp
+    for (let i = 0; i < imageFiles.length; i++) {
+      const imageFile = imageFiles[i];
+      if (imageFile.size === 0 || imageFile.size > 20 * 1024 * 1024) continue;
+      
+      try {
+        const buffer = Buffer.from(await imageFile.arrayBuffer());
+        const webpBuffer = await sharp(buffer)
+          .resize({ width: 1920, height: 1080, fit: "inside", withoutEnlargement: true })
+          .webp({ quality: 80, effort: 4 })
+          .toBuffer();
 
-      const rand = Math.random().toString(36).substring(2, 12);
-      const epoch = Date.now();
-      const key = `vans/${parsed.data.slug}/${rand}_${epoch}.webp`;
+        const rand = Math.random().toString(36).substring(2, 12);
+        const epoch = Date.now();
+        const key = `vans/${parsed.data.slug}/${rand}_${epoch}.webp`;
 
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET)
-        .upload(key, webpBuffer, { contentType: "image/webp" });
+        const { error: uploadError } = await supabase.storage
+          .from(BUCKET)
+          .upload(key, webpBuffer, { contentType: "image/webp" });
 
-      if (!uploadError) {
-        await supabase.from("van_images").insert({
-          van_id: data.id,
-          storage_path: key,
-          alt: `${parsed.data.make} ${parsed.data.model} ${parsed.data.bodyType}`,
-          sort_order: 0,
-          is_primary: true,
-        });
+        if (!uploadError) {
+          await supabase.from("van_images").insert({
+            van_id: data.id,
+            storage_path: key,
+            alt: `${parsed.data.make} ${parsed.data.model} ${parsed.data.bodyType}`,
+            sort_order: sortOrder,
+            is_primary: i === primaryIndex,
+          });
+          sortOrder++;
+        }
+      } catch (err) {
+        console.error(`Failed to process uploaded image ${i} during van creation`, err);
+        // Non-fatal, keep trying other images
       }
-    } catch (err) {
-      console.error("Failed to process uploaded image during van creation", err);
-      // Non-fatal, van is already created.
     }
   }
 
