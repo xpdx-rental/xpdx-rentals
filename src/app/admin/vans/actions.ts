@@ -84,6 +84,7 @@ function readVanForm(formData: FormData) {
 
     priceWeeklyFrom: formData.get("priceWeeklyFrom"),
     priceMonthlyFrom: formData.get("priceMonthlyFrom"),
+    depositAmount: formData.get("depositAmount"),
     minHireDays: formData.get("minHireDays") ?? 28,
     priceVerified: formData.get("priceVerified") === "on",
 
@@ -105,7 +106,7 @@ function readVanForm(formData: FormData) {
     sortOrder: formData.get("sortOrder") ?? 0,
   };
 
-  // An empty slug field means "derive it from the name" â€” the common case when
+  // An empty slug field means "derive it from the name" — the common case when
   // adding a van. The operator can still override it.
   if (!String(raw.slug ?? "").trim()) {
     raw.slug = slugifyVanName(String(raw.name ?? ""));
@@ -126,6 +127,7 @@ function toRow(data: ReturnType<typeof vanSchema.parse>) {
     seats: data.seats,
     price_weekly_from: data.priceWeeklyFrom,
     price_monthly_from: data.priceMonthlyFrom,
+    deposit_amount: data.depositAmount,
     min_hire_days: data.minHireDays,
     price_verified: data.priceVerified,
     length_mm: data.lengthMm,
