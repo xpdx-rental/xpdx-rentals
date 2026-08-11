@@ -80,7 +80,16 @@ export const vanSchema = z.object({
   // ── Pricing ──
   priceWeeklyFrom: z.coerce.number().default(0),
   priceMonthlyFrom: optionalInt(1000000),
-  depositAmount: optionalInt(10000),
+  depositAmount: z
+    .union([z.string(), z.number(), z.null(), z.undefined()])
+    .transform((v) => {
+      if (v === null || v === undefined) return null;
+      const s = String(v).trim();
+      return s === "" ? null : Number(s);
+    })
+    .refine((v) => v === null || !Number.isNaN(v), {
+      message: "Must be a valid number",
+    }),
   // 28 days is the contractual minimum everywhere on the site. No page may
   // imply daily or weekly hire is available (CLAUDE.md §3, "Resolved"), so the
   // editor cannot set a shorter term.

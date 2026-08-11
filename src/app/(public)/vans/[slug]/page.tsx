@@ -6,6 +6,7 @@ import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { getPublicVanBySlug, getPublicVanSlugs } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
 import { VanPhoto } from "@/components/public/van-photo";
+import { VanGallery } from "@/components/public/van-gallery";
 import { ContactLink } from "@/components/public/contact-link";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { JsonLd } from "@/components/json-ld";
@@ -97,36 +98,7 @@ export default async function VanDetailPage({ params }: { params: Promise<{ slug
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
-            {/*
-              The LCP element. Rendered at full opacity with `priority` and no
-              animation — MOTION.md §2.3 makes this a hard rule and Phase 4b
-              must not change it.
-            */}
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted">
-              <span className="relative block size-full" style={vanTransitionName("photo", van.slug)}>
-                <VanPhoto
-                  src={van.primaryImage?.url}
-                  alt={van.primaryImage?.alt}
-                  slug={van.slug}
-                  shot="side-profile"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 60vw"
-                />
-              </span>
-            </div>
-
-            {van.images.length > 1 ? (
-              <ul className="mt-3 grid grid-cols-4 gap-3">
-                {van.images.slice(1, 5).map((img) => (
-                  <li
-                    key={img.url}
-                    className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-muted"
-                  >
-                    <VanPhoto src={img.url} alt={img.alt} slug={van.slug} sizes="25vw" />
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            <VanGallery images={van.images} slug={van.slug} />
           </div>
 
           <div>
