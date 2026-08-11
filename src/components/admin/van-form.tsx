@@ -96,7 +96,9 @@ export function VanForm({
       }));
       setSelectedImages(prev => [...prev, ...newFiles]);
     }
-    e.target.value = ""; // Reset input so same file can be selected again
+    // We intentionally don't clear e.target.value here because some browsers (Safari/Mobile Chrome)
+    // will immediately revoke the underlying OS file handle, making the File object unreadable
+    // when the form is eventually submitted.
   };
 
   const removeImage = (index: number) => {

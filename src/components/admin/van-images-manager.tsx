@@ -55,7 +55,6 @@ export function VanImagesManager({
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    e.target.value = "";
 
     setUploading(true);
     let ok = 0;
@@ -81,6 +80,7 @@ export function VanImagesManager({
       }
     }
     setUploading(false);
+    e.target.value = "";
     if (ok) toast.success(`${ok} image${ok === 1 ? "" : "s"} uploaded — check the alt text.`);
   }
 

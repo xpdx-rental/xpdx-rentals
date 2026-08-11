@@ -138,11 +138,29 @@ export async function assignAdminRole(
   const supabase = createAdminClient();
 
   // Look up the user
-  const user = await searchUserByEmail(email);
+  let user = await searchUserByEmail(email);
   if (!user) {
-    return { 
-      status: "error", 
-      message: "User not found. The user must sign up or sign in to the platform before they can be assigned an admin role." 
+    // Auto-create the user if they don't exist
+    const { data: newAuthUser, error: createError } = await supabase.auth.admin.createUser({
+      email: email,
+      email_confirm: true,
+      user_metadata: { full_name: email.split("@")[0] },
+    });
+
+    if (createError || !newAuthUser.user) {
+      return { 
+        status: "error", 
+        message: `Failed to auto-create user account: ${createError?.message || "Unknown error"}` 
+      };
+    }
+
+    const { deriveProfileFromUser } = await import("@/lib/auth/profile");
+    await supabase.from("profiles").upsert(deriveProfileFromUser(newAuthUser.user), { onConflict: "id" });
+
+    user = {
+      id: newAuthUser.user.id,
+      email: newAuthUser.user.email!,
+      fullName: newAuthUser.user.user_metadata?.full_name ?? null,
     };
   }
 

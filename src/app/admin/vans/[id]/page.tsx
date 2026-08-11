@@ -5,6 +5,7 @@ import { getVanById } from "@/lib/data/vans";
 import { VanForm } from "@/components/admin/van-form";
 import { VanImagesManager } from "@/components/admin/van-images-manager";
 import { DeleteVanButton } from "./delete-van-button";
+import { VanStatusToggle } from "./van-status-toggle";
 import { updateVan } from "../actions";
 
 export const metadata = { title: "Edit van" };
@@ -35,16 +36,19 @@ export default async function EditVanPage({
           <h1 className="font-heading text-2xl font-bold text-foreground">{van.name}</h1>
           {created ? <p className="text-sm text-success">Van created.</p> : null}
         </div>
-        {van.status !== "draft" ? (
-          <a
-            href={`/vans/${van.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium text-foreground hover:bg-muted"
-          >
-            View live <ExternalLink className="size-4" />
-          </a>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <VanStatusToggle id={van.id} status={van.status} />
+          {van.status !== "draft" ? (
+            <a
+              href={`/vans/${van.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              View live <ExternalLink className="size-4" />
+            </a>
+          ) : null}
+        </div>
       </div>
 
       <VanImagesManager vanId={van.id} vanSlug={van.slug} images={van.images} />

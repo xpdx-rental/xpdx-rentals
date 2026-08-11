@@ -3,8 +3,8 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown } from "lucide-react";
-import { setVanStatus, moveVan } from "./actions";
+import { ArrowUp, ArrowDown, Trash2 } from "lucide-react";
+import { setVanStatus, moveVan, deleteVan } from "./actions";
 import { VAN_STATUSES, VAN_STATUS_LABELS, type VanStatus } from "@/lib/van";
 
 /**
@@ -74,6 +74,25 @@ export function VanRowActions({
         className="inline-flex size-9 items-center justify-center rounded-lg border border-border text-foreground hover:bg-muted disabled:opacity-30"
       >
         <ArrowDown className="size-4" />
+      </button>
+      
+      <div className="ml-1 w-px h-6 bg-border mx-1" aria-hidden="true" />
+      
+      <button
+        type="button"
+        aria-label="Delete van"
+        disabled={pending}
+        onClick={() => {
+          if (window.confirm("Are you sure you want to delete this van? This action cannot be undone.")) {
+            startTransition(async () => {
+              const res = await deleteVan(id);
+              if (res?.error) toast.error(res.error);
+            });
+          }
+        }}
+        className="inline-flex size-9 items-center justify-center rounded-lg border border-danger/30 text-danger hover:bg-danger/10 hover:border-danger/50 disabled:opacity-30"
+      >
+        <Trash2 className="size-4" />
       </button>
     </div>
   );

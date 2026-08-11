@@ -122,7 +122,7 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
                 min-height: 400px;
                 background-color: var(--background) !important;
                 border: 0 !important;
-                color: white;
+                color: var(--foreground) !important;
               }
               .ck.ck-toolbar {
                 background: #0f172a !important;
