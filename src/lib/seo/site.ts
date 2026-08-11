@@ -2,7 +2,20 @@ import { optionalEnv } from "@/lib/config";
 
 /** Canonical site origin (no trailing slash) for SEO URLs. */
 export function siteBaseUrl(): string {
-  const raw = optionalEnv("NEXT_PUBLIC_APP_URL") || "http://localhost:3000";
+  let raw = optionalEnv("NEXT_PUBLIC_APP_URL");
+  
+  if (!raw && optionalEnv("VERCEL_PROJECT_PRODUCTION_URL")) {
+    raw = `https://${optionalEnv("VERCEL_PROJECT_PRODUCTION_URL")}`;
+  }
+  
+  if (!raw && optionalEnv("VERCEL_URL")) {
+    raw = `https://${optionalEnv("VERCEL_URL")}`;
+  }
+  
+  if (!raw) {
+    raw = "http://localhost:3000";
+  }
+  
   return raw.replace(/\/$/, "");
 }
 
