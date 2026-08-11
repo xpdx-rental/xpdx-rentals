@@ -73,6 +73,10 @@ async function slugForVan(
 function readVanForm(formData: FormData) {
   const raw = {
     name: formData.get("name"),
+    make: formData.get("make"),
+    model: formData.get("model"),
+    year: formData.get("year"),
+    registration: formData.get("registration"),
     slug: formData.get("slug"),
     bodyType: formData.get("bodyType"),
     wheelbaseLabel: formData.get("wheelbaseLabel"),
@@ -118,6 +122,10 @@ function toRow(data: ReturnType<typeof vanSchema.parse>) {
   return {
     slug: data.slug,
     name: data.name,
+    make: data.make,
+    model: data.model,
+    year: data.year,
+    registration: data.registration,
     body_type: data.bodyType,
     wheelbase_label: data.wheelbaseLabel,
     roof: data.roof,
