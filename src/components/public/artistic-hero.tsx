@@ -21,6 +21,8 @@ import {
   Mail,
   PackageSearch,
   ChevronDown,
+  Key,
+  TrendingUp,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import type { PublicVan } from "@/lib/data/public-vans";
@@ -30,6 +32,25 @@ import { useRef, useState } from "react";
 import { BackgroundVideo } from "@/components/public/background-video";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import type { SiteContact } from "@/lib/data/settings";
+
+function SteeringWheel(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 12 12 2" />
+      <path d="M12 12 20.66 17" />
+      <path d="M12 12 3.34 17" />
+    </svg>
+  );
+}
 
 // ─── Spotlight gradient that follows cursor ─────────────────────────────────
 function CursorSpotlight() {
@@ -359,11 +380,36 @@ export function ArtisticHero({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.1 }}
-            className="mt-6"
+            className="mt-12 w-full"
           >
-            <p className="text-primary font-heading font-black text-xl md:text-2xl tracking-[0.2em] uppercase drop-shadow-sm">
-              Rent. Drive. Thrive.
-            </p>
+            <div className="flex flex-col items-start w-full">
+              <div className="relative flex items-center justify-start w-full py-2">
+                {/* Left bracket */}
+                <div className="absolute left-0 top-0 w-6 h-full border-y-2 border-l-2 border-primary/80" />
+                
+                <h2 className="text-3xl sm:text-5xl font-black text-primary tracking-tight px-8 sm:px-10 z-10 py-2 uppercase">
+                  Rent. Drive. Thrive.
+                </h2>
+
+                {/* Right bracket - attached to the text size rather than full width */}
+                <div className="absolute left-auto right-auto top-0 w-6 h-full border-y-2 border-r-2 border-primary/80 ml-[max(100%,300px)] sm:ml-[105%]" style={{ left: 'clamp(280px, 80%, 460px)' }} />
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-x-8 gap-y-4 w-full pl-2">
+                <div className="flex items-center gap-2">
+                  <Key className="size-5 sm:size-6 text-primary" strokeWidth={2} />
+                  <span className="text-sm sm:text-base font-medium text-white">Get the van.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <SteeringWheel className="size-5 sm:size-6 text-primary" strokeWidth={2} />
+                  <span className="text-sm sm:text-base font-medium text-white">Get to work.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="size-5 sm:size-6 text-primary" strokeWidth={2} />
+                  <span className="text-sm sm:text-base font-medium text-white">Grow your business.</span>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Quick search — inline, mobile only. The desktop version is the
