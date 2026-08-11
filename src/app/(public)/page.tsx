@@ -39,6 +39,7 @@ import { corePage } from "@/lib/seo/entities/core-pages";
 import { FEATURED_FAQS } from "@/lib/content/faqs";
 import { ADVANTAGES } from "@/lib/content/about";
 import { formatWeekly, formatMm } from "@/lib/van";
+import { RentDriveThrive } from "@/components/public/rent-drive-thrive";
 
 const ADVANTAGE_ICONS: Record<string, LucideIcon> = {
   infinity: InfinityIcon,
@@ -94,6 +95,8 @@ export default async function HomePage() {
         Phase 4b must not animate it.
       */}
       <ArtisticHero contact={contact} cheapest={cheapest} vans={vans} />
+
+      <RentDriveThrive />
 
       {/* Who We Are */}
       <section aria-labelledby="who-we-are" className="mx-auto max-w-6xl px-4 py-20 sm:px-6 relative z-10">
