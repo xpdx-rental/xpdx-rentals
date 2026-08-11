@@ -39,7 +39,7 @@ export function VanPhoto({
         fill
         sizes={sizes}
         priority={priority}
-        className={`object-cover ${className}`}
+        className={`object-cover bg-muted transform-gpu will-change-transform ${className}`}
       />
     );
   }
