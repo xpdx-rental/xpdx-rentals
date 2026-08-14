@@ -197,7 +197,7 @@ export default function FaqPage() {
       {/* ── CTA ── */}
       <section className="relative bg-muted border-t border-border py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[#EA580C]/[0.07] blur-[80px] rounded-full" />
+          <div className="absolute bottom-0 left-0 right-0 mx-auto w-[600px] h-[200px] bg-[#EA580C]/[0.07] blur-[80px] rounded-full" />
         </div>
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-[#EA580C]/10 border border-[#EA580C]/20 mb-6">

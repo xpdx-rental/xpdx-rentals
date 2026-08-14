@@ -437,7 +437,7 @@ export function ArtisticHero({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 1 }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 md:hidden"
+            className="absolute bottom-6 left-0 right-0 mx-auto flex flex-col items-center gap-2 md:hidden"
           >
             <p className="text-white/25 text-[10px] uppercase tracking-[0.3em]">Scroll</p>
             <motion.div
@@ -451,10 +451,10 @@ export function ArtisticHero({
 
       {/* Quick Search Bar */}
       <motion.div
-        initial={{ opacity: 0, x: "-50%", y: "150%" }}
-        animate={{ opacity: 1, x: "-50%", y: "50%" }}
+        initial={{ opacity: 0, y: "150%" }}
+        animate={{ opacity: 1, y: "50%" }}
         transition={{ duration: 0.8, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute bottom-0 left-1/2 w-full max-w-4xl px-4 z-50 hidden md:block"
+        className="absolute bottom-0 left-0 right-0 mx-auto w-full max-w-4xl px-4 z-50 hidden md:block"
       >
         <QuickSearchForm
           query={query}

@@ -317,7 +317,7 @@ export default async function AboutUsPage() {
       {/* ── CTA / Enquiry ── */}
       <section id="contact" className="relative bg-background border-t border-border py-24 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#EA580C]/[0.06] rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 left-0 right-0 mx-auto w-[800px] h-[300px] bg-[#EA580C]/[0.06] rounded-full blur-[100px]" />
         </div>
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center mb-14">
           <div className="inline-flex items-center gap-3 mb-5">

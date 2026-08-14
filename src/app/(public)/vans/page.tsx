@@ -150,7 +150,7 @@ export default async function VansPage() {
 
       <section className="relative border-t border-border bg-background py-16 sm:py-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[#EA580C]/[0.06] blur-[80px] rounded-full" />
+          <div className="absolute bottom-0 left-0 right-0 mx-auto w-[600px] h-[200px] bg-[#EA580C]/[0.06] blur-[80px] rounded-full" />
         </div>
         <div className="relative mx-auto max-w-2xl px-4 sm:px-6">
           <div className="text-center mb-10">
