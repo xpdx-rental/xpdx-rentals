@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/security/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import Papa from "papaparse";
-import type { VanRow } from "@/lib/data/rows";
+import type { VanRow, VanStatusRow } from "@/lib/data/rows";
 
 export async function bulkUploadVans(formData: FormData) {
   try {
@@ -77,7 +77,7 @@ export async function bulkUploadVans(formData: FormData) {
               description: row.description || null,
               seo_title: row.seo_title || null,
               seo_description: row.seo_description || null,
-              status: row.status || "draft",
+              status: (row.status || "draft") as VanStatusRow,
               price_verified: false,
               dimensions_verified: false,
             });
