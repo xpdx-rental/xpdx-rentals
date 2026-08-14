@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Check } from "lucide-react";
 import { getPublicVans } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
-import { getSeoPage, getSeoRegistry } from "@/lib/seo/registry";
+import { getSeoPage, generatedSlugs } from "@/lib/seo/registry";
 import { registryMetadata, suppressedMetadata } from "@/lib/seo/metadata";
 import {
   findServiceByPathSegment,
@@ -54,13 +54,14 @@ import { formatWeekly, ROOF_LABELS } from "@/lib/van";
  * produces no page at all rather than an empty one.
  */
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ serviceSlug: string }> };
 
 export async function generateStaticParams() {
-  return [];
+  const slugs = await generatedSlugs("service");
+  return slugs.map((serviceSlug) => ({ serviceSlug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -15,7 +15,7 @@ import { SplitTextReveal } from "@/components/animations/split-text-reveal";
 import { ServiceAreaMap } from "@/components/public/service-area-map";
 import { ALL_FAQS } from "@/lib/content/faqs";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/local-van-hire"));
 

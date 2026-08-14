@@ -12,7 +12,7 @@ import { corePage } from "@/lib/seo/entities/core-pages";
 import { HIRE_TERMS, INCLUSIONS } from "@/lib/business";
 import { FleetSearchFilter } from "@/components/public/fleet-search-filter";
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/vans"));
 

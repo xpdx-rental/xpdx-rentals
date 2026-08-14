@@ -15,7 +15,7 @@ import { SplitTextReveal } from "@/components/animations/split-text-reveal";
 import { ALL_FAQS } from "@/lib/content/faqs";
 import { formatMm, formatWeekly } from "@/lib/van";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/delivery-van-for-rent"));
 

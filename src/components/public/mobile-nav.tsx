@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Menu, X, ChevronRight, Phone } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
@@ -85,7 +86,7 @@ export function MobileNav({ phone, whatsapp }: { phone: string | null; whatsapp:
         <Menu className="size-6" aria-hidden="true" />
       </button>
 
-      {open ? (
+      {open && typeof document !== "undefined" ? createPortal(
         <div className="fixed inset-0 z-50 lg:hidden">
           {/* Backdrop. Clicking it dismisses, as a dialog should. */}
           <button
@@ -167,7 +168,8 @@ export function MobileNav({ phone, whatsapp }: { phone: string | null; whatsapp:
               </div>
             ) : null}
           </div>
-        </div>
+        </div>,
+        document.body
       ) : null}
     </>
   );

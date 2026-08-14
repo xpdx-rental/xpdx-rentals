@@ -34,7 +34,7 @@ export async function bulkUploadVans(formData: FormData) {
           const rowsToInsert: Partial<VanRow>[] = [];
 
           for (let i = 0; i < results.data.length; i++) {
-            const row: any = results.data[i];
+            const row = results.data[i] as Record<string, string>;
 
             // Basic validation
             if (!row.slug || !row.name || !row.body_type || !row.wheelbase_label || !row.roof || !row.transmission || !row.fuel) {
@@ -57,7 +57,7 @@ export async function bulkUploadVans(formData: FormData) {
               registration: row.registration || null,
               body_type: row.body_type,
               wheelbase_label: row.wheelbase_label,
-              roof: row.roof as any,
+              roof: row.roof as "standard" | "high" | "low",
               tonnage: row.tonnage ? parseFloat(row.tonnage) : 0,
               transmission: row.transmission,
               fuel: row.fuel,
@@ -89,7 +89,7 @@ export async function bulkUploadVans(formData: FormData) {
           }
 
           // Insert into database
-          const { error } = await supabase.from("vans").insert(rowsToInsert as any);
+          const { error } = await supabase.from("vans").insert(rowsToInsert as unknown as VanRow[]);
 
           if (error) {
             resolve({ success: false, error: `Database Error: ${error.message}` });
@@ -100,12 +100,12 @@ export async function bulkUploadVans(formData: FormData) {
           revalidatePath("/vans");
           resolve({ success: true, count: rowsToInsert.length });
         },
-        error: (error: any) => {
+        error: (error: Error) => {
           resolve({ success: false, error: `CSV Error: ${error.message}` });
         },
       });
     });
-  } catch (err: any) {
-    return { success: false, error: err.message || "An unexpected error occurred." };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : "An unexpected error occurred." };
   }
 }

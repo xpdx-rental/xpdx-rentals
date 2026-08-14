@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Activity, Eye, Inbox, MousePointerClick, Truck, AlertTriangle } from "lucide-react";
+import { Activity, Eye, Inbox, Truck } from "lucide-react";
 import Link from "next/link";
 import { AnalyticsCharts } from "@/components/admin/analytics-charts";
 
@@ -28,7 +28,7 @@ export default async function AdminIndexPage() {
   const thirtyDaysIso = thirtyDaysAgo.toISOString();
 
   // Fetch real analytics data
-  const [{ data: rawViews, error: viewsError }, { data: rawLeads }] = await Promise.all([
+  const [{ data: rawViews }, { data: rawLeads }] = await Promise.all([
     supabase.from("page_views").select("created_at").gte("created_at", thirtyDaysIso),
     supabase.from("leads").select("created_at").gte("created_at", thirtyDaysIso),
   ]);

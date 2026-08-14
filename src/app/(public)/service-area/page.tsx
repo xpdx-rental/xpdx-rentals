@@ -12,7 +12,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { corePage } from "@/lib/seo/entities/core-pages";
 import { HIRE_TERMS } from "@/lib/business";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/service-area"));
 

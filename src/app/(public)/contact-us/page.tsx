@@ -4,14 +4,14 @@ import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { getSiteContact, getOpeningHours } from "@/lib/data/settings";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { IframeMap } from "@/components/public/iframe-map";
-import { GEO } from "@/lib/business";
+
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbSchema, autoRentalSchema } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { corePage } from "@/lib/seo/entities/core-pages";
 import { telHref, waHref } from "@/lib/lead";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/contact-us"));
 

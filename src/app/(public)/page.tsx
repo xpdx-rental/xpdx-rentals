@@ -53,7 +53,7 @@ const ADVANTAGE_ICONS: Record<string, LucideIcon> = {
   cog: Cog,
 };
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 // Copy lives in `entities/core-pages.ts`, shared with the SEO registry so the
 // sitemap and /admin/seo describe the page this route actually ships.

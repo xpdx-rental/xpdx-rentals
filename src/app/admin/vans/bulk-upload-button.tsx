@@ -23,13 +23,13 @@ export function BulkUploadButton() {
     formData.append("file", file);
 
     try {
-      const result = await bulkUploadVans(formData) as any;
+      const result = (await bulkUploadVans(formData)) as { success: boolean; count?: number; error?: string };
       if (result.success) {
         toast.success(`Successfully uploaded ${result.count} vans!`);
       } else {
         toast.error(result.error || "Failed to upload vans.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error("An unexpected error occurred during upload.");
     } finally {
       setIsUploading(false);

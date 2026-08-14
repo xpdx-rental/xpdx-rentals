@@ -14,10 +14,10 @@ const supabase = createClient(url, key, {
 });
 
 async function main() {
-  const { data: users, error: usersError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
+  const { error: usersError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
   console.log("List Users Error:", usersError?.message || "Success");
 
-  const { data: adminRoles, error: adminRolesError } = await supabase.from("admin_roles").select("*").limit(1);
+  const { error: adminRolesError } = await supabase.from("admin_roles").select("*").limit(1);
   console.log("Admin Roles Error:", adminRolesError?.message || "Success");
 }
 

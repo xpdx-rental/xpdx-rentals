@@ -17,7 +17,7 @@ import { BusinessHeroVideo } from "@/components/public/business-hero-video";
 import { ALL_FAQS } from "@/lib/content/faqs";
 import { HIRE_TERMS } from "@/lib/business";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/business-van-rental"));
 

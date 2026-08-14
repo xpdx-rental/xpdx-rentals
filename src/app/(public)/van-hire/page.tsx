@@ -32,7 +32,7 @@ import { formatWeekly } from "@/lib/van";
  * that keyword rather than a generated category page taking it.
  */
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /**
  * Synchronous, from the shared core-page copy.

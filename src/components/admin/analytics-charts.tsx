@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { format, subDays, parseISO } from "date-fns";
-import { TrendingUp, MousePointerClick, Calendar, User } from "lucide-react";
+
 
 type DailyStat = {
   date: string;

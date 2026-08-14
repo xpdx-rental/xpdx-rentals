@@ -3,25 +3,26 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Phone, Check } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
-import { getPublicVanBySlug, getPublicVanSlugs } from "@/lib/data/public-vans";
+import { getPublicVanBySlug } from "@/lib/data/public-vans";
 import { getSiteContact } from "@/lib/data/settings";
-import { VanPhoto } from "@/components/public/van-photo";
+
 import { VanGallery } from "@/components/public/van-gallery";
 import { ContactLink } from "@/components/public/contact-link";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 import { JsonLd } from "@/components/json-ld";
 import { vanSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { registryMetadata, suppressedMetadata } from "@/lib/seo/metadata";
-import { getSeoPage } from "@/lib/seo/registry";
+import { getSeoPage, generatedSlugs } from "@/lib/seo/registry";
 import { formatWeekly, formatMm, ROOF_LABELS } from "@/lib/van";
 import { telHref, waHref } from "@/lib/lead";
 import { HIRE_TERMS, INCLUSIONS } from "@/lib/business";
 
-export const revalidate = 300;
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  return [];
+  const slugs = await generatedSlugs("vehicle");
+  return slugs.map((slug) => ({ slug }));
 }
 
 function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {

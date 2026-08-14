@@ -42,14 +42,15 @@ import { HIRE_TERMS } from "@/lib/business";
  * a wasted phone call.
  */
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ slug: string }> };
 
 
 export async function generateStaticParams() {
-  return [];
+  const slugs = await generatedSlugs("use-case");
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

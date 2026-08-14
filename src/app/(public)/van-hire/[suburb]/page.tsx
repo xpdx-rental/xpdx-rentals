@@ -60,7 +60,7 @@ import { formatWeekly } from "@/lib/van";
  * wholesale, and it is not what this is.
  */
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 /** A suburb the gate rejected is a 404, not a thin page. */
 export const dynamicParams = true;
 
@@ -68,7 +68,8 @@ type Props = { params: Promise<{ suburb: string }> };
 
 
 export async function generateStaticParams() {
-  return [];
+  const slugs = await generatedSlugs("location");
+  return slugs.map((suburb) => ({ suburb }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

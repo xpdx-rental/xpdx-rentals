@@ -24,7 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export const metadata: Metadata = pageMetadata(corePage("/use-cases"));
 
