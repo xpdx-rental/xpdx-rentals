@@ -137,7 +137,7 @@ export default function RootLayout({
       className={`${inter.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground font-sans tracking-tight">
+      <body className="min-h-screen bg-background text-foreground font-sans tracking-tight overflow-x-hidden">
         <AnalyticsTracker />
         <NoiseOverlay />
         <LenisProvider>
