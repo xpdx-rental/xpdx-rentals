@@ -18,7 +18,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         Skip to content
       </a>
       <SiteNav />
-      <main id="main" className="flex-1">
+      <main id="main" className="flex-1 overflow-x-hidden">
         {children}
       </main>
       <SiteFooter />
