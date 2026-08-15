@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { sitemapPages } from "@/lib/seo/registry";
 import { siteBaseUrl } from "@/lib/seo/site";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 /**
  * XML sitemap, generated from the SEO registry.
