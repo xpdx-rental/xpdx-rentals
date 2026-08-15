@@ -383,7 +383,7 @@ export function ArtisticHero({
             className="mt-12 w-full"
           >
             <div className="flex flex-col items-start w-full">
-              <div className="relative flex items-center justify-start w-full py-2">
+              <div className="relative inline-flex items-center justify-start py-2">
                 {/* Left bracket */}
                 <div className="absolute left-0 top-0 w-6 h-full border-y-2 border-l-2 border-primary/80" />
                 
@@ -391,8 +391,8 @@ export function ArtisticHero({
                   Rent. Drive. Thrive.
                 </h2>
 
-                {/* Right bracket - attached to the text size rather than full width */}
-                <div className="absolute left-auto right-auto top-0 w-6 h-full border-y-2 border-r-2 border-primary/80 ml-[max(100%,300px)] sm:ml-[105%]" style={{ left: 'clamp(280px, 80%, 460px)' }} />
+                {/* Right bracket */}
+                <div className="absolute right-0 top-0 w-6 h-full border-y-2 border-r-2 border-primary/80" />
               </div>
 
               <div className="mt-6 flex flex-wrap gap-x-8 gap-y-4 w-full pl-2">
