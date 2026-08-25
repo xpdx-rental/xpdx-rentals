@@ -8,6 +8,11 @@ import { createClient } from "@/lib/supabase/client";
 import { saveBlogPost } from "@/app/admin/blog/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function BlogEditor({ 
   id = "",
@@ -105,210 +110,217 @@ export function BlogEditor({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Post Title</label>
-            <input 
-              type="text" 
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground"
-              placeholder="E.g., The Ultimate Guide to Van Hire"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Post Content</label>
-            <div className="prose max-w-none ck-editor-container bg-background text-foreground rounded-lg overflow-hidden border border-border">
-              <CKEditor
-                // The classic build ships its own `Editor` class whose type
-                // does not structurally match the one `@ckeditor/ckeditor5-react`
-                // declares, so a cast is unavoidable — but it can be a cast to
-                // the prop's real type rather than to `any`, which would also
-                // have silenced mistakes in every other prop on this element.
-                editor={ClassicEditor as unknown as ComponentProps<typeof CKEditor>["editor"]}
-                data={content}
-                onReady={(editor) => {
-                  editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
-                    return {
-                      upload: async () => {
-                        const file = await loader.file;
-                        if (!file) throw new Error("No file provided");
-                        const supabase = createClient();
-                        const filename = `${Date.now()}-${file.name}`;
-                        
-                        // Only `error` is used — the public URL is resolved
-                        // separately below, so destructuring `data` here just
-                        // bound a value nothing read.
-                        const { error } = await supabase.storage
-                          .from("media")
-                          .upload(`blog/${filename}`, file, {
-                            cacheControl: '3600',
-                            upsert: false
-                          });
-                          
-                        if (error) throw error;
-                        
-                        const { data: { publicUrl } } = supabase.storage
-                          .from("media")
-                          .getPublicUrl(`blog/${filename}`);
-                          
-                        return { default: publicUrl };
-                      }
-                    };
-                  };
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  setContent(data);
-                }}
-              />
-            </div>
-            <style jsx global>{`
-              .ck-editor__editable_inline {
-                min-height: 400px;
-                background-color: var(--background) !important;
-                border: 0 !important;
-                color: var(--foreground) !important;
-              }
-              .ck.ck-toolbar {
-                background: #0f172a !important;
-                border: 0 !important;
-                border-bottom: 1px solid #1e293b !important;
-              }
-              .ck.ck-button {
-                color: #cbd5e1 !important;
-              }
-              .ck.ck-button:hover, .ck.ck-button.ck-on {
-                background: #1e293b !important;
-                color: white !important;
-              }
-              .ck.ck-tooltip .ck-tooltip__text {
-                color: white;
-                background: black;
-              }
-            `}</style>
-          </div>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Post Content</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-base font-medium">Post Title</Label>
+                <Input 
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="E.g., The Ultimate Guide to Van Hire"
+                  className="text-lg font-medium"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-base font-medium">Body</Label>
+                <div className="prose max-w-none ck-editor-container bg-background text-foreground rounded-lg overflow-hidden border border-input shadow-sm">
+                  <CKEditor
+                    editor={ClassicEditor as unknown as ComponentProps<typeof CKEditor>["editor"]}
+                    data={content}
+                    onReady={(editor) => {
+                      editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
+                        return {
+                          upload: async () => {
+                            const file = await loader.file;
+                            if (!file) throw new Error("No file provided");
+                            const supabase = createClient();
+                            const filename = `${Date.now()}-${file.name}`;
+                            
+                            const { error } = await supabase.storage
+                              .from("media")
+                              .upload(`blog/${filename}`, file, {
+                                cacheControl: '3600',
+                                upsert: false
+                              });
+                              
+                            if (error) throw error;
+                            
+                            const { data: { publicUrl } } = supabase.storage
+                              .from("media")
+                              .getPublicUrl(`blog/${filename}`);
+                              
+                            return { default: publicUrl };
+                          }
+                        };
+                      };
+                    }}
+                    onChange={(event, editor) => {
+                      const data = editor.getData();
+                      setContent(data);
+                    }}
+                  />
+                </div>
+                <style jsx global>{`
+                  .ck-editor__editable_inline {
+                    min-height: 500px;
+                    background-color: var(--background) !important;
+                    border: 0 !important;
+                    color: var(--foreground) !important;
+                  }
+                  .ck.ck-toolbar {
+                    background: var(--muted) !important;
+                    border: 0 !important;
+                    border-bottom: 1px solid var(--border) !important;
+                  }
+                  .ck.ck-button {
+                    color: var(--foreground) !important;
+                  }
+                  .ck.ck-button:hover, .ck.ck-button.ck-on {
+                    background: var(--background) !important;
+                    color: var(--foreground) !important;
+                  }
+                  .ck.ck-tooltip .ck-tooltip__text {
+                    color: white;
+                    background: black;
+                  }
+                `}</style>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <h3 className="font-semibold text-foreground">Publish Settings</h3>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">URL Slug</label>
-              <input 
-                type="text" 
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
-                placeholder="ultimate-guide"
-              />
-            </div>
+        <div className="space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Publish Settings</CardTitle>
+              <CardDescription>Manage your post visibility</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="slug">URL Slug</Label>
+                <Input 
+                  id="slug"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="ultimate-guide"
+                />
+              </div>
 
-            <div className="space-y-2 pt-2">
-              <label className="text-sm font-medium text-muted-foreground">Cover Image</label>
-              
-              {coverUrl ? (
-                <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={coverUrl} alt="Cover preview" className="object-cover w-full h-full" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <button 
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-white text-xs font-medium bg-black/50 px-3 py-1.5 rounded hover:bg-black/70 transition-colors"
-                      disabled={uploadingCover}
-                    >
-                      {uploadingCover ? "Uploading..." : "Change Image"}
-                    </button>
+              <div className="space-y-2">
+                <Label>Cover Image</Label>
+                {coverUrl ? (
+                  <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-input group shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={coverUrl} alt="Cover preview" className="object-cover w-full h-full" />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
+                      <Button 
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingCover}
+                      >
+                        {uploadingCover ? "Uploading..." : "Change Image"}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingCover}
-                  className="flex h-20 w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-background/50 text-muted-foreground hover:bg-background hover:text-foreground transition-colors disabled:opacity-50"
+                ) : (
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingCover}
+                    className="flex h-32 w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-input bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:border-muted-foreground/50 transition-all disabled:opacity-50"
+                  >
+                    {uploadingCover ? <Loader2 className="size-6 animate-spin" /> : <ImagePlus className="size-6" />}
+                    <span className="text-sm font-medium">{uploadingCover ? "Uploading..." : "Upload Cover Image"}</span>
+                  </button>
+                )}
+                
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleCoverUpload} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
+              </div>
+
+              <div className="pt-2 flex flex-col gap-3">
+                <Button 
+                  onClick={() => handleSave('published')}
+                  disabled={saving}
+                  size="lg"
+                  className="w-full font-bold"
                 >
-                  {uploadingCover ? <Loader2 className="size-5 animate-spin" /> : <ImagePlus className="size-5" />}
-                  <span className="text-xs font-medium">{uploadingCover ? "Uploading..." : "Upload Cover"}</span>
-                </button>
-              )}
+                  {saving && <Loader2 className="size-4 animate-spin mr-2" />}
+                  Publish Now
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleSave('draft')}
+                  disabled={saving}
+                  size="lg"
+                  className="w-full"
+                >
+                  Save Draft
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Organization & SEO</CardTitle>
+              <CardDescription>Improve discoverability</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="categories">Categories</Label>
+                <Input 
+                  id="categories"
+                  value={categories}
+                  onChange={(e) => setCategories(e.target.value)}
+                  placeholder="e.g. Travel, Advice"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tags">Tags</Label>
+                <Input 
+                  id="tags"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  placeholder="e.g. Roadtrip, Vanlife"
+                />
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="metaTitle">Meta Title</Label>
+                <Input 
+                  id="metaTitle"
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  placeholder="SEO Title (max 60 chars)"
+                />
+              </div>
               
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleCoverUpload} 
-                accept="image/*" 
-                className="hidden" 
-              />
-            </div>
-
-            <div className="pt-4 flex flex-col gap-3">
-              <button 
-                onClick={() => handleSave('published')}
-                disabled={saving}
-                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
-              >
-                {saving ? <Loader2 className="size-4 animate-spin" /> : null}
-                Publish Now
-              </button>
-              <button 
-                onClick={() => handleSave('draft')}
-                disabled={saving}
-                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-slate-800 font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-              >
-                Save Draft
-              </button>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <h3 className="font-semibold text-foreground">Organization & SEO</h3>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Categories</label>
-              <input 
-                type="text" 
-                value={categories}
-                onChange={(e) => setCategories(e.target.value)}
-                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
-                placeholder="Comma separated"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Tags</label>
-              <input 
-                type="text" 
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
-                placeholder="Comma separated"
-              />
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <label className="text-sm font-medium text-muted-foreground">Meta Title</label>
-              <input 
-                type="text" 
-                value={metaTitle}
-                onChange={(e) => setMetaTitle(e.target.value)}
-                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
-                placeholder="SEO Title"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Meta Description</label>
-              <textarea 
-                value={metaDescription}
-                onChange={(e) => setMetaDescription(e.target.value)}
-                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground min-h-[80px]"
-                placeholder="SEO Description"
-              />
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="metaDescription">Meta Description</Label>
+                <Textarea 
+                  id="metaDescription"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  placeholder="SEO Description (max 160 chars)"
+                  className="min-h-[100px] resize-y"
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
