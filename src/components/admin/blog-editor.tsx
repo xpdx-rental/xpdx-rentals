@@ -46,7 +46,7 @@ export function BlogEditor({
       const filename = `${Date.now()}-${file.name}`;
       
       const { error } = await supabase.storage
-        .from("media")
+        .from("blog-media")
         .upload(`blog/covers/${filename}`, file, {
           cacheControl: '3600',
           upsert: false
@@ -55,7 +55,7 @@ export function BlogEditor({
       if (error) throw error;
       
       const { data: { publicUrl } } = supabase.storage
-        .from("media")
+        .from("blog-media")
         .getPublicUrl(`blog/covers/${filename}`);
         
       setCoverUrl(publicUrl);
@@ -144,7 +144,7 @@ export function BlogEditor({
                             const filename = `${Date.now()}-${file.name}`;
                             
                             const { error } = await supabase.storage
-                              .from("media")
+                              .from("blog-media")
                               .upload(`blog/${filename}`, file, {
                                 cacheControl: '3600',
                                 upsert: false
@@ -153,7 +153,7 @@ export function BlogEditor({
                             if (error) throw error;
                             
                             const { data: { publicUrl } } = supabase.storage
-                              .from("media")
+                              .from("blog-media")
                               .getPublicUrl(`blog/${filename}`);
                               
                             return { default: publicUrl };
