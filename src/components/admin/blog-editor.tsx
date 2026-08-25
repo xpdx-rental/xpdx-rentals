@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export function BlogEditor({ 
-  id,
+  id = "",
   initialContent = "", 
   initialTitle = "", 
   initialSlug = "",
