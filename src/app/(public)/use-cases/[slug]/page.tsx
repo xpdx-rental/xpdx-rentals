@@ -43,7 +43,7 @@ import { HIRE_TERMS } from "@/lib/business";
  */
 
 export const revalidate = 86400;
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 type Props = { params: Promise<{ slug: string }> };
 

@@ -55,7 +55,7 @@ import { formatWeekly, ROOF_LABELS } from "@/lib/van";
  */
 
 export const revalidate = 86400;
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 type Props = { params: Promise<{ serviceSlug: string }> };
 

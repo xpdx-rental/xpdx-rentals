@@ -87,7 +87,7 @@ export const getSiteContact = unstable_cache(
     };
   },
   ["site-contact"],
-  { revalidate: 3600, tags: ["settings", "public"] },
+  { revalidate: 86400, tags: ["settings", "public"] },
 );
 
 /**
@@ -109,5 +109,5 @@ export const getOpeningHours = unstable_cache(
     return out;
   },
   ["opening-hours"],
-  { revalidate: 3600, tags: ["settings", "public"] },
+  { revalidate: 86400, tags: ["settings", "public"] },
 );

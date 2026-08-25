@@ -62,7 +62,7 @@ import { formatWeekly } from "@/lib/van";
 
 export const revalidate = 86400;
 /** A suburb the gate rejected is a 404, not a thin page. */
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 type Props = { params: Promise<{ suburb: string }> };
 

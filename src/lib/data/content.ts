@@ -84,5 +84,5 @@ export const getApprovedTestimonials = unstable_cache(
     }
   },
   ["testimonials"],
-  { revalidate: 3600, tags: ["testimonials", "public"] },
+  { revalidate: 86400, tags: ["testimonials", "public"] },
 );
