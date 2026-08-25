@@ -5,11 +5,27 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { Loader2, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { saveBlogPost } from "@/app/admin/blog/actions";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug = "" }) {
+export function BlogEditor({ 
+  id,
+  initialContent = "", 
+  initialTitle = "", 
+  initialSlug = "",
+  initialCategories = "",
+  initialMetaTitle = "",
+  initialMetaDescription = "",
+  initialTags = ""
+}) {
   const [title, setTitle] = useState(initialTitle);
   const [slug, setSlug] = useState(initialSlug);
   const [content, setContent] = useState(initialContent);
+  const [categories, setCategories] = useState(initialCategories);
+  const [metaTitle, setMetaTitle] = useState(initialMetaTitle);
+  const [metaDescription, setMetaDescription] = useState(initialMetaDescription);
+  const [tags, setTags] = useState(initialTags);
   const [saving, setSaving] = useState(false);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -47,12 +63,44 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
     }
   };
 
+  const router = useRouter();
+
   const handleSave = async (status: 'draft' | 'published') => {
+    if (!title || !slug) {
+      toast.error("Title and slug are required.");
+      return;
+    }
+
     setSaving(true);
-    // Simulate save
-    await new Promise(r => setTimeout(r, 1000));
-    setSaving(false);
-    alert(`Successfully saved as ${status}!`);
+    
+    try {
+      const result = await saveBlogPost({
+        ...(id ? { id } : {}),
+        title,
+        slug,
+        content,
+        cover_image_url: coverUrl,
+        status,
+        categories_raw: categories,
+        tags_raw: tags,
+        meta_title: metaTitle,
+        meta_description: metaDescription,
+      });
+
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(`Successfully saved as ${status}!`);
+        if (!id && result.post?.id) {
+          router.push(`/admin/blog/${result.post.id}`);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred while saving.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -212,6 +260,53 @@ export function BlogEditor({ initialContent = "", initialTitle = "", initialSlug
               >
                 Save Draft
               </button>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <h3 className="font-semibold text-foreground">Organization & SEO</h3>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Categories</label>
+              <input 
+                type="text" 
+                value={categories}
+                onChange={(e) => setCategories(e.target.value)}
+                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
+                placeholder="Comma separated"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Tags</label>
+              <input 
+                type="text" 
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
+                placeholder="Comma separated"
+              />
+            </div>
+
+            <div className="space-y-2 pt-2">
+              <label className="text-sm font-medium text-muted-foreground">Meta Title</label>
+              <input 
+                type="text" 
+                value={metaTitle}
+                onChange={(e) => setMetaTitle(e.target.value)}
+                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground"
+                placeholder="SEO Title"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Meta Description</label>
+              <textarea 
+                value={metaDescription}
+                onChange={(e) => setMetaDescription(e.target.value)}
+                className="w-full rounded-md border border-border bg-background/50 px-3 py-1.5 text-sm text-foreground min-h-[80px]"
+                placeholder="SEO Description"
+              />
             </div>
           </div>
         </div>

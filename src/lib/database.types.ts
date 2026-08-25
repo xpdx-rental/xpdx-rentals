@@ -142,43 +142,55 @@ export type Database = {
       blog_posts: {
         Row: {
           ai_prompt: string | null
+          categories_raw: string | null
           category_id: string | null
           content: string
           cover_image_url: string | null
           created_at: string
           id: string
+          meta_description: string | null
+          meta_title: string | null
           published_at: string | null
           slug: string
           status: Database["public"]["Enums"]["blog_status"]
           summary: string | null
+          tags_raw: string | null
           title: string
           updated_at: string
         }
         Insert: {
           ai_prompt?: string | null
+          categories_raw?: string | null
           category_id?: string | null
           content: string
           cover_image_url?: string | null
           created_at?: string
           id?: string
+          meta_description?: string | null
+          meta_title?: string | null
           published_at?: string | null
           slug: string
           status?: Database["public"]["Enums"]["blog_status"]
           summary?: string | null
+          tags_raw?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           ai_prompt?: string | null
+          categories_raw?: string | null
           category_id?: string | null
           content?: string
           cover_image_url?: string | null
           created_at?: string
           id?: string
+          meta_description?: string | null
+          meta_title?: string | null
           published_at?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["blog_status"]
           summary?: string | null
+          tags_raw?: string | null
           title?: string
           updated_at?: string
         }

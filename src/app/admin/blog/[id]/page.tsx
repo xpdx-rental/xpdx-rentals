@@ -34,9 +34,14 @@ export default async function EditBlogPostPage({ params }: { params: Promise<{ i
       </header>
 
       <BlogEditor 
+        id={post.id}
         initialTitle={post?.title ?? ""} 
         initialContent={post?.content ?? ""}
         initialSlug={post?.slug ?? ""}
+        initialCategories={post?.categories_raw ?? ""}
+        initialTags={post?.tags_raw ?? ""}
+        initialMetaTitle={post?.meta_title ?? ""}
+        initialMetaDescription={post?.meta_description ?? ""}
       />
     </div>
   );
