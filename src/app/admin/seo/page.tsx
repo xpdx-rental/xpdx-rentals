@@ -50,7 +50,7 @@ function DecisionBadge({ page }: { page: SeoPage }) {
 }
 
 export default async function AdminSeoPage() {
-  await requireAdminRole(["owner", "admin"]);
+  await requireAdminRole(["owner"]);
 
   const [registry, stats] = await Promise.all([getSeoRegistry(), registryStats()]);
   const base = siteBaseUrl();

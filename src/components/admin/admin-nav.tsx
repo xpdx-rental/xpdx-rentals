@@ -55,7 +55,7 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
           "/admin/vans": ["owner", "super_admin", "admin", "manager", "hire_desk"],
           "/admin/blog": ["owner", "super_admin", "manager", "content"],
           "/admin/testimonials": ["owner", "super_admin", "manager", "content"],
-          "/admin/seo": ["owner", "super_admin", "admin"],
+          "/admin/seo": ["owner", "super_admin"],
           "/admin/settings": ["owner", "super_admin", "admin"],
           "/admin/roles": ["owner", "super_admin"], // Only owner can see Roles
           "/admin/audit": ["owner", "super_admin"], // Only owner can see Audit

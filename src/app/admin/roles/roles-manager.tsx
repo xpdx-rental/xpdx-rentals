@@ -15,7 +15,7 @@ const ROLE_OPTIONS = [
   { value: "hire_desk", label: "Hire desk", description: "Work enquiries (view, update, assign to self) & quick-change van availability", color: "bg-blue-100 text-blue-700 border-blue-200" },
 
   { value: "manager", label: "Manager", description: "Inventory, leads, content & reports (no users/settings)", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  { value: "admin", label: "Admin", description: "Access to Fleet, Leads, Settings, and SEO (no Blog, Testimonials, Audit, or Users)", color: "bg-amber-100 text-amber-700 border-amber-200" },
+  { value: "admin", label: "Admin", description: "Access to Fleet, Leads, and Settings (no SEO, Blog, Testimonials, Audit, or Users)", color: "bg-amber-100 text-amber-700 border-amber-200" },
 ];
 
 const ROLE_BADGE_COLORS: Record<string, string> = {
