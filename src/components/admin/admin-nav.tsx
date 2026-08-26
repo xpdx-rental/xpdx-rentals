@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -35,13 +35,14 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Kick off the Supabase browser client singleton. This starts the internal
-  // setInterval that silently refreshes the session token before it expires.
-  // Without this, the token expires, and Next.js hover+click concurrent requests
-  // race to refresh it on the server, causing instant logouts due to refresh token reuse.
-  useState(() => {
+  // Initialize the Supabase browser client on mount. The createBrowserClient singleton
+  // starts an internal setInterval that silently refreshes the access token before it
+  // expires. Without this, the browser holds a stale token and the next navigation
+  // triggers a server-side refresh race — which Supabase detects as refresh-token reuse
+  // and immediately revokes the session.
+  useEffect(() => {
     createClient();
-  });
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";

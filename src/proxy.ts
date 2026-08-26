@@ -301,19 +301,25 @@ export async function proxy(request: NextRequest) {
 
   const isAdminRoute =
     path.startsWith("/admin") && !path.startsWith("/admin-login");
-  const isProtectedRoute = isAdminRoute;
 
-  // OPTIMIZATION: Skip expensive auth checks on public pages.
-  if (!isProtectedRoute) {
-    return response;
+  // We MUST call getUser() on every request (not just admin routes) to allow the
+  // Supabase SSR client to refresh the access token when it's nearing expiry and
+  // write the refreshed cookies back onto the response. If we skip this on public
+  // pages, the token can expire between refreshes and the next admin navigation
+  // will fail because the middleware never saved the new token to the cookie.
+  //
+  // Note: The `setAll` callback above correctly updates the `response` variable
+  // when a token refresh occurs, so the refreshed cookie is always forwarded.
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // On admin routes: if there's no authenticated user, redirect to login.
+  // This is a defence-in-depth check — `requireAdmin()` in the layout is the
+  // authoritative gate, but this stops the page render entirely at the edge.
+  if (isAdminRoute && !user) {
+    const loginUrl = new URL("/admin-login", request.url);
+    loginUrl.searchParams.set("redirectedFrom", path);
+    return NextResponse.redirect(loginUrl);
   }
-
-
-  // We MUST call getUser() here to allow the Supabase SSR client to refresh the token
-  // and set the updated cookies on the response, because Server Components cannot set cookies.
-  // Without this, Server Actions and RSC fetches will attempt to refresh the token but fail to save it,
-  // leading to refresh token reuse and instant session revocation.
-  await supabase.auth.getUser();
 
   return response;
 }
