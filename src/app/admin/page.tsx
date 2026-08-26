@@ -1,34 +1,60 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Activity, Eye, Inbox, Truck } from "lucide-react";
+import { Activity, Eye, Inbox, Truck, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { AnalyticsCharts } from "@/components/admin/analytics-charts";
+import { Suspense } from "react";
 
 export const metadata = { title: "Dashboard" };
 export const dynamic = "force-dynamic";
 
-export default async function AdminIndexPage() {
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <header className="flex flex-col gap-2">
+        <div className="h-8 w-64 bg-muted animate-pulse rounded-md" />
+        <div className="h-4 w-96 bg-muted/50 animate-pulse rounded-md" />
+      </header>
+      
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-sm h-32 flex items-center justify-center">
+            <Loader2 className="size-6 text-muted-foreground animate-spin" />
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="col-span-1 lg:col-span-2 rounded-2xl border border-border bg-card/40 p-6 h-96 flex items-center justify-center">
+          <Loader2 className="size-8 text-muted-foreground animate-spin" />
+        </div>
+        <div className="col-span-1 rounded-2xl border border-border bg-card/40 p-6 h-96 flex items-center justify-center">
+          <Loader2 className="size-8 text-muted-foreground animate-spin" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function DashboardContent() {
   const supabase = createAdminClient();
 
-  // Fetch basic stats (with error handling so it doesn't crash if something is wrong)
-  const [{ count: leadCount }, { count: vanCount }, { count: activeVanCount }, { data: recentLeads }] = await Promise.all([
-    supabase.from("leads").select("*", { count: "exact", head: true }),
-    supabase.from("vans").select("*", { count: "exact", head: true }),
-    // Fix: valid statuses are 'available' or 'limited', not 'published'
-    supabase.from("vans").select("*", { count: "exact", head: true }).in("status", ["available", "limited"]),
-    supabase
-      .from("leads")
-      .select("id, name, type, created_at, status")
-      .order("created_at", { ascending: false })
-      .limit(6)
-  ]);
-
-  // Aggregate page views and leads from the last 30 days
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const thirtyDaysIso = thirtyDaysAgo.toISOString();
 
-  // Fetch real analytics data
-  const [{ data: rawViews }, { data: rawLeads }] = await Promise.all([
+  // Combine ALL queries into a single parallel block to eliminate waterfall latency
+  const [
+    { count: leadCount }, 
+    { count: vanCount }, 
+    { count: activeVanCount }, 
+    { data: recentLeads },
+    { data: rawViews },
+    { data: rawLeads }
+  ] = await Promise.all([
+    supabase.from("leads").select("*", { count: "exact", head: true }),
+    supabase.from("vans").select("*", { count: "exact", head: true }),
+    supabase.from("vans").select("*", { count: "exact", head: true }).in("status", ["available", "limited"]),
+    supabase.from("leads").select("id, name, type, created_at, status").order("created_at", { ascending: false }).limit(6),
     supabase.from("page_views").select("created_at").gte("created_at", thirtyDaysIso),
     supabase.from("leads").select("created_at").gte("created_at", thirtyDaysIso),
   ]);
@@ -171,5 +197,13 @@ export default async function AdminIndexPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminIndexPage() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent />
+    </Suspense>
   );
 }
