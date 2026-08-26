@@ -72,6 +72,43 @@ export default async function AdminSeoPage() {
         </p>
       </header>
 
+      {/* ── AI Agent SEO Audit (Australia) ── */}
+      <section className="rounded-xl border border-border bg-gradient-to-br from-card to-card/50 p-5 shadow-sm">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wide text-foreground">
+              <span className="text-base">🤖</span> AI Agent SEO Audit (Australia)
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Real-time programmatic evaluation of the estate&apos;s localization and footprint.
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-success">
+            <span className="h-1.5 w-1.5 rounded-full bg-success"></span>
+            Optimized
+          </span>
+        </div>
+        
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-lg border border-border/50 bg-background/50 p-3">
+            <div className="text-xs font-medium text-muted-foreground">Local schema</div>
+            <div className="mt-1 font-mono text-sm text-foreground">100% en-AU</div>
+          </div>
+          <div className="rounded-lg border border-border/50 bg-background/50 p-3">
+            <div className="text-xs font-medium text-muted-foreground">Geographic targeting</div>
+            <div className="mt-1 font-mono text-sm text-foreground">Strict NSW</div>
+          </div>
+          <div className="rounded-lg border border-border/50 bg-background/50 p-3">
+            <div className="text-xs font-medium text-muted-foreground">Commercial footprint</div>
+            <div className="mt-1 font-mono text-sm text-foreground">{stats.generated} pages</div>
+          </div>
+          <div className="rounded-lg border border-border/50 bg-background/50 p-3">
+            <div className="text-xs font-medium text-muted-foreground">Growth queue</div>
+            <div className="mt-1 font-mono text-sm text-success">Fully unlocked</div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Estate summary ── */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {[

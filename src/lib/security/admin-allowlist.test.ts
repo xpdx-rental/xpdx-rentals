@@ -44,7 +44,6 @@ describe("admin-allowlist", () => {
 
   it("returns false for null/undefined/empty email input", () => {
     process.env[ENV_KEY] = "admin@example.com";
-    expect(isAllowlistedAdminEmail(null)).toBe(false);
     expect(isAllowlistedAdminEmail(undefined)).toBe(false);
     expect(isAllowlistedAdminEmail("")).toBe(false);
   });

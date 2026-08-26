@@ -19,7 +19,7 @@ export type RoleActionState = {
   message: string;
 };
 
-const VALID_ROLES = ["owner", "admin", "manager", "hire_desk", "content"] as const;
+const VALID_ROLES = ["owner", "super_admin", "admin", "manager", "hire_desk", "content"] as const;
 type ValidRole = (typeof VALID_ROLES)[number];
 
 function isValidRole(role: string): role is ValidRole {
@@ -119,8 +119,8 @@ export async function assignAdminRole(
   const role = String(formData.get("role") ?? "");
   const mfaRequired = formData.get("mfaRequired") === "true";
 
-  if (role === "owner") {
-    return { status: "error", message: "The owner role can only be assigned manually through the database." };
+  if ((role === "owner" || role === "super_admin") && currentUserRole !== "owner" && currentUserRole !== "super_admin") {
+    return { status: "error", message: "Only super admins and owners can assign the owner or super_admin role." };
   }
 
   if (email === "pankaj@techtonika-autolink.com") {
