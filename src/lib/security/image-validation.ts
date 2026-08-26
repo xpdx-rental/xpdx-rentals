@@ -1,4 +1,4 @@
-import sharp, { type Metadata } from "sharp";
+import type { Metadata } from "sharp";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -113,6 +113,7 @@ export async function validateStoredImage(
     // `sharp` reads the container header — the magic bytes — so a text file or
     // an executable renamed `.webp` fails here regardless of what the client
     // declared as its content type.
+    const sharp = (await import("sharp")).default;
     metadata = await sharp(buffer, { failOn: "error" }).metadata();
   } catch {
     return { ok: false, error: "That file is not a readable image." };
