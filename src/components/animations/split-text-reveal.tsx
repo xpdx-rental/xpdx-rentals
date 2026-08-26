@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Fragment, type ElementType } from "react";
 
 /**
@@ -72,7 +72,7 @@ export function SplitTextReveal({
   // the animation each time.
   return (
     <Tag className={className}>
-      <motion.span
+      <m.span
         className="inline"
         initial="hidden"
         whileInView="visible"
@@ -93,13 +93,13 @@ export function SplitTextReveal({
               // baseline, which is visible on every heading containing one.
               className="inline-block overflow-hidden pb-[0.12em] mb-[-0.12em] align-bottom"
             >
-              <motion.span
+              <m.span
                 className="inline-block"
                 variants={WORD_VARIANTS}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
                 {word}
-              </motion.span>
+              </m.span>
             </span>
             {/*
               A real space between the word spans, rather than the `margin-right`
@@ -113,7 +113,7 @@ export function SplitTextReveal({
             {i < words.length - 1 ? " " : null}
           </Fragment>
         ))}
-      </motion.span>
+      </m.span>
     </Tag>
   );
 }

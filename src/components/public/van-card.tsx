@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { VanPhoto } from "@/components/public/van-photo";
 import { formatWeekly, formatMm, ROOF_LABELS } from "@/lib/van";
 import type { PublicVan } from "@/lib/data/public-vans";
-import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
+import { m, useMotionValue, useMotionTemplate } from "framer-motion";
 
 function vanTransitionName(kind: "photo" | "name" | "price", slug: string) {
   return { viewTransitionName: `van-${kind}-${slug}` } as React.CSSProperties;
@@ -39,7 +39,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
   const spotlightBackground = useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(255,95,0,0.1) 0%, transparent 80%)`;
 
   return (
-    <motion.article
+    <m.article
       onMouseMove={handleMouseMove}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
       id={`van-card-${van.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-card/50 backdrop-blur-md shadow-lg transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(255,95,0,0.15)] hover:border-[#EA580C]/40 hover:-translate-y-1.5"
     >
-      <motion.div
+      <m.div
         className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{ background: spotlightBackground }}
       />
@@ -136,6 +136,6 @@ export function VanCard({ van, priority = false }: { van: PublicVan; priority?: 
         </div>
       </div>
       </div>
-    </motion.article>
+    </m.article>
   );
 }

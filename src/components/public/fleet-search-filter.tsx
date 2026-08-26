@@ -16,7 +16,7 @@ import {
   Check,
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Fuse from "fuse.js";
 import { VanCard } from "@/components/public/van-card";
 import type { PublicVan } from "@/lib/data/public-vans";
@@ -217,7 +217,7 @@ function SortDropdown({
 
       <AnimatePresence>
         {open && (
-          <motion.ul
+          <m.ul
             role="listbox"
             aria-label="Sort order"
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
@@ -249,7 +249,7 @@ function SortDropdown({
                 </button>
               </li>
             ))}
-          </motion.ul>
+          </m.ul>
         )}
       </AnimatePresence>
     </div>
@@ -426,7 +426,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
             {/* Clear all */}
             <AnimatePresence>
               {(activeCount > 0 || sort !== "recommended") && (
-                <motion.button
+                <m.button
                   initial={{ opacity: 0, scale: 0.85 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.85 }}
@@ -438,7 +438,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
                 >
                   <X className="size-3.5" />
                   <span className="hidden sm:inline">Clear</span>
-                </motion.button>
+                </m.button>
               )}
             </AnimatePresence>
           </div>
@@ -448,7 +448,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
       {/* ── Expandable filter panel ── */}
       <AnimatePresence>
         {filtersOpen && (
-          <motion.div
+          <m.div
             id="filter-panel"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -555,7 +555,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -613,7 +613,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
 
       {/* ── Vehicle grid / empty state ── */}
       {filtered.length === 0 ? (
-        <motion.div
+        <m.div
           key="empty"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -644,7 +644,7 @@ export function FleetSearchFilter({ vans }: { vans: PublicVan[] }) {
               Clear all filters
             </button>
           </div>
-        </motion.div>
+        </m.div>
       ) : (
         <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6 pb-16">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

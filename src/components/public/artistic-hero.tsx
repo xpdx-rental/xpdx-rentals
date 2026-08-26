@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  motion,
+  m,
   useScroll,
   useTransform,
   useMotionValue,
@@ -65,7 +65,7 @@ function CursorSpotlight() {
   };
 
   return (
-    <motion.div
+    <m.div
       onMouseMove={handleMouse}
       style={{ background }}
       className="absolute inset-0 z-10 pointer-events-none"
@@ -145,7 +145,7 @@ function StatChip({
   delay: number;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
@@ -153,7 +153,7 @@ function StatChip({
     >
       <span className="text-primary">{icon}</span>
       <span className="text-white/70 text-xs font-medium tracking-wide">{label}</span>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -203,7 +203,7 @@ export function ArtisticHero({
           the generator's watermark. Poster is the real fleet photo, so there
           is no blank/black frame before the video can play.
         */}
-        <motion.div style={{ y: imageY }} className="absolute inset-0 h-[calc(100%+120px)] w-full opacity-60">
+        <m.div style={{ y: imageY }} className="absolute inset-0 h-[calc(100%+120px)] w-full opacity-60">
           <BackgroundVideo
             src="/videos/business-van-rental-hero.mp4"
             poster="/vans/sprinter-l2h2.jpg"
@@ -211,7 +211,7 @@ export function ArtisticHero({
             objectPosition="object-top"
             priority
           />
-        </motion.div>
+        </m.div>
 
         {/*
           ── Left side gradient overlay ─────────────────────────────────────
@@ -245,10 +245,10 @@ export function ArtisticHero({
 
       {/* ── Main content ─────────────────────────────────────────────── */}
       <div className="relative z-20 mx-auto w-full max-w-[1400px] px-6 lg:px-12 pt-16 pb-24">
-        <motion.div style={{ y: contentY, opacity }} className="flex flex-col justify-center max-w-2xl">
+        <m.div style={{ y: contentY, opacity }} className="flex flex-col justify-center max-w-2xl">
 
           {/* Eyebrow */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -259,12 +259,12 @@ export function ArtisticHero({
               Long-Term Van Hire · Sydney
             </span>
             <div className="h-px flex-1 bg-white/[0.06]" />
-          </motion.div>
+          </m.div>
 
           {/* Main Heading — editorial, razor-sharp */}
           <h1 className="font-heading font-black leading-[0.92] tracking-[-0.03em]">
             {["100+ Vans.", "Ready To", "Work."].map((word, i) => (
-              <motion.span
+              <m.span
                 key={word}
                 className="block overflow-hidden"
                 initial={{ y: "100%" }}
@@ -284,24 +284,24 @@ export function ArtisticHero({
                 >
                   {word}
                 </span>
-              </motion.span>
+              </m.span>
             ))}
           </h1>
 
           {/* Body copy */}
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mt-8 text-white/90 font-medium text-lg leading-relaxed max-w-md drop-shadow-sm"
           >
             Powering Sydney&apos;s trades, couriers, and businesses. Tap into our massive fleet of 100+ commercial vans with unlimited kilometres and comprehensive insurance included.
-          </motion.p>
+          </m.p>
 
 
 
           {/* CTAs */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.75, ease: [0.16, 1, 0.3, 1] }}
@@ -342,10 +342,10 @@ export function ArtisticHero({
                 <WhatsAppIcon className="size-5 transition-transform group-hover:scale-110" />
               </MagneticButton>
             )}
-          </motion.div>
+          </m.div>
 
           {/* Starting price & Availability */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
@@ -373,10 +373,10 @@ export function ArtisticHero({
                 Vans Available Today
               </span>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Slogan */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.1 }}
@@ -410,12 +410,12 @@ export function ArtisticHero({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Quick search — inline, mobile only. The desktop version is the
               floating pill below; mobile gets it in normal flow instead of
               zero search capability at all below md. */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.05, ease: [0.16, 1, 0.3, 1] }}
@@ -427,30 +427,30 @@ export function ArtisticHero({
               onSubmit={handleSearch}
               pill={false}
             />
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
 
 
 
           {/* Scroll cue (Mobile only now) */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 1 }}
             className="absolute bottom-6 left-0 right-0 mx-auto flex flex-col items-center gap-2 md:hidden"
           >
             <p className="text-white/25 text-[10px] uppercase tracking-[0.3em]">Scroll</p>
-            <motion.div
+            <m.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               className="w-px h-10 bg-gradient-to-b from-primary/60 to-transparent"
             />
-          </motion.div>
+          </m.div>
       </div>
 
 
       {/* Quick Search Bar */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: "150%" }}
         animate={{ opacity: 1, y: "50%" }}
         transition={{ duration: 0.8, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
@@ -462,7 +462,7 @@ export function ArtisticHero({
           onSubmit={handleSearch}
           pill
         />
-      </motion.div>
+      </m.div>
     </section>
   );
 }

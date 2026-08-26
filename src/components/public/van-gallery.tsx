@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { VanPhoto } from "@/components/public/van-photo";
 import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 interface Image {
   url: string;
@@ -114,7 +114,7 @@ export function VanGallery({ images, slug }: VanGalleryProps) {
       {/* Fullscreen Lightbox */}
       <AnimatePresence>
         {isLightboxOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -163,7 +163,7 @@ export function VanGallery({ images, slug }: VanGalleryProps) {
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium">
               {activeIndex + 1} / {images.length}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

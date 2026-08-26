@@ -15,16 +15,20 @@ export function AnalyticsTracker() {
       // Ignore admin routes
       if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return;
 
-      // Ping our tracking API asynchronously
-      fetch("/api/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pathname }),
-        // keepalive ensures the request fires even if the user navigates away instantly
-        keepalive: true,
-      }).catch(() => {
-        // Silently fail on client if analytics request fails
-      });
+      // Ping our tracking API asynchronously, deferred to let main thread breathe
+      const timer = setTimeout(() => {
+        fetch("/api/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pathname }),
+          // keepalive ensures the request fires even if the user navigates away instantly
+          keepalive: true,
+        }).catch(() => {
+          // Silently fail on client if analytics request fails
+        });
+      }, 3000);
+      
+      return () => clearTimeout(timer);
     }
   }, [pathname]);
 

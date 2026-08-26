@@ -32,25 +32,30 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const lenis = new Lenis({
-      lerp: 0.1,
-      duration: 1.2,
-      smoothWheel: true,
-      wheelMultiplier: 1,
-    });
-
-    lenisRef.current = lenis;
-
     let handle = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
+    let lenis: Lenis;
+    
+    const initLenis = window.setTimeout(() => {
+      lenis = new Lenis({
+        lerp: 0.1,
+        duration: 1.2,
+        smoothWheel: true,
+        wheelMultiplier: 1,
+      });
+
+      lenisRef.current = lenis;
+
+      const raf = (time: number) => {
+        lenis.raf(time);
+        handle = requestAnimationFrame(raf);
+      };
       handle = requestAnimationFrame(raf);
-    };
-    handle = requestAnimationFrame(raf);
+    }, 100);
 
     return () => {
-      cancelAnimationFrame(handle);
-      lenis.destroy();
+      window.clearTimeout(initLenis);
+      if (handle) cancelAnimationFrame(handle);
+      if (lenis) lenis.destroy();
       lenisRef.current = null;
     };
   }, []);

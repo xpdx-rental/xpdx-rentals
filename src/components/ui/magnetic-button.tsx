@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
+import { m, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 
 /**
@@ -53,7 +53,7 @@ export function MagneticButton({
   };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
@@ -71,6 +71,6 @@ export function MagneticButton({
           {children}
         </button>
       )}
-    </motion.div>
+    </m.div>
   );
 }

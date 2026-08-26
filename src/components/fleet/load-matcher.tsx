@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   LOAD_PRESETS,
   matchFleet,
@@ -88,7 +88,7 @@ function FillBar({ fillRatio, verdict }: { fillRatio: number; verdict: Verdict }
         </span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
-        <motion.div
+        <m.div
           className={`h-full rounded-full ${barColor}`}
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -137,7 +137,7 @@ function VanCard({
   const imgAlt = localImg?.alt ?? van.primaryImageAlt ?? `${van.name} cargo van`;
 
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -211,7 +211,7 @@ function VanCard({
           )}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -245,7 +245,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
           {LOAD_PRESETS.map((p) => {
             const isActive = p.id === load.id;
             return (
-              <motion.button
+              <m.button
                 key={p.id}
                 type="button"
                 role="radio"
@@ -269,13 +269,13 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
                   {p.hint}
                 </span>
                 {isActive && (
-                  <motion.div
+                  <m.div
                     layoutId="load-selector-indicator"
                     className="absolute inset-0 rounded-2xl ring-1 ring-primary/40"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
-              </motion.button>
+              </m.button>
             );
           })}
         </div>
@@ -283,7 +283,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
 
       {/* ── Results summary ── */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={load.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -308,11 +308,11 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
               </span>
             )}
           </div>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* ── Van grid ── */}
-      <motion.div
+      <m.div
         layout
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4"
       >
@@ -331,7 +331,7 @@ export function LoadMatcher({ vans }: { vans: LoadMatcherVan[] }) {
             );
           })}
         </AnimatePresence>
-      </motion.div>
+      </m.div>
 
       {/* ── Disclaimer ── */}
       <p className="text-xs text-muted-foreground border-t border-border pt-4 leading-relaxed">

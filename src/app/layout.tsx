@@ -6,6 +6,7 @@ import { siteBaseUrl } from "@/lib/seo/site";
 import { LenisProvider } from "@/components/animations/lenis-provider";
 import { NoiseOverlay } from "@/components/animations/noise-overlay";
 import { AnalyticsTracker } from "@/components/public/analytics-tracker";
+import { FramerProvider } from "@/components/animations/framer-provider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -160,10 +161,10 @@ export default function RootLayout({
         */}
         {GTM_ID ? (
           <>
-            <Script id="gtm-init" strategy="afterInteractive">
+            <Script id="gtm-init" strategy="lazyOnload">
               {`window.dataLayer=window.dataLayer||[];`}
             </Script>
-            <Script id="gtm" strategy="afterInteractive">
+            <Script id="gtm" strategy="lazyOnload">
               {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -195,7 +196,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           every page including fully static ones. The sonner <Toaster> moved to
           the admin layout, which is the only place anything calls toast().
         */}
-        {children}
+        <FramerProvider>
+          {children}
+        </FramerProvider>
         </LenisProvider>
         <Analytics />
         <SpeedInsights />
