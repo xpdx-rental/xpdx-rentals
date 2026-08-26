@@ -16,10 +16,6 @@ async function handleSignOut(request: Request) {
   return NextResponse.redirect(url, { status: 302 });
 }
 
-export async function GET(request: Request) {
-  return handleSignOut(request);
-}
-
 export async function POST(request: Request) {
   return handleSignOut(request);
 }

@@ -106,7 +106,11 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
         <div className="mt-auto border-t border-border p-4 text-xs text-muted-foreground">
           <p className="truncate text-foreground/80">{userEmail}</p>
           {role ? <p className="capitalize">{role.replace("_", " ")}</p> : null}
-          <Link href="/auth/sign-out" className="mt-2 inline-block text-muted-foreground hover:text-foreground">Sign out</Link>
+          <form method="POST" action="/auth/sign-out">
+            <button type="submit" className="mt-2 inline-block text-muted-foreground hover:text-foreground">
+              Sign out
+            </button>
+          </form>
         </div>
       </aside>
     </>
