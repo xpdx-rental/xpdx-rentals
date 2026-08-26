@@ -46,20 +46,18 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
         const active = isActive(item.href);
         // Define links by permission tier
         const isOwnerOnly = ["/admin/audit"].includes(item.href);
-        const isAdminOwnerOnly = [
-          "/admin/blog",
-          "/admin/testimonials",
-          "/admin/seo",
-          "/admin/settings",
-          "/admin/roles",
-        ].includes(item.href);
+        const isAdminOwnerOnly = ["/admin/seo", "/admin/settings", "/admin/roles"].includes(item.href);
+        const isContentAccessible = ["/admin/blog", "/admin/testimonials"].includes(item.href);
 
         const isOwner = role === "owner" || role === "super_admin";
-        const isAdmin = role === "admin";
+        const isAdmin = role === "admin" || isOwner;
+        const isContent = role === "content" || isAdmin;
+        const isManager = role === "manager" || isAdmin;
 
         // Hide links if the user doesn't meet the role requirements
         if (isOwnerOnly && !isOwner) return null;
-        if (isAdminOwnerOnly && !isOwner && !isAdmin) return null;
+        if (isAdminOwnerOnly && !isAdmin) return null;
+        if (isContentAccessible && !isContent) return null;
 
         return (
           <Link
