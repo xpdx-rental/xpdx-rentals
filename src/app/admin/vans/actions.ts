@@ -9,7 +9,6 @@ import { VANS_CACHE_KEY } from "@/lib/data/public-vans";
 import { invalidateCache } from "@/lib/redis";
 import { isValidVanStorageKey, validateStoredImage } from "@/lib/security/image-validation";
 import { vanSchema, vanImageSchema, parseFeaturesTextarea } from "@/lib/validation/van";
-import sharp from "sharp";
 import { slugifyVanName, type VanStatus } from "@/lib/van";
 
 /**
@@ -197,6 +196,7 @@ export async function createVan(_prev: Result | null, formData: FormData): Promi
       
       try {
         const buffer = Buffer.from(await imageFile.arrayBuffer());
+        const sharp = (await import("sharp")).default;
         const webpBuffer = await sharp(buffer)
           .resize({ width: 1920, height: 1080, fit: "inside", withoutEnlargement: true })
           .webp({ quality: 80, effort: 4 })
