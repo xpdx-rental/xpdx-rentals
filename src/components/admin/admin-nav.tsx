@@ -8,6 +8,7 @@ import {
   Settings, Users, ScrollText, Menu, X, FileText, Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 // Leads first: it is the landing screen and the thing staff open all day
 // (CLAUDE.md §7). The dashboard, brands/models catalogue and API-usage screens
@@ -28,8 +29,6 @@ const NAV = [
   { href: "/admin/roles", label: "Users & Roles", icon: Users },
   { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
 ];
-
-import { createClient } from "@/lib/supabase/client";
 
 export function AdminNav({ userEmail, role }: { userEmail?: string; role?: string }) {
   const pathname = usePathname();
