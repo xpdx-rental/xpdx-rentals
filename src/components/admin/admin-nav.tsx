@@ -35,6 +35,14 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  // Kick off the Supabase browser client singleton. This starts the internal
+  // setInterval that silently refreshes the session token before it expires.
+  // Without this, the token expires, and Next.js hover+click concurrent requests
+  // race to refresh it on the server, causing instant logouts due to refresh token reuse.
+  useState(() => {
+    createClient();
+  });
+
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname === href || pathname.startsWith(`${href}/`);
@@ -52,7 +60,6 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
         const isOwner = role === "owner" || role === "super_admin";
         const isAdmin = role === "admin" || isOwner;
         const isContent = role === "content" || isAdmin;
-        const isManager = role === "manager" || isAdmin;
 
         // Hide links if the user doesn't meet the role requirements
         if (isOwnerOnly && !isOwner) return null;

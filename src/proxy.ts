@@ -19,11 +19,9 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { isAllowlistedAdminEmail } from "@/lib/security/admin-allowlist";
 import { isAllowedBot } from "@/lib/security/bots";
 import { canonicalLowercasePath } from "@/lib/routing";
 import { GEO_BLOCKED_PATH, evaluateGeoAccess, getAllowedCountries, prefersMachineReadableResponse } from "@/lib/security/geo-restriction";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 // ─── Bot / Scraper UA Lists ────────────────────────────────────────────────────
 //
@@ -311,10 +309,11 @@ export async function proxy(request: NextRequest) {
   }
 
 
-  // Removed edge-middleware auth check (getUser()) because it is redundant
-  // and prone to edge-to-serverless network race conditions on Vercel.
-  // The `/admin` routes are strictly protected by `requireAdmin()` in `src/app/admin/layout.tsx`.
-  // Server Actions are strictly protected by `requireAdminRole()`.
+  // We MUST call getUser() here to allow the Supabase SSR client to refresh the token
+  // and set the updated cookies on the response, because Server Components cannot set cookies.
+  // Without this, Server Actions and RSC fetches will attempt to refresh the token but fail to save it,
+  // leading to refresh token reuse and instant session revocation.
+  await supabase.auth.getUser();
 
   return response;
 }
