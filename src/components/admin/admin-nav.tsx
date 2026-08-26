@@ -29,9 +29,19 @@ const NAV = [
   { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
 ];
 
+import { createClient } from "@/lib/supabase/client";
+
 export function AdminNav({ userEmail, role }: { userEmail?: string; role?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Kick off the Supabase browser client singleton. This starts the internal
+  // setInterval that silently refreshes the session token before it expires.
+  // Without this, the token expires, and Next.js hover+click concurrent requests
+  // race to refresh it on the server, causing instant logouts.
+  useState(() => {
+    createClient();
+  });
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
