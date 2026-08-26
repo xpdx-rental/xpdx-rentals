@@ -8,6 +8,8 @@ import {
   Settings, Users, ScrollText, Menu, X, FileText, Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { useEffect } from "react";
 
 // Leads first: it is the landing screen and the thing staff open all day
 // (CLAUDE.md §7). The dashboard, brands/models catalogue and API-usage screens
@@ -32,6 +34,12 @@ const NAV = [
 export function AdminNav({ userEmail, role }: { userEmail?: string; role?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Initialize the Supabase browser client on mount to handle background token
+  // refreshes safely.
+  useEffect(() => {
+    createClient();
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
