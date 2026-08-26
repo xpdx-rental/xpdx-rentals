@@ -9,8 +9,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect } from "react";
-
 // Leads first: it is the landing screen and the thing staff open all day
 // (CLAUDE.md §7). The dashboard, brands/models catalogue and API-usage screens
 // went in Phase 1.
