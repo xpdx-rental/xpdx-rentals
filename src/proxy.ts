@@ -303,14 +303,14 @@ export async function proxy(request: NextRequest) {
     path.startsWith("/admin") && !path.startsWith("/admin-login");
 
   // Call getUser() to trigger a token refresh if the access token is nearing
-  // expiry. The Supabase SSR client will write the new token via setAll() above,
-  // which updates BOTH the response cookies (sent to browser) AND the request
-  // headers (forwarded to Server Components in this same request).
-  //
-  // IMPORTANT: We do NOT use the return value here to gate access. Redirecting
-  // on `!user` is unreliable because getUser() makes a live network call that
-  // can transiently return null (slow network, brief Supabase unavailability).
-  await supabase.auth.getUser();
+  // expiry. We only do this for admin routes and non-prefetch requests to avoid
+  // Vercel Edge parallel-execution race conditions that trigger Supabase's
+  // refresh-token reuse protection (which revokes the entire session).
+  const isPrefetch = request.headers.get("purpose") === "prefetch" || request.headers.get("x-middleware-prefetch") === "1" || request.headers.has("x-nextjs-data");
+
+  if (isAdminRoute && !isPrefetch) {
+    await supabase.auth.getUser();
+  }
 
   return response;
 }
