@@ -29,7 +29,13 @@ export const getCurrentUser = cache(async function getCurrentUser() {
   // refresh-token reuse detection and immediately revoking the session.
   const { data, error } = await supabase.auth.getSession();
 
-  if (error || !data.session) {
+  if (error) {
+    console.error("[auth] getSession error:", error.message);
+    return null;
+  }
+
+  if (!data.session) {
+    console.error("[auth] getSession: no session in cookie");
     return null;
   }
 
@@ -40,6 +46,7 @@ export async function requireUser() {
   const user = await getCurrentUser();
 
   if (!user) {
+    console.error("[auth] requireUser: no user, redirecting to /admin-login");
     redirect("/admin-login");
   }
 
