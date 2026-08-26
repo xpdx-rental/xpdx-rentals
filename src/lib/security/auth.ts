@@ -63,7 +63,10 @@ async function userHasAdminRoleRecord(
 
 export const userHasAdminAccess = cache(async function userHasAdminAccess(user: SupabaseUser) {
   if (isAllowlistedAdminEmail(user.email)) return true;
-  return userHasPlatformRole(user) || userHasAdminRoleRecord(user.id);
+  // Access is determined SOLELY by the admin_roles table — the panel's own
+  // role management UI. The app_metadata.platform_role claim is ignored so
+  // that adding/removing users in the panel is the single source of truth.
+  return userHasAdminRoleRecord(user.id);
 });
 
 export const getUserAdminRole = cache(async function getUserAdminRole(user: SupabaseUser): Promise<string> {
@@ -99,16 +102,20 @@ export async function requireAdmin() {
 export async function requireAdminRole(allowedRoles: string[]) {
   const user = await requireUser();
 
-  // Check if they have an active admin role record for these specific roles
-  // or if they are an owner (who can do everything).
-  // Note: Admin no longer has global bypass. They must be explicitly granted access via allowedRoles.
-  const isGlobalAdmin = await userHasAdminRoleRecord(user.id, ["owner"]);
-  if (isGlobalAdmin || isAllowlistedAdminEmail(user.email)) {
+  // Allowlisted system-owner emails bypass per-role checks.
+  if (isAllowlistedAdminEmail(user.email)) {
     return user;
   }
 
+  // Global owners (role = "owner" in admin_roles) can access everything.
+  const isGlobalOwner = await userHasAdminRoleRecord(user.id, ["owner"]);
+  if (isGlobalOwner) {
+    return user;
+  }
+
+  // Everyone else must have an explicit record for one of the allowed roles.
   const hasSpecificRole = await userHasAdminRoleRecord(user.id, allowedRoles);
-  if (!hasSpecificRole && !userHasPlatformRole(user, allowedRoles)) {
+  if (!hasSpecificRole) {
     redirect("/");
   }
 

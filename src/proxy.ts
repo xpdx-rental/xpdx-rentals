@@ -337,25 +337,19 @@ export async function proxy(request: NextRequest) {
     let isAuthorizedAdmin = isAllowlistedAdminEmail(user.email);
 
     if (!isAuthorizedAdmin) {
-      const platformRole = user.app_metadata?.platform_role;
-      if (
-        platformRole === "owner" ||
-        platformRole === "admin" ||
-        platformRole === "moderator"
-      ) {
-        isAuthorizedAdmin = true;
-      } else {
-        const adminSupabase = createAdminClient();
-        const { data: roleRecord } = await adminSupabase
-          .from("admin_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("active", true)
-          .maybeSingle();
+      // Access is granted ONLY by an active record in the admin_roles table.
+      // The app_metadata.platform_role claim is NOT checked here — the panel's
+      // own Users & Roles UI is the single source of truth.
+      const adminSupabase = createAdminClient();
+      const { data: roleRecord } = await adminSupabase
+        .from("admin_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("active", true)
+        .maybeSingle();
 
-        if (roleRecord) {
-          isAuthorizedAdmin = true;
-        }
+      if (roleRecord) {
+        isAuthorizedAdmin = true;
       }
     }
 

@@ -26,12 +26,37 @@ export function StaffSignIn() {
     setError(null);
     try {
       const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) {
         setError(signInError.message);
         setLoading(false);
         return;
       }
+
+      // ── Role gate ────────────────────────────────────────────────────────────
+      // After sign-in succeeds we must verify the user actually has an active
+      // record in admin_roles (or is on the owner allowlist). Anyone with a
+      // Supabase Auth account would otherwise reach the admin area just by
+      // knowing their password. We verify via a lightweight API endpoint that
+      // runs server-side with the service-role key.
+      const userId = signInData.user?.id;
+      if (userId) {
+        const checkResp = await fetch("/api/auth/check-admin-role", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, email: signInData.user?.email }),
+        });
+        const checkData = await checkResp.json();
+
+        if (!checkData.authorized) {
+          // Sign them back out so they don't hold a live session.
+          await supabase.auth.signOut();
+          setError("Your account does not have admin panel access. Contact your administrator.");
+          setLoading(false);
+          return;
+        }
+      }
+
       // Full navigation so the server picks up the new session cookies.
       window.location.href = redirectedFrom || "/admin";
     } catch (err) {
