@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Star, Trash2, Plus, X } from "lucide-react";
 import { saveTestimonial, toggleTestimonialApproved, deleteTestimonial } from "./actions";
@@ -26,11 +26,13 @@ export function TestimonialsManager({ items }: { items: Testimonial[] }) {
   const [state, formAction] = useActionState(saveTestimonial, undefined);
 
   // Close the form + refresh after a successful save.
-  if (state?.ok && showForm) {
-    setShowForm(false);
-    setEditing(null);
-    router.refresh();
-  }
+  useEffect(() => {
+    if (state?.ok) {
+      setShowForm(false);
+      setEditing(null);
+      router.refresh();
+    }
+  }, [state?.ok, router]);
 
   const act = (fn: () => Promise<unknown>) => startTransition(async () => { await fn(); router.refresh(); });
 

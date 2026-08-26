@@ -2,6 +2,7 @@ import { BlogEditor } from "@/components/admin/blog-editor";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notFound } from "next/navigation";
 
 export const metadata = { title: "Edit Blog Post" };
 export const dynamic = "force-dynamic";
@@ -10,8 +11,7 @@ export default async function EditBlogPostPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const supabase = createAdminClient();
 
-  // Try to fetch the post, if table doesn't exist yet, it throws an error and we just mock it for now
-  // so the UI doesn't crash before the user runs db push.
+  // Try to fetch the post
   const { data: post, error } = await supabase
     .from("blog_posts")
     .select("*")
@@ -19,8 +19,7 @@ export default async function EditBlogPostPage({ params }: { params: Promise<{ i
     .maybeSingle();
 
   if (error || !post) {
-    // If table missing or post not found, fallback gracefully 
-    // In production, you might want to call notFound() here if !post and no error
+    notFound();
   }
 
   return (
@@ -42,6 +41,7 @@ export default async function EditBlogPostPage({ params }: { params: Promise<{ i
         initialTags={post?.tags_raw ?? ""}
         initialMetaTitle={post?.meta_title ?? ""}
         initialMetaDescription={post?.meta_description ?? ""}
+        initialCoverUrl={post?.cover_image_url ?? ""}
       />
     </div>
   );

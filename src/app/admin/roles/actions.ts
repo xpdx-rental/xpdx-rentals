@@ -204,6 +204,17 @@ export async function revokeAdminRole(userId: string): Promise<RoleActionState> 
   const { getUserAdminRole } = await import("@/lib/security/auth");
   const currentUserRole = await getUserAdminRole(currentUser);
 
+  // Fetch the email of the target user
+  const { data: targetProfile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", userId)
+    .single();
+
+  if (targetProfile?.email === "pankaj@techtonika-autolink.com") {
+    return { status: "error", message: "Cannot modify the system owner account." };
+  }
+
   // Check the role of the user being revoked
   const { data: targetRole } = await supabase
     .from("admin_roles")

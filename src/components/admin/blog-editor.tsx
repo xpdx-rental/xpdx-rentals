@@ -22,7 +22,8 @@ export function BlogEditor({
   initialCategories = "",
   initialMetaTitle = "",
   initialMetaDescription = "",
-  initialTags = ""
+  initialTags = "",
+  initialCoverUrl = ""
 }) {
   const [title, setTitle] = useState(initialTitle);
   const [slug, setSlug] = useState(initialSlug);
@@ -32,7 +33,7 @@ export function BlogEditor({
   const [metaDescription, setMetaDescription] = useState(initialMetaDescription);
   const [tags, setTags] = useState(initialTags);
   const [saving, setSaving] = useState(false);
-  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [coverUrl, setCoverUrl] = useState<string | null>(initialCoverUrl || null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
