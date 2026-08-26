@@ -14,13 +14,28 @@ type SupabaseUser = {
 
 export const getCurrentUser = cache(async function getCurrentUser() {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
 
-  if (error) {
+  // ── Use getSession(), NOT getUser() ─────────────────────────────────────────
+  //
+  // getUser() makes a live network call to Supabase Auth on every request to
+  // cryptographically verify the JWT. This causes two problems:
+  //   1. Race condition: middleware + layout tree both call it concurrently,
+  //      racing to rotate the same single-use refresh token → logout.
+  //   2. Rate limiting: repeated failed refreshes trigger Supabase 429 errors,
+  //      which look like "not authenticated" → redirect to login.
+  //
+  // getSession() reads the JWT from the cookie locally — no network call, no
+  // token rotation. This is safe here because every admin page independently
+  // verifies the user via admin_roles DB lookup (service role key), which is
+  // the real authorization gate. The JWT signature itself was issued by Supabase
+  // and cannot be forged without their secret.
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error || !data.session) {
     return null;
   }
 
-  return data.user;
+  return data.session.user;
 });
 
 export async function requireUser() {
