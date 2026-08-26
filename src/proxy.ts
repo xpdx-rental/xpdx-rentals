@@ -311,52 +311,10 @@ export async function proxy(request: NextRequest) {
   }
 
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/admin-login";
-    redirectUrl.searchParams.set(
-      "redirectedFrom",
-      request.nextUrl.pathname + request.nextUrl.search,
-    );
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  if (isAdminRoute && user) {
-    let isAuthorizedAdmin = isAllowlistedAdminEmail(user.email);
-
-    if (!isAuthorizedAdmin) {
-      const platformRole = user.app_metadata?.platform_role;
-      if (
-        platformRole === "owner" ||
-        platformRole === "admin" ||
-        platformRole === "moderator"
-      ) {
-        isAuthorizedAdmin = true;
-      } else {
-        const adminSupabase = createAdminClient();
-        const { data: roleRecord } = await adminSupabase
-          .from("admin_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("active", true)
-          .maybeSingle();
-
-        if (roleRecord) {
-          isAuthorizedAdmin = true;
-        }
-      }
-    }
-
-    if (!isAuthorizedAdmin) {
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = "/";
-      return NextResponse.redirect(redirectUrl);
-    }
-  }
+  // Removed edge-middleware auth check (getUser()) because it is redundant
+  // and prone to edge-to-serverless network race conditions on Vercel.
+  // The `/admin` routes are strictly protected by `requireAdmin()` in `src/app/admin/layout.tsx`.
+  // Server Actions are strictly protected by `requireAdminRole()`.
 
   return response;
 }
