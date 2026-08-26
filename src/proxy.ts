@@ -302,17 +302,15 @@ export async function proxy(request: NextRequest) {
   const isAdminRoute =
     path.startsWith("/admin") && !path.startsWith("/admin-login");
 
-  // Call getUser() to trigger a token refresh if the access token is nearing
-  // expiry. The Supabase SSR client will write the new token via setAll() above,
-  // which updates BOTH the response cookies (sent to browser) AND the request
-  // headers (forwarded to Server Components in this same request).
-  //
-  // IMPORTANT: We do NOT use the return value here to gate access. Redirecting
-  // on `!user` is unreliable because getUser() makes a live network call that
-  // can transiently return null (slow network, brief Supabase unavailability).
-  // Access enforcement is handled authoritatively by requireAdmin() in the
-  // admin layout, which runs in the stable Node.js serverless runtime.
-  await supabase.auth.getUser();
+  // IMPORTANT: Token Refresh Race Condition Prevention
+  // Next.js fires simultaneous requests (e.g. hover prefetch + click, or parallel RSCs).
+  // If multiple requests hit getUser() simultaneously with an expiring token, they will all
+  // try to use the same Refresh Token. Supabase will detect this as a replay attack and
+  // IMMEDIATELY revoke the session (logging the user out).
+  // We use getSession() instead of getUser() in the middleware. getSession() securely 
+  // decodes the JWT without making a network call or attempting a risky refresh.
+  // The browser client (in admin-nav.tsx) will handle background refreshing safely.
+  await supabase.auth.getSession();
 
   return response;
 }
