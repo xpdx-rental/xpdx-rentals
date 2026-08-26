@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function POST(request: Request) {
+async function handleSignOut(request: Request) {
   const supabase = await createClient();
   await supabase.auth.signOut();
 
@@ -11,6 +11,15 @@ export async function POST(request: Request) {
   cookieStore.delete("admin_session");
   cookieStore.delete("active_role");
 
-  const url = new URL("/", request.url);
+  // Redirect to the staff sign-in page
+  const url = new URL("/admin-login", request.url);
   return NextResponse.redirect(url, { status: 302 });
+}
+
+export async function GET(request: Request) {
+  return handleSignOut(request);
+}
+
+export async function POST(request: Request) {
+  return handleSignOut(request);
 }
