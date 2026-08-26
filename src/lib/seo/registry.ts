@@ -17,6 +17,7 @@ import {
 } from "@/lib/seo/entities/locations";
 import { USE_CASES, recommendedVans, type UseCase } from "@/lib/data/use-cases";
 import { CORE_PAGES } from "@/lib/seo/entities/core-pages";
+import { getPublicBlogPosts, type PublicBlogPost } from "@/lib/data/blog";
 import {
   decide,
   INTENT_VALUE,
@@ -48,7 +49,7 @@ import {
  * inbound internal links, without anyone remembering to do it.
  */
 
-export type SeoPageKind = "core" | "service" | "location" | "use-case" | "vehicle";
+export type SeoPageKind = "core" | "service" | "location" | "use-case" | "vehicle" | "blog";
 
 export type SeoPage = {
   kind: SeoPageKind;
@@ -415,6 +416,39 @@ function buildCorePages(vans: PublicVan[]): SeoPage[] {
   }));
 }
 
+function buildBlogPostPage(post: PublicBlogPost): SeoPage {
+  const cleanSlug = post.slug.replace(/\/$/, "");
+  const path = `/blog/${cleanSlug}`;
+
+  return {
+    kind: "blog",
+    path,
+    slug: cleanSlug,
+    h1: post.title,
+    title: post.metaTitle || `${post.title} | XPDX Rentals`,
+    description: post.metaDescription || post.summary || "",
+    primaryKeyword: post.tagsRaw ? post.tagsRaw.split(",")[0]?.trim() || "" : "",
+    secondaryKeywords: [],
+    intent: "commercial-investigation",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Blog", path: "/blog" },
+      { name: post.title, path },
+    ],
+    decision: {
+      generate: true,
+      index: true,
+      sitemap: true,
+      canonicalPath: path,
+      score: 100,
+      reasons: ["Published blog post — hand-authored editorial content, exempt from quality score."],
+    },
+    lastModified: new Date(post.publishedAt || post.createdAt),
+    priority: 0.5,
+    changeFrequency: "monthly",
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Cannibalisation pass
 // ─────────────────────────────────────────────────────────────────────────────
@@ -480,7 +514,10 @@ function resolveCannibalisation(pages: SeoPage[]): SeoPage[] {
  * pays for it once.
  */
 export const getSeoRegistry = cache(async (): Promise<SeoPage[]> => {
-  const vans = (await getPublicVans()).filter((v) => v.status !== "draft");
+  const [vans, posts] = await Promise.all([
+    (await getPublicVans()).filter((v) => v.status !== "draft"),
+    getPublicBlogPosts(),
+  ]);
 
   // Contact details are a hard prerequisite of the gate, and `getSiteContact`
   // falls back to the authorised `lib/business.ts` values, so a page can never
@@ -493,6 +530,7 @@ export const getSeoRegistry = cache(async (): Promise<SeoPage[]> => {
     ...verifiedLocations().map((l) => buildLocationPage(l, vans, hasContact)),
     ...USE_CASES.map((u) => buildUseCasePage(u, vans, hasContact)),
     ...vans.map((v) => buildVehiclePage(v, hasContact)),
+    ...posts.map((p) => buildBlogPostPage(p)),
   ];
 
   return resolveCannibalisation(pages);

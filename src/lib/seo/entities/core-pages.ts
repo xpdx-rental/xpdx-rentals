@@ -206,6 +206,17 @@ export const CORE_PAGES: CorePage[] = [
     changeFrequency: "monthly",
     tracksFleet: false,
   },
+  {
+    path: "/blog",
+    title: "Blog — insights, guides, and tips",
+    description: "Insights, guides, and tips for long-term cargo van hire in Sydney from XPDX Rentals.",
+    h1: "Blog",
+    primaryKeyword: "van hire blog sydney",
+    intent: "commercial-investigation",
+    priority: 0.6,
+    changeFrequency: "weekly",
+    tracksFleet: false,
+  },
 ];
 
 /**

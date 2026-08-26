@@ -19,6 +19,7 @@ const FLEET_LINKS = [
 const COMPANY_LINKS = [
   { href: "/about-us", label: "About us" },
   { href: "/faq", label: "FAQ" },
+  { href: "/blog", label: "Blog" },
   { href: "/contact-us", label: "Contact us" },
   { href: "/terms-of-hire", label: "Terms of hire" },
   { href: "/privacy-policy", label: "Privacy policy" },

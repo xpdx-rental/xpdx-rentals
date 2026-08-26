@@ -667,3 +667,75 @@ p {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
 }
+
+/* ── Blog Post Content Formatting (prose style) ── */
+.blog-post-content p {
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--body);
+}
+.blog-post-content h2 {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 1.75rem;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+.blog-post-content h3 {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--foreground);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+.blog-post-content ul {
+  list-style-type: disc;
+  margin-left: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+.blog-post-content ol {
+  list-style-type: decimal;
+  margin-left: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+.blog-post-content li {
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--body);
+}
+.blog-post-content strong {
+  font-weight: 700;
+  color: var(--foreground);
+}
+.blog-post-content a {
+  color: var(--primary);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.blog-post-content a:hover {
+  color: var(--primary-hover);
+}
+.blog-post-content blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 1.25rem;
+  font-style: italic;
+  margin: 1.5rem 0;
+  color: var(--muted-foreground);
+}
+.blog-post-content img {
+  border-radius: var(--radius-lg);
+  margin: 2rem 0;
+  width: 100%;
+  height: auto;
+  box-shadow: var(--shadow-md);
+}
+
