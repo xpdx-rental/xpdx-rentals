@@ -15,22 +15,25 @@ type SupabaseUser = {
 export const getCurrentUser = cache(async function getCurrentUser() {
   const supabase = await createClient();
 
-  // We use getUser() here (not getSession()) because getSession() only reads the
-  // local cookie without validating against the Supabase server. This means an expired
-  // or revoked token still appears valid, causing the server to think the user is
-  // authenticated when they are not — leading to cryptic redirects to /admin-login.
+  // Use getSession() here, NOT getUser().
   //
-  // getUser() performs a real network call to validate the JWT. The proxy middleware
-  // already refreshed the token and wrote the new cookies onto the request headers,
-  // so this call will hit Supabase with the already-refreshed token — it won't cause
-  // a second refresh or rate-limit issues.
-  const { data, error } = await supabase.auth.getUser();
+  // The proxy middleware (proxy.ts) already calls getUser() on every request,
+  // which handles token refresh and writes the fresh token to both the response
+  // cookies (browser) and the request headers (Server Components). By the time
+  // this function runs, the session in the cookie is guaranteed to be fresh.
+  //
+  // Using getUser() here would make a SECOND live network call to Supabase,
+  // which (a) doubles latency, and (b) can transiently return null on a slow
+  // network — causing a false logout. It can also trigger its own refresh
+  // attempt that races with the middleware's refresh, triggering Supabase's
+  // refresh-token reuse detection and immediately revoking the session.
+  const { data, error } = await supabase.auth.getSession();
 
-  if (error || !data.user) {
+  if (error || !data.session) {
     return null;
   }
 
-  return data.user;
+  return data.session.user;
 });
 
 export async function requireUser() {

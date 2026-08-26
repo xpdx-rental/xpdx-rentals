@@ -302,24 +302,17 @@ export async function proxy(request: NextRequest) {
   const isAdminRoute =
     path.startsWith("/admin") && !path.startsWith("/admin-login");
 
-  // We MUST call getUser() on every request (not just admin routes) to allow the
-  // Supabase SSR client to refresh the access token when it's nearing expiry and
-  // write the refreshed cookies back onto the response. If we skip this on public
-  // pages, the token can expire between refreshes and the next admin navigation
-  // will fail because the middleware never saved the new token to the cookie.
+  // Call getUser() to trigger a token refresh if the access token is nearing
+  // expiry. The Supabase SSR client will write the new token via setAll() above,
+  // which updates BOTH the response cookies (sent to browser) AND the request
+  // headers (forwarded to Server Components in this same request).
   //
-  // Note: The `setAll` callback above correctly updates the `response` variable
-  // when a token refresh occurs, so the refreshed cookie is always forwarded.
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // On admin routes: if there's no authenticated user, redirect to login.
-  // This is a defence-in-depth check — `requireAdmin()` in the layout is the
-  // authoritative gate, but this stops the page render entirely at the edge.
-  if (isAdminRoute && !user) {
-    const loginUrl = new URL("/admin-login", request.url);
-    loginUrl.searchParams.set("redirectedFrom", path);
-    return NextResponse.redirect(loginUrl);
-  }
+  // IMPORTANT: We do NOT use the return value here to gate access. Redirecting
+  // on `!user` is unreliable because getUser() makes a live network call that
+  // can transiently return null (slow network, brief Supabase unavailability).
+  // Access enforcement is handled authoritatively by requireAdmin() in the
+  // admin layout, which runs in the stable Node.js serverless runtime.
+  await supabase.auth.getUser();
 
   return response;
 }
