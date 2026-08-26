@@ -2,13 +2,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { Plus, Sparkles, FileText, Calendar, Eye, PenLine } from "lucide-react";
 
-import { requireAdminRole } from "@/lib/security/auth";
-
 export const metadata = { title: "Blog Manager" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminBlogPage() {
-  await requireAdminRole(["owner"]);
   const supabase = createAdminClient();
 
   // Fetch blogs (ignoring errors if table doesn't exist yet, we will just show empty state)

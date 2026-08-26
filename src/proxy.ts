@@ -22,12 +22,8 @@ import { createServerClient } from "@supabase/ssr";
 import { isAllowlistedAdminEmail } from "@/lib/security/admin-allowlist";
 import { isAllowedBot } from "@/lib/security/bots";
 import { canonicalLowercasePath } from "@/lib/routing";
-import {
-  GEO_BLOCKED_PATH,
-  evaluateGeoAccess,
-  getAllowedCountries,
-  prefersMachineReadableResponse,
-} from "@/lib/security/geo-restriction";
+import { GEO_BLOCKED_PATH, evaluateGeoAccess, getAllowedCountries, prefersMachineReadableResponse } from "@/lib/security/geo-restriction";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // ─── Bot / Scraper UA Lists ────────────────────────────────────────────────────
 //
@@ -322,7 +318,8 @@ export async function proxy(request: NextRequest) {
       ) {
         isAuthorizedAdmin = true;
       } else {
-        const { data: roleRecord } = await supabase
+        const adminSupabase = createAdminClient();
+        const { data: roleRecord } = await adminSupabase
           .from("admin_roles")
           .select("role")
           .eq("user_id", user.id)

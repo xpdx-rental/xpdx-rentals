@@ -42,14 +42,22 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
     <nav className="flex flex-col gap-1 p-3">
       {NAV.map((item) => {
         const active = isActive(item.href);
-        const isAdminAllowed = ["/admin", "/admin/leads", "/admin/vans", "/admin/testimonials", "/admin/settings", "/admin/roles"].includes(item.href);
-        
-        // Hide these from everyone except owner and super_admin
-        if (!isAdminAllowed && role === "admin") return null;
-        
-        // Original logic for manager etc.
-        const isOwnerOnly = ["/admin/blog", "/admin/testimonials", "/admin/roles", "/admin/audit", "/admin/settings"].includes(item.href);
-        if (isOwnerOnly && role !== "owner" && role !== "super_admin" && role !== "admin") return null;
+        // Define links by permission tier
+        const isOwnerOnly = ["/admin/audit"].includes(item.href);
+        const isAdminOwnerOnly = [
+          "/admin/blog",
+          "/admin/testimonials",
+          "/admin/seo",
+          "/admin/settings",
+          "/admin/roles",
+        ].includes(item.href);
+
+        const isOwner = role === "owner" || role === "super_admin";
+        const isAdmin = role === "admin";
+
+        // Hide links if the user doesn't meet the role requirements
+        if (isOwnerOnly && !isOwner) return null;
+        if (isAdminOwnerOnly && !isOwner && !isAdmin) return null;
 
         return (
           <Link
