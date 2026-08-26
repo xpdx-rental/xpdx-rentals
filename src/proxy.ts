@@ -302,11 +302,26 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  // ── IMPORTANT: Use getSession() here, NOT getUser() ──────────────────────────
+  //
+  // getUser() makes a live round-trip to Supabase Auth and, when the access
+  // token is near expiry, attempts to refresh it using the refresh token.
+  // The Next.js server layouts (requireAdmin / requireUser) also call getUser().
+  // Because Next.js runs middleware and the layout tree concurrently, both
+  // calls race to rotate the same single-use refresh token. Whichever wins
+  // invalidates the other, producing "Invalid Refresh Token: Not Found" and
+  // kicking the user to the login page on every navigation.
+  //
+  // getSession() only reads the JWT that is already stored in the cookie —
+  // it makes NO network call and does NOT refresh the token. This is safe
+  // here because the middleware's job is gate-keeping (is there a cookie?),
+  // not cryptographic verification. The real verification happens in the
+  // server layouts via getUser(), which runs exactly once per request.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!session) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin-login";
     redirectUrl.searchParams.set(
@@ -315,6 +330,8 @@ export async function proxy(request: NextRequest) {
     );
     return NextResponse.redirect(redirectUrl);
   }
+
+  const user = session.user;
 
   if (isAdminRoute && user) {
     let isAuthorizedAdmin = isAllowlistedAdminEmail(user.email);
