@@ -14,13 +14,17 @@ type SupabaseUser = {
 
 export const getCurrentUser = cache(async function getCurrentUser() {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
+  
+  // proxy.ts (middleware) already uses getUser() to verify the JWT securely over the network.
+  // We use getSession() here in Server Components to avoid a redundant network round-trip,
+  // which is faster and prevents Vercel edge-to-serverless token refresh race conditions.
+  const { data, error } = await supabase.auth.getSession();
 
-  if (error) {
+  if (error || !data.session) {
     return null;
   }
 
-  return data.user;
+  return data.session.user;
 });
 
 export async function requireUser() {

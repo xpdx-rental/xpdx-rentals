@@ -251,9 +251,18 @@ export async function proxy(request: NextRequest) {
           .getAll()
           .map((c) => `${c.name}=${c.value}`)
           .join("; ");
-        request.headers.set("cookie", cookieStr);
+        
+        // Fix for Next.js App Router on Vercel Edge: mutating request.headers
+        // directly is often ignored by the server components. We must clone
+        // the headers and pass them explicitly in the next() options.
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set("cookie", cookieStr);
 
-        response = NextResponse.next({ request });
+        response = NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          }
+        });
         // Re-apply security headers after response is recreated
         if (isNonPublicPath) {
           response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
