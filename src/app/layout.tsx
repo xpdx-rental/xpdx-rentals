@@ -6,6 +6,8 @@ import { siteBaseUrl } from "@/lib/seo/site";
 import { LenisProvider } from "@/components/animations/lenis-provider";
 import { NoiseOverlay } from "@/components/animations/noise-overlay";
 import { AnalyticsTracker } from "@/components/public/analytics-tracker";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // REBRAND.md §5 type stack. Inter and Plus Jakarta Sans — the previous faces —
 // are gone from next/font, the CSS and the preconnects.
@@ -195,18 +197,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         */}
         {children}
         </LenisProvider>
-        {/*
-          @vercel/analytics and @vercel/speed-insights were removed here. They
-          inject script tags pointing at /_vercel/insights and
-          /_vercel/speed-insights, which only exist when deployed on Vercel — on
-          any other host they are two 404s on every page load, and they counted
-          against the MOTION.md §10 initial-JS budget for nothing.
-
-          REBRAND.md §7 requires a fresh GA4 property and a decision on the GTM
-          container at infra time; GA is already wired above via
-          NEXT_PUBLIC_GA_MEASUREMENT_ID. Re-add these at deploy if the site does
-          land on Vercel.
-        */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

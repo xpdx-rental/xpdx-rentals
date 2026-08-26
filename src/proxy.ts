@@ -292,6 +292,16 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  // Skip auth checks on background prefetch requests to prevent the browser from
+  // missing cookie updates during prefetching, which leads to invalidated refresh tokens.
+  const isPrefetch =
+    request.headers.get("next-router-prefetch") === "1" ||
+    request.headers.get("purpose") === "prefetch";
+
+  if (isPrefetch) {
+    return response;
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
