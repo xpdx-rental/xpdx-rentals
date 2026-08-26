@@ -49,7 +49,8 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
 
         const isOwner = role === "owner" || role === "super_admin";
         const isAdmin = role === "admin" || isOwner;
-        const isContent = role === "content" || isAdmin;
+        const isManager = role === "manager" || isAdmin;
+        const isContent = role === "content" || isManager;
 
         // Hide links if the user doesn't meet the role requirements
         if (isOwnerOnly && !isOwner) return null;

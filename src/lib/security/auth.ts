@@ -129,7 +129,7 @@ export async function requireAdminRole(allowedRoles: string[]) {
 
   const hasSpecificRole = await userHasAdminRoleRecord(user.id, allowedRoles);
   if (!hasSpecificRole && !userHasPlatformRole(user, allowedRoles)) {
-    redirect("/");
+    redirect("/admin");
   }
 
   return user;

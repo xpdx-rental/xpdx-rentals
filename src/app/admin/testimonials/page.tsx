@@ -7,7 +7,7 @@ export const metadata = { title: "Testimonials" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminTestimonialsPage() {
-  await requireAdminRole(["owner", "admin"]);
+  await requireAdminRole(["owner", "admin", "manager", "content"]);
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("testimonials")
