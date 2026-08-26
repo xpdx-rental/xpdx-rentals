@@ -14,28 +14,13 @@ type SupabaseUser = {
 
 export const getCurrentUser = cache(async function getCurrentUser() {
   const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
 
-  // ── Use getSession(), NOT getUser() ─────────────────────────────────────────
-  //
-  // getUser() makes a live network call to Supabase Auth on every request to
-  // cryptographically verify the JWT. This causes two problems:
-  //   1. Race condition: middleware + layout tree both call it concurrently,
-  //      racing to rotate the same single-use refresh token → logout.
-  //   2. Rate limiting: repeated failed refreshes trigger Supabase 429 errors,
-  //      which look like "not authenticated" → redirect to login.
-  //
-  // getSession() reads the JWT from the cookie locally — no network call, no
-  // token rotation. This is safe here because every admin page independently
-  // verifies the user via admin_roles DB lookup (service role key), which is
-  // the real authorization gate. The JWT signature itself was issued by Supabase
-  // and cannot be forged without their secret.
-  const { data, error } = await supabase.auth.getSession();
-
-  if (error || !data.session) {
+  if (error) {
     return null;
   }
 
-  return data.session.user;
+  return data.user;
 });
 
 export async function requireUser() {
@@ -78,10 +63,7 @@ async function userHasAdminRoleRecord(
 
 export const userHasAdminAccess = cache(async function userHasAdminAccess(user: SupabaseUser) {
   if (isAllowlistedAdminEmail(user.email)) return true;
-  // Access is determined SOLELY by the admin_roles table — the panel's own
-  // role management UI. The app_metadata.platform_role claim is ignored so
-  // that adding/removing users in the panel is the single source of truth.
-  return userHasAdminRoleRecord(user.id);
+  return userHasPlatformRole(user) || userHasAdminRoleRecord(user.id);
 });
 
 export const getUserAdminRole = cache(async function getUserAdminRole(user: SupabaseUser): Promise<string> {
@@ -117,20 +99,16 @@ export async function requireAdmin() {
 export async function requireAdminRole(allowedRoles: string[]) {
   const user = await requireUser();
 
-  // Allowlisted system-owner emails bypass per-role checks.
-  if (isAllowlistedAdminEmail(user.email)) {
+  // Check if they have an active admin role record for these specific roles
+  // or if they are an owner (who can do everything).
+  // Note: Admin no longer has global bypass. They must be explicitly granted access via allowedRoles.
+  const isGlobalAdmin = await userHasAdminRoleRecord(user.id, ["owner"]);
+  if (isGlobalAdmin || isAllowlistedAdminEmail(user.email)) {
     return user;
   }
 
-  // Global owners (role = "owner" in admin_roles) can access everything.
-  const isGlobalOwner = await userHasAdminRoleRecord(user.id, ["owner"]);
-  if (isGlobalOwner) {
-    return user;
-  }
-
-  // Everyone else must have an explicit record for one of the allowed roles.
   const hasSpecificRole = await userHasAdminRoleRecord(user.id, allowedRoles);
-  if (!hasSpecificRole) {
+  if (!hasSpecificRole && !userHasPlatformRole(user, allowedRoles)) {
     redirect("/");
   }
 

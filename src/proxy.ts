@@ -244,6 +244,15 @@ export async function proxy(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value),
         );
+
+        // Sync updated cookies back to the raw header so Server Components can read them.
+        // Without this, Server Components see the old token, attempt a second refresh, and crash.
+        const cookieStr = request.cookies
+          .getAll()
+          .map((c) => `${c.name}=${c.value}`)
+          .join("; ");
+        request.headers.set("cookie", cookieStr);
+
         response = NextResponse.next({ request });
         // Re-apply security headers after response is recreated
         if (isNonPublicPath) {
@@ -302,26 +311,11 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  // ── IMPORTANT: Use getSession() here, NOT getUser() ──────────────────────────
-  //
-  // getUser() makes a live round-trip to Supabase Auth and, when the access
-  // token is near expiry, attempts to refresh it using the refresh token.
-  // The Next.js server layouts (requireAdmin / requireUser) also call getUser().
-  // Because Next.js runs middleware and the layout tree concurrently, both
-  // calls race to rotate the same single-use refresh token. Whichever wins
-  // invalidates the other, producing "Invalid Refresh Token: Not Found" and
-  // kicking the user to the login page on every navigation.
-  //
-  // getSession() only reads the JWT that is already stored in the cookie —
-  // it makes NO network call and does NOT refresh the token. This is safe
-  // here because the middleware's job is gate-keeping (is there a cookie?),
-  // not cryptographic verification. The real verification happens in the
-  // server layouts via getUser(), which runs exactly once per request.
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin-login";
     redirectUrl.searchParams.set(
@@ -331,25 +325,29 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  const user = session.user;
-
   if (isAdminRoute && user) {
     let isAuthorizedAdmin = isAllowlistedAdminEmail(user.email);
 
     if (!isAuthorizedAdmin) {
-      // Access is granted ONLY by an active record in the admin_roles table.
-      // The app_metadata.platform_role claim is NOT checked here — the panel's
-      // own Users & Roles UI is the single source of truth.
-      const adminSupabase = createAdminClient();
-      const { data: roleRecord } = await adminSupabase
-        .from("admin_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("active", true)
-        .maybeSingle();
-
-      if (roleRecord) {
+      const platformRole = user.app_metadata?.platform_role;
+      if (
+        platformRole === "owner" ||
+        platformRole === "admin" ||
+        platformRole === "moderator"
+      ) {
         isAuthorizedAdmin = true;
+      } else {
+        const adminSupabase = createAdminClient();
+        const { data: roleRecord } = await adminSupabase
+          .from("admin_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("active", true)
+          .maybeSingle();
+
+        if (roleRecord) {
+          isAuthorizedAdmin = true;
+        }
       }
     }
 
