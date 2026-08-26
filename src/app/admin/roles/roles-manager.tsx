@@ -16,7 +16,6 @@ const ROLE_OPTIONS = [
 
   { value: "manager", label: "Manager", description: "Inventory, leads, content & reports (no users/settings)", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
   { value: "admin", label: "Admin", description: "Access to Fleet, Leads, Settings, and SEO (no Blog, Testimonials, Audit, or Users)", color: "bg-amber-100 text-amber-700 border-amber-200" },
-  { value: "owner", label: "Owner", description: "Full control including users, settings & hard delete", color: "bg-red-100 text-red-700 border-red-200" },
 ];
 
 const ROLE_BADGE_COLORS: Record<string, string> = {
@@ -32,10 +31,7 @@ const initialAssignState: RoleActionState = { status: "idle", message: "" };
 function AssignRoleForm({ currentUserRole }: { currentUserRole?: string }) {
   const [state, action, isPending] = useActionState(assignAdminRole, initialAssignState);
 
-  // Filter out owner role if the current user is an admin
-  const availableRoles = currentUserRole === "admin" 
-    ? ROLE_OPTIONS.filter(opt => opt.value !== "owner") 
-    : ROLE_OPTIONS;
+  const availableRoles = ROLE_OPTIONS;
 
   useEffect(() => {
     if (state.status === "success") {
@@ -223,10 +219,7 @@ function RoleRow({ entry }: { entry: AdminRoleEntry }) {
 }
 
 export function RolesManager({ roles, currentUserRole }: { roles: AdminRoleEntry[], currentUserRole?: string }) {
-  // If the current user is an admin, hide 'owner' and 'super_admin' roles from the list
-  const visibleRoles = currentUserRole === "admin" 
-    ? roles.filter(r => r.role !== "owner" && r.role !== "super_admin")
-    : roles;
+  const visibleRoles = roles.filter(r => r.role !== "owner" && r.role !== "super_admin");
 
   const activeRoles = visibleRoles.filter((r) => r.active);
   const revokedRoles = visibleRoles.filter((r) => !r.active);

@@ -49,19 +49,23 @@ export function AdminNav({ userEmail, role }: { userEmail?: string; role?: strin
       {NAV.map((item) => {
         const active = isActive(item.href);
         // Define links by permission tier
-        const isOwnerOnly = ["/admin/audit"].includes(item.href);
-        const isAdminOwnerOnly = ["/admin/seo", "/admin/settings", "/admin/roles"].includes(item.href);
-        const isContentAccessible = ["/admin/blog", "/admin/testimonials"].includes(item.href);
+        const allowedRolesByRoute: Record<string, string[]> = {
+          "/admin": ["owner", "super_admin", "admin", "manager", "hire_desk", "content"], // Dashboard
+          "/admin/leads": ["owner", "super_admin", "admin", "manager", "hire_desk"],
+          "/admin/vans": ["owner", "super_admin", "admin", "manager", "hire_desk"],
+          "/admin/blog": ["owner", "super_admin", "manager", "content"],
+          "/admin/testimonials": ["owner", "super_admin", "manager", "content"],
+          "/admin/seo": ["owner", "super_admin", "admin"],
+          "/admin/settings": ["owner", "super_admin", "admin"],
+          "/admin/roles": ["owner", "super_admin"], // Only owner can see Roles
+          "/admin/audit": ["owner", "super_admin"], // Only owner can see Audit
+        };
 
-        const isOwner = role === "owner" || role === "super_admin";
-        const isAdmin = role === "admin" || isOwner;
-        const isManager = role === "manager" || isAdmin;
-        const isContent = role === "content" || isManager;
-
-        // Hide links if the user doesn't meet the role requirements
-        if (isOwnerOnly && !isOwner) return null;
-        if (isAdminOwnerOnly && !isAdmin) return null;
-        if (isContentAccessible && !isContent) return null;
+        const normalizedRole = role === "super_admin" ? "owner" : (role || "");
+        const allowed = allowedRolesByRoute[item.href];
+        if (allowed && !allowed.includes(normalizedRole)) {
+          return null;
+        }
 
         return (
           <Link

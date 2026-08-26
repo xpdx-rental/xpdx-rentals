@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function AdminRolesPage() {
-  const user = await requireAdminRole(["owner", "admin"]);
+  const user = await requireAdminRole(["owner"]);
   const currentUserRole = await getUserAdminRole(user);
 
   const roles = await getAdminRoles();
