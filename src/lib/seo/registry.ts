@@ -476,6 +476,10 @@ function resolveCannibalisation(pages: SeoPage[]): SeoPage[] {
   return pages.map((page) => {
     if (!page.decision.generate) return page;
 
+    // Vehicles are physical inventory. Multiple vans of the same model will share 
+    // a primary keyword, but each is a distinct product that should be indexed.
+    if (page.kind === "vehicle") return page;
+
     const key = normaliseKeyword(page.primaryKeyword);
     const existing = owner.get(key);
 
