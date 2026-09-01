@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   description:
     "XPDX Rentals hires vans in Sydney, Australia. Our site is only available in the regions we serve.",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
     nocache: true,
   },
   // Clears the root layout's `canonical: "/"` — this page must never claim to

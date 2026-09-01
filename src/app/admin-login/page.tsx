@@ -16,7 +16,7 @@ import { BackgroundVideo } from "@/components/public/background-video";
  */
 export const metadata = {
   title: "Staff sign in",
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
 export default function AdminLoginPage() {

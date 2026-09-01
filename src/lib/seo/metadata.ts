@@ -67,13 +67,7 @@ export function pageMetadata(input: {
     description: input.description,
     ...(input.keywords?.length ? { keywords: input.keywords } : {}),
     alternates: canonical(input.canonicalPath ?? input.path),
-    ...(input.noindex
-      ? // `follow` is deliberate: a page we do not want ranked is still a page
-        // whose links should pass equity to the fleet. `nofollow` would strand
-        // it. `max-image-preview` etc. are left at Google's defaults so an
-        // indexable page is never quietly downgraded to a text-only result.
-        { robots: { index: false, follow: true, googleBot: { index: false, follow: true } } }
-      : { robots: { index: true, follow: true } }),
+    robots: { index: true, follow: true },
     openGraph: {
       type: "website",
       locale: "en_AU",
