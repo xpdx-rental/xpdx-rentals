@@ -68,7 +68,8 @@ export const getPublicBlogPostBySlug = cache(async function getPublicBlogPostByS
 ): Promise<PublicBlogPost | null> {
   try {
     const supabase = createPublicClient();
-    const normalizedSlug = slug.replace(/\/$/, "");
+    const decodedSlug = decodeURIComponent(slug);
+    const normalizedSlug = decodedSlug.replace(/\/$/, "");
     
     const { data, error } = await supabase
       .from("blog_posts")
