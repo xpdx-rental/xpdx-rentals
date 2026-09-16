@@ -227,6 +227,18 @@ export async function SiteFooter() {
             <Link href="/terms-of-hire" className="hover:text-primary transition-colors">Terms</Link>
           </div>
         </div>
+        <div className="text-center text-sm text-muted-foreground">
+          Website by{" "}
+          <a
+            href="https://www.tradiedigitalagency.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Tradie Digital Agency (opens in a new tab)"
+            className="hover:text-primary transition-colors"
+          >
+            Tradie Digital Agency
+          </a>
+        </div>
       </div>
     </footer>
   );
