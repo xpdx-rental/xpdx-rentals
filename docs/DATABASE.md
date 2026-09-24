@@ -1,6 +1,6 @@
 # Database Documentation
 
-Cars365 utilizes Supabase (PostgreSQL 15+) as its primary source of truth.
+XPDX Rentals utilizes Supabase (PostgreSQL 15+) as its primary source of truth.
 
 ## Core Schema Structure
 

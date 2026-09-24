@@ -1,6 +1,6 @@
 # API Documentation
 
-This outlines the structure of the Next.js API Routes and Server Actions handling the backend logic for Cars365.
+This outlines the structure of the Next.js API Routes and Server Actions handling the backend logic for XPDX Rentals.
 
 ## Public Endpoints (REST)
 

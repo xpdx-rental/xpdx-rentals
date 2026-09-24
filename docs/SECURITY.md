@@ -1,6 +1,6 @@
 # Security & Authentication Boundaries
 
-Cars365 uses a defense-in-depth approach utilizing Supabase Auth, Row Level Security, and Next.js middleware.
+XPDX Rentals uses a defense-in-depth approach utilizing Supabase Auth, Row Level Security, and Next.js middleware.
 
 ## Auth Model
 - Authentication is handled exclusively by Supabase via OTP Magic Links.

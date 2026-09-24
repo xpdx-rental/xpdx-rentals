@@ -1,6 +1,6 @@
 # Deployment & Operations Guide
 
-Cars365 is optimized for a Serverless Edge deployment model using Vercel.
+XPDX Rentals is optimized for a Serverless Edge deployment model using Vercel.
 
 ## Required Services
 1. **Vercel** (Hosting, CDN, CI/CD, ISR Caching)
