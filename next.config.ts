@@ -165,18 +165,28 @@ const nextConfig: NextConfig = {
           // API responses should never be cached by a shared proxy or CDN edge
           // unless the route explicitly opts in with Cache-Control.
           { key: "Cache-Control", value: "no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
       {
         source: "/admin/:path*",
         headers: [
           { key: "Cache-Control", value: "no-store, no-cache" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/admin-login",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
       {
         source: "/auth/:path*",
         headers: [
           { key: "Cache-Control", value: "no-store, no-cache" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
       // ── Static media in /public ─────────────────────────────────────────────
@@ -219,6 +229,7 @@ const nextConfig: NextConfig = {
         source: "/geo-blocked",
         headers: [
           { key: "Cache-Control", value: "private, no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
     ];

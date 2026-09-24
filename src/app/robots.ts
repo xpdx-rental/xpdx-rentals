@@ -25,92 +25,9 @@ export default function robots(): MetadataRoute.Robots {
 
   return {
     rules: [
-      // ── Google: full access, no delay ────────────────────────────────────
-      {
-        userAgent: "Googlebot",
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-      // ── Bing: full access, no delay ──────────────────────────────────────
-      {
-        userAgent: "Bingbot",
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-      // ── Other good-faith SEO/social bots ────────────────────────────────
-      {
-        userAgent: "DuckDuckBot",
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-      {
-        userAgent: "Slurp", // Yahoo
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-      {
-        userAgent: "facebookexternalhit",
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-      {
-        userAgent: "Twitterbot",
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-      {
-        userAgent: "LinkedInBot",
-        allow: "/",
-        disallow: ["/admin/", "/admin-login", "/api/", "/auth/", "/geo-blocked"],
-      },
-
-      // ── AI training scrapers — fully blocked ─────────────────────────────
-      // These crawlers are blocked because they harvest data for model
-      // training without consent and do not respect site ToS.
-      { userAgent: "GPTBot",             disallow: "/" },
-      { userAgent: "CCBot",              disallow: "/" },
-      { userAgent: "anthropic-ai",       disallow: "/" },
-      { userAgent: "ClaudeBot",          disallow: "/" },
-      { userAgent: "Google-Extended",    disallow: "/" }, // Gemini training
-      { userAgent: "Meta-ExternalAgent", disallow: "/" }, // Meta AI training
-      { userAgent: "Bytespider",         disallow: "/" }, // TikTok/ByteDance
-      { userAgent: "OmgiliBot",          disallow: "/" },
-      { userAgent: "Omgili",             disallow: "/" },
-      { userAgent: "PetalBot",           disallow: "/" }, // Huawei mass crawler
-      { userAgent: "cohere-ai",          disallow: "/" },
-
-      // ── Aggressive SEO / OSINT tools — fully blocked ─────────────────────
-      // These index the entire site at high frequency, consuming significant
-      // bandwidth and server resources without providing SEO benefit.
-      { userAgent: "AhrefsBot",      disallow: "/" },
-      { userAgent: "SemrushBot",     disallow: "/" },
-      { userAgent: "DotBot",         disallow: "/" },
-      { userAgent: "MJ12bot",        disallow: "/" },
-      { userAgent: "BLEXBot",        disallow: "/" },
-      { userAgent: "DataForSeoBot",  disallow: "/" },
-      { userAgent: "serpstatbot",    disallow: "/" },
-      { userAgent: "SeobilityBot",   disallow: "/" },
-      { userAgent: "Rogerbot",       disallow: "/" },
-      { userAgent: "spbot",          disallow: "/" },
-      { userAgent: "SiteImproveBot", disallow: "/" },
-
-      // ── Generic / unknown bots — polite throttle ─────────────────────────
-      // Allow public pages but enforce a crawl delay and block all
-      // non-public paths. Crawl-delay is supported by most bots that obey
-      // robots.txt but is ignored by browsers/humans, so SEO is unaffected.
       {
         userAgent: "*",
         allow: "/",
-        disallow: [
-          "/admin/",
-          "/admin-login",
-          "/api/",
-          "/auth/",
-          "/geo-blocked",
-          "/_next/",
-          "/static/",
-        ],
-        crawlDelay: 10, // seconds between requests for unknown crawlers
       },
     ],
     sitemap: `${base}/sitemap.xml`,

@@ -217,6 +217,7 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   if (isNonPublicPath) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
   // Remove fingerprinting headers injected by Node/Next at the edge layer.
@@ -261,6 +262,7 @@ export async function proxy(request: NextRequest) {
         });
         // Re-apply security headers after response is recreated
         if (isNonPublicPath) {
+          response.headers.set("X-Robots-Tag", "noindex, nofollow");
         }
         response.headers.delete("x-powered-by");
         response.headers.delete("server");
@@ -306,7 +308,13 @@ export async function proxy(request: NextRequest) {
   const isPrefetch = request.headers.get("purpose") === "prefetch" || request.headers.get("x-middleware-prefetch") === "1" || request.headers.has("x-nextjs-data");
 
   if (isAdminRoute && !isPrefetch) {
-    await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/admin-login";
+      loginUrl.searchParams.set("redirectedFrom", request.nextUrl.pathname);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   return response;

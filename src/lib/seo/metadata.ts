@@ -67,7 +67,7 @@ export function pageMetadata(input: {
     description: input.description,
     ...(input.keywords?.length ? { keywords: input.keywords } : {}),
     alternates: canonical(input.canonicalPath ?? input.path),
-    robots: { index: true, follow: true },
+    robots: input.noindex ? { index: false, follow: false } : { index: true, follow: true },
     openGraph: {
       type: "website",
       locale: "en_AU",
