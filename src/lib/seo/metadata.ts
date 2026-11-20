@@ -24,7 +24,7 @@ const BRAND = "XPDX Rentals";
  * metadata is built, so no caller has to know the template exists.
  */
 function resolveTitle(title: string): Metadata["title"] {
-  return title.includes(BRAND) ? { absolute: title } : title;
+  return title.includes(BRAND) || title.includes("|") ? { absolute: title } : title;
 }
 
 /**

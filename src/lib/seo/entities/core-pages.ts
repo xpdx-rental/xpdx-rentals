@@ -86,7 +86,7 @@ export const CORE_PAGES: CorePage[] = [
     // No brand suffix: the root layout's title template appends it. See
     // `resolveTitle` in lib/seo/metadata.ts for why some entries here carry
     // the brand and others must not.
-    title: "Van rental Sydney — by category, suburb and job",
+    title: "Van Hire Sydney | Cargo & High Roof Vans from $300/Week",
     description:
       "Every way to hire a van from XPDX Rentals in Sydney — by vehicle category, by suburb, and by the job you need it for.",
     h1: "Van hire in Sydney",
